@@ -1,5 +1,7 @@
 # \ -s puma
 require 'rubygems'
+require 'active_record'
+require 'pg'
 require 'logger'
 require 'eventmachine'
 require './logging.rb'
@@ -8,12 +10,18 @@ require './api_module/analogic_process.rb'
 
 $path = File.dirname(File.expand_path(__FILE__))
 
-ip = '45.55.233.137'
+# ip = '45.55.233.137'
 
-# ip = '192.168.0.150'
+ip = '192.168.0.150'
 porta = 5580
 
 @pasta_pids = "#{$path}/tmp/pids"
+
+ActiveRecord::Base.configurations = YAML.load(IO.read("#{$path}/db/config.yml"))
+# ActiveRecord::Base.establish_connection(:production)
+ActiveRecord::Base.establish_connection(:development)
+ActiveRecord::Base.default_timezone = :local
+ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 # Internal: cria a pasta para armazenar os pids e armazena o PID do puma
 #

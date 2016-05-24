@@ -1,0 +1,15 @@
+default: &default
+  adapter: postgresql
+  encoding: utf8
+  pool: 5
+  username: postgres
+  password: atma*1000#webservice
+  port: 5432
+
+development:
+  <<: *default
+  database: telemetria_analogica_development
+production:
+  <<: *default
+  host: 45.55.233.137
+  database: telemetria_analogica_production
