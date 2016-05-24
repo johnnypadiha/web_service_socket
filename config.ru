@@ -17,11 +17,11 @@ porta = 5580
 
 @pasta_pids = "#{$path}/tmp/pids"
 
-ActiveRecord::Base.configurations = YAML.load(IO.read("#{$path}/db/config.yml"))
-# ActiveRecord::Base.establish_connection(:production)
-ActiveRecord::Base.establish_connection(:development)
-ActiveRecord::Base.default_timezone = :local
-ActiveRecord::Base.logger = Logger.new(STDOUT)
+# ActiveRecord::Base.configurations = YAML.load(IO.read("#{$path}/db/config.yml"))
+# # ActiveRecord::Base.establish_connection(:production)
+# ActiveRecord::Base.establish_connection(:development)
+# ActiveRecord::Base.default_timezone = :local
+# ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 # Internal: cria a pasta para armazenar os pids e armazena o PID do puma
 #
