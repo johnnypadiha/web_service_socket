@@ -5,7 +5,7 @@ module AnalogicProcess
     logger.info "\t--Registrando Telemetria--\n"
     porta, ip = Socket.unpack_sockaddr_in(get_peername)
     logger.info "IP #{ip} Conectado!"
-    self.send_data "Você esta conectado"
+    # self.send_data "Você esta conectado"
   end
 
   def receive_data data
@@ -23,7 +23,7 @@ module AnalogicProcess
       else
         logger.info "Telemetria encontrada #{telemetria}"
         logger.info "Enviando pacote para telemetria"
-        telemetria[:socket].send_data "#{telemetria[:id]}02FFFF"
+        telemetria[:socket].send_data "<02FFFF03>"
       end
     else
       index = $lista_telemetria.find_index { |t| t[:id] == id }
@@ -37,7 +37,7 @@ module AnalogicProcess
         $lista_telemetria[index][:socket] = self
       end
     end
-    self.send_data gerar_atualizacao_hora
+    # self.send_data gerar_atualizacao_hora
 
     logger.info "Pacote recebido #{data}"
     logger.info "Telemetrias conectadas #{$lista_telemetria.size}"
@@ -49,18 +49,18 @@ module AnalogicProcess
   end
 
   def gerar_atualizacao_hora
-    hora = Time.now
-    hex = '<'
-    hex += '00'
-    hex += hora.strftime('%y').to_i.to_s(16).rjust(2, '0').upcase
-    hex += hora.strftime('%m').to_i.to_s(16).rjust(2, '0').upcase
-    hex += hora.strftime('%d').to_i.to_s(16).rjust(2, '0').upcase
-    hex += hora.strftime('%H').to_i.to_s(16).rjust(2, '0').upcase
-    hex += hora.strftime('%M').to_i.to_s(16).rjust(2, '0').upcase
-    hex += hora.strftime('%S').to_i.to_s(16).rjust(2, '0').upcase
-    hex += '00'
-    hex += '>'
-
-    hex
+    # hora = Time.now
+    # hex = '<'
+    # hex += '00'
+    # hex += hora.strftime('%y').to_i.to_s(16).rjust(2, '0').upcase
+    # hex += hora.strftime('%m').to_i.to_s(16).rjust(2, '0').upcase
+    # hex += hora.strftime('%d').to_i.to_s(16).rjust(2, '0').upcase
+    # hex += hora.strftime('%H').to_i.to_s(16).rjust(2, '0').upcase
+    # hex += hora.strftime('%M').to_i.to_s(16).rjust(2, '0').upcase
+    # hex += hora.strftime('%S').to_i.to_s(16).rjust(2, '0').upcase
+    # hex += '00'
+    # hex += '>'
+    #
+    # hex
   end
 end
