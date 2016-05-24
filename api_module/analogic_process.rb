@@ -1,7 +1,4 @@
-require './api_module/logging.rb'
-
 module AnalogicProcess
-  include Logging
   $lista_telemetria = []
   def post_init
     logger.info "-- Telemetria Conectada!"

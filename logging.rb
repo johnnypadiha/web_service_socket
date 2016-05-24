@@ -5,6 +5,6 @@ module Logging
  end
 
  def self.logger
-   @logger ||= Logger.new("event.log")
+   @logger ||= Logger.new("log.log")
  end
 end
