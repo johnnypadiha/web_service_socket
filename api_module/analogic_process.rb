@@ -37,13 +37,30 @@ module AnalogicProcess
         $lista_telemetria[index][:socket] = self
       end
     end
+    self.send_data gerar_atualizacao_hora
+
     logger.info "Pacote recebido #{data}"
-    logger.info "Telemetrias conectadas #{$lista_telemetria}"
+    logger.info "Telemetrias conectadas #{$lista_telemetria.size}"
     close_connection if data =~ /quit/i
   end
 
   def unbind
     puts "-- someone disconnected from the echo server!"
   end
-  #puts "Hey Man ;-)"
+
+  def gerar_atualizacao_hora
+    hora = Time.now
+    hex = '<'
+    hex += '00'
+    hex += hora.strftime('%y').to_i.to_s(16).rjust(2, '0').upcase
+    hex += hora.strftime('%m').to_i.to_s(16).rjust(2, '0').upcase
+    hex += hora.strftime('%d').to_i.to_s(16).rjust(2, '0').upcase
+    hex += hora.strftime('%H').to_i.to_s(16).rjust(2, '0').upcase
+    hex += hora.strftime('%M').to_i.to_s(16).rjust(2, '0').upcase
+    hex += hora.strftime('%S').to_i.to_s(16).rjust(2, '0').upcase
+    hex += '00'
+    hex += '>'
+
+    hex
+  end
 end
