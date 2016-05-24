@@ -23,7 +23,7 @@ module AnalogicProcess
       else
         logger.info "Telemetria encontrada #{telemetria}"
         logger.info "Enviando pacote para telemetria"
-        telemetria[:socket].send_data "<02FFFF03>"
+        telemetria[:socket].send_data "<02FFFE03>"
       end
     else
       index = $lista_telemetria.find_index { |t| t[:id] == id }
