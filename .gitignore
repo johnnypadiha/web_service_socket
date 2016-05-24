@@ -1,11 +1,7 @@
 # Ignore bundler config.
-/.bundle
+vendor/**/*
 
 # Ignore all logfiles and tempfiles.
-./Gemfile.lock
-./log.log
-./tmp/*
-./tmp/pids/*
-./tmp/pids/puma.pid
-
-vendor/**/*
+Gemfile.lock
+log.log
+tmp/**/*
