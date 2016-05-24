@@ -8,7 +8,9 @@ require './api_module/analogic_process.rb'
 
 $path = File.dirname(File.expand_path(__FILE__))
 
-ip = '192.168.0.150'
+ip = '45.55.233.137'
+
+# ip = '192.168.0.150'
 porta = 5580
 
 @pasta_pids = "#{$path}/tmp/pids"
