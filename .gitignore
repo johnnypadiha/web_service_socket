@@ -8,3 +8,5 @@
 ./tmp/pids/*
 ./tmp/pids/puma.pid
 ./vendor/bundle/*
+
+/.bundle
