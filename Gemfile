@@ -9,4 +9,5 @@ end
 group :production do
   gem 'puma'
   gem 'activerecord'
+  gem 'pg'
 end
