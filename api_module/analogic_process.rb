@@ -36,7 +36,7 @@ module AnalogicProcess
         $lista_telemetria[index][:socket] = self
       end
     end
-    # self.send_data gerar_atualizacao_hora
+    self.send_data gerar_atualizacao_hora
 
     logger.info "Pacote recebido #{data}"
     logger.info "Telemetrias conectadas #{$lista_telemetria.size}"
@@ -48,18 +48,22 @@ module AnalogicProcess
   end
 
   def gerar_atualizacao_hora
-    # hora = Time.now
-    # hex = '<'
-    # hex += '00'
-    # hex += hora.strftime('%y').to_i.to_s(16).rjust(2, '0').upcase
-    # hex += hora.strftime('%m').to_i.to_s(16).rjust(2, '0').upcase
-    # hex += hora.strftime('%d').to_i.to_s(16).rjust(2, '0').upcase
-    # hex += hora.strftime('%H').to_i.to_s(16).rjust(2, '0').upcase
-    # hex += hora.strftime('%M').to_i.to_s(16).rjust(2, '0').upcase
-    # hex += hora.strftime('%S').to_i.to_s(16).rjust(2, '0').upcase
-    # hex += '00'
-    # hex += '>'
-    #
-    # hex
+    response = '<00'
+    data = Time.now.strftime("%y%m%d%H%M%S")
+    checkError = 0
+
+    for i in 0..5
+      temp = data[2 * i ... (2 * i) + 2].to_i
+      response += temp.to_s(16).rjust(2, '0').upcase
+
+      checkError ^= temp
+    end
+
+      response += checkError.to_s(16).rjust(2,'0').upcase
+      response += '>'
+
+      logger.info "Pacote de atualização de Hora ---> #{response}"
+
+      response
   end
 end
