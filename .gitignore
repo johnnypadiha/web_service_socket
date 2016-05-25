@@ -4,4 +4,5 @@ vendor/**/*
 # Ignore all logfiles and tempfiles.
 Gemfile.lock
 log.log
+telemetry_connection.log
 tmp/**/*

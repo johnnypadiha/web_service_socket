@@ -5,7 +5,6 @@ module AnalogicProcess
     logger.info "\t--Registrando Telemetria--\n"
     porta, ip = Socket.unpack_sockaddr_in(get_peername)
     logger.info "IP #{ip} Conectado!"
-    self.send_data "Você esta conectado"
   end
 
   def receive_data data
