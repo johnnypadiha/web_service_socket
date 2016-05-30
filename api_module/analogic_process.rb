@@ -42,6 +42,7 @@ module AnalogicProcess
     # atualização de hora
     self.send_data Hora.gerar_atualizacao_hora
 
+    Pacotes::processador(data)
     logger.info "Pacote recebido #{data}"
     logger.info "Telemetrias conectadas #{$lista_telemetria.size}"
     close_connection if data =~ /quit/i
