@@ -36,7 +36,8 @@ module AnalogicProcess
         $lista_telemetria[index][:socket] = self
       end
     end
-    self.send_data gerar_atualizacao_hora
+    # atualização de hora
+    self.send_data "<00#{gerar_check_sum(Time.now.strftime("%y%m%d%H%M%S"))}>"
 
     logger.info "Pacote recebido #{data}"
     logger.info "Telemetrias conectadas #{$lista_telemetria.size}"
@@ -47,27 +48,27 @@ module AnalogicProcess
     puts "-- someone disconnected from the echo server!"
   end
 
-  def gerar_atualizacao_hora
-    response = '<00'
-    data = Time.now.strftime("%y%m%d%H%M%S")
-    checkError = 0
+  # def gerar_atualizacao_hora
+  #   response = '<00'
+  #   data = Time.now.strftime("%y%m%d%H%M%S")
+  #   checkError = 0
+  #
+  #   for i in 0..5
+  #     temp = data[2 * i ... (2 * i) + 2].to_i
+  #     response += temp.to_s(16).rjust(2, '0').upcase
+  #
+  #     checkError ^= temp
+  #   end
+  #
+  #     response += checkError.to_s(16).rjust(2,'0').upcase
+  #     response += '>'
+  #
+  #     logger.info "Pacote de atualização de Hora ---> #{response}"
+  #
+  #     response
+  # end
 
-    for i in 0..5
-      temp = data[2 * i ... (2 * i) + 2].to_i
-      response += temp.to_s(16).rjust(2, '0').upcase
-
-      checkError ^= temp
-    end
-
-      response += checkError.to_s(16).rjust(2,'0').upcase
-      response += '>'
-
-      logger.info "Pacote de atualização de Hora ---> #{response}"
-
-      response
-  end
-
-  def gerar_check_sum
+  def gerar_check_sum(comando)
     i = 0
     cs = 0
     while i < comando.size
