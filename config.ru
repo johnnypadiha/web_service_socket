@@ -13,9 +13,11 @@ Dir.glob('./model/*.rb') { |file| load file }
 $path = File.dirname(File.expand_path(__FILE__))
 
 ip = '45.55.233.137'
-
+# ip = '192.168.0.150'
+# ip = '45.55.233.137'
 # ip = '192.168.0.11'
-#ip = '192.168.0.150'
+# ip = '192.168.0.225'
+
 porta = 5580
 
 @pasta_pids = "#{$path}/tmp/pids"
