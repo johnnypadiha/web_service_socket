@@ -16,7 +16,7 @@ namespace :deploy do
   task :update do
     invoke 'deploy:stop'
     invoke 'deploy:update_code'
-    #invoke 'deploy:migrate'
+    invoke 'deploy:migrate'
     invoke 'deploy:start'
   end
 
