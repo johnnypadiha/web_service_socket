@@ -1,10 +1,6 @@
-<<<<<<< HEAD
 require './api_module/check_sum.rb'
-
 include CheckSum
-=======
 require_relative '../service/base_converter'
->>>>>>> bandeira-work
 module AnalogicProcess
   $lista_telemetria = []
   def post_init
@@ -43,12 +39,8 @@ module AnalogicProcess
         $lista_telemetria[index][:socket] = self
       end
     end
-<<<<<<< HEAD
     # atualização de hora
     self.send_data Hora.gerar_atualizacao_hora
-=======
-    self.send_data gerar_atualizacao_hora
->>>>>>> bandeira-work
 
     Pacotes::processador(data)
     logger.info "Pacote recebido #{data}"
@@ -59,27 +51,4 @@ module AnalogicProcess
   def unbind
     puts "-- someone disconnected from the echo server!"
   end
-<<<<<<< HEAD
-=======
-
-  def gerar_atualizacao_hora
-    response = '<00'
-    data = Time.now.strftime("%y%m%d%H%M%S")
-    checkError = 0
-
-    for i in 0..5
-      temp = data[2 * i ... (2 * i) + 2].to_i
-      response += temp.to_s(16).rjust(2, '0').upcase
-
-      checkError ^= temp
-    end
-
-      response += checkError.to_s(16).rjust(2,'0').upcase
-      response += '>'
-
-      logger.info "Pacote de atualização de Hora ---> #{response}"
-
-      response
-  end
->>>>>>> bandeira-work
 end
