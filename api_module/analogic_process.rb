@@ -1,6 +1,6 @@
 require './api_module/check_sum.rb'
-
 include CheckSum
+require_relative '../service/base_converter'
 module AnalogicProcess
   $lista_telemetria = []
   def post_init

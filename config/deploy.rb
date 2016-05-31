@@ -16,6 +16,7 @@ namespace :deploy do
   task :update do
     invoke 'deploy:stop'
     invoke 'deploy:update_code'
+    invoke 'deploy:migrate'
     invoke 'deploy:start'
   end
 
@@ -24,6 +25,12 @@ namespace :deploy do
       execute "cd #{deploy_to} && git stash"
       execute "cd #{deploy_to} && git pull"
       execute "cd #{deploy_to} && bundle install --path vendor/bundle"
+    end
+  end
+
+  task :migrate do
+    on roles(:web), in: :sequence, wait: 5 do
+      execute "cd #{deploy_to} && bundle exec rake db:migrate RAILS_ENV=production"
     end
   end
 
