@@ -1,4 +1,5 @@
 require './api_module/check_sum.rb'
+require './api_module/gerente_module.rb'
 include CheckSum
 require_relative '../service/base_converter'
 module AnalogicProcess
@@ -11,6 +12,7 @@ module AnalogicProcess
   end
 
   def receive_data data
+    data.chomp!
     porta, ip =  Socket.unpack_sockaddr_in(get_peername)
     id = data[1..4]
     hora = Time.now
@@ -21,11 +23,16 @@ module AnalogicProcess
       telemetria = $lista_telemetria.find { |t| t[:id] == id_telemetria }
 
       if telemetria.nil?
-        logger.info "A Telemetria de ID #{id_telemetria} não comunicou com o sistema"
+        if id_telemetria == 'xxxx'
+          Saida.create(deleted: false, cancelado: false, codigo_equipamento: 28, tentativa: 0, tipo_comando: 4)
+          send_data "teste de leitura instantanea requisitada para o id 28"
+        else
+          logger.info "A Telemetria de ID #{id_telemetria} não comunicou com o sistema"
+        end
       else
         logger.info "Telemetria encontrada #{telemetria}"
         logger.info "Enviando pacote para telemetria"
-        telemetria[:socket].send_data "<02FFFE03>"
+        telemetria[:socket].send_data GerenteModule.obter_pacote(data)
       end
     else
       index = $lista_telemetria.find_index { |t| t[:id] == id }
@@ -38,13 +45,13 @@ module AnalogicProcess
         $lista_telemetria[index][:hora] = hora
         $lista_telemetria[index][:socket] = self
       end
-    end
-    # atualização de hora
-    self.send_data Hora.gerar_atualizacao_hora
+      # atualização de hora
+      self.send_data Hora.gerar_atualizacao_hora
 
-    Pacotes::processador(data)
-    logger.info "Pacote recebido #{data}"
-    logger.info "Telemetrias conectadas #{$lista_telemetria.size}"
+      logger.info "Pacote recebido #{data}"
+      Pacotes::processador(data) unless data.nil?
+      logger.info "Telemetrias conectadas #{$lista_telemetria.size}"
+    end
     close_connection if data =~ /quit/i
   end
 

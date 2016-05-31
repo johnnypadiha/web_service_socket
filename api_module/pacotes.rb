@@ -9,7 +9,7 @@ class Pacotes
   end
 
   def self.formatador(pacote)
-    pacote = pacote.chomp!
+    pacote = pacote.chomp
     pacote = pacote.tr!('<', '')
     pacote = pacote.tr!('>', '')
   end

@@ -6,27 +6,28 @@ require 'logger'
 require 'eventmachine'
 require './logging.rb'
 require './server.rb'
+require './gerente.rb'
 require './api_module/analogic_process.rb'
 require './api_module/pacotes.rb'
 Dir.glob('./model/*.rb') { |file| load file }
 
 $path = File.dirname(File.expand_path(__FILE__))
 
-ip = '45.55.233.137'
+#ip = '45.55.233.137'
 # ip = '192.168.0.150'
 # ip = '45.55.233.137'
-# ip = '192.168.0.11'
+ ip = '192.168.0.11'
 # ip = '192.168.0.225'
 
 porta = 5580
 
 @pasta_pids = "#{$path}/tmp/pids"
 
-# ActiveRecord::Base.configurations = YAML.load(IO.read("#{$path}/db/config.yml"))
+ ActiveRecord::Base.configurations = YAML.load(IO.read("#{$path}/db/config.yml"))
 # # ActiveRecord::Base.establish_connection(:production)
-# ActiveRecord::Base.establish_connection(:development)
-# ActiveRecord::Base.default_timezone = :local
-# ActiveRecord::Base.logger = Logger.new(STDOUT)
+ ActiveRecord::Base.establish_connection(:development)
+ ActiveRecord::Base.default_timezone = :local
+ ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 # Internal: cria a pasta para armazenar os pids e armazena o PID do puma
 #
@@ -39,6 +40,17 @@ def puma_pid
   arq = File.new("#{@pasta_pids}/puma.pid", 'w')
   arq.puts pid.to_i
   arq.close
+end
+
+fork do
+  # pega o pid do gerente e armazena na pastas de pids
+  pid = Process.pid
+  arq = File.new("#{@pasta_pids}/gerente.pid", 'w')
+  arq.puts pid.to_i
+  arq.close
+
+  sleep 10
+  Gerente.new(ip, porta)
 end
 
 puma_pid
