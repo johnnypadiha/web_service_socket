@@ -7,7 +7,7 @@ class ProcessarPacotes
     index_D ||= 1
     medidas = Hash.new
 
-    medidas[:nivel_sinal] = pacote[74...78].to_i(16) - 65536
+    medidas[:nivel_sinal] = ProcessarPacotes::obtem_nivel_sinal pacote
     24.times do |i|
       case i + 1
       when 1..16
@@ -27,5 +27,25 @@ class ProcessarPacotes
     end
 
     medidas
+  end
+
+  def self.inicializacao(pacote)
+    inicializacao = Hash.new
+    inicializacao[:telemetria_id] = ProcessarPacotes::obtem_telemetria_id pacote
+    inicializacao[:data] = Time.now
+    inicializacao[:nivel_sinal] = ProcessarPacotes::obtem_nivel_sinal pacote
+    inicializacao
+  end
+
+  def self.obtem_telemetria_id(pacote, inicio_telemetria_id = 0, fim_telemetria_id = 3)
+    return pacote[inicio_telemetria_id..fim_telemetria_id]
+  end
+
+  def self.obtem_firmware(pacote, inicio_firmware = 6, fim_firmware = 9)
+    return pacote[inicio_firmware..fim_firmware]
+  end
+
+  def self.obtem_nivel_sinal(pacote, inicio_nivel_sinal = 74, fim_nivel_sinal = 78, base_subtracao = 65536)
+    return pacote[inicio_nivel_sinal...fim_nivel_sinal].to_i(16) - base_subtracao
   end
 end
