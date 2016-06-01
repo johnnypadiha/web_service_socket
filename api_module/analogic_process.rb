@@ -45,6 +45,7 @@ module AnalogicProcess
         $lista_telemetria[index][:hora] = hora
         $lista_telemetria[index][:socket] = self
       end
+      Raw.create(pacote: data)
       # atualização de hora
       self.send_data Hora.gerar_atualizacao_hora
 
