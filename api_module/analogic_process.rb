@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require './api_module/check_sum.rb'
 require './api_module/gerente_module.rb'
 include CheckSum
@@ -51,7 +53,7 @@ module AnalogicProcess
 
     # valida se o pacote esta vindo em um formato válido Ex: <xxx>
     # if (data[0] == "<" && data[data.length-3] == ">")
-      Pacotes::processador(data) unless data.nil?
+      Pacotes.processador(data) unless data.nil?
     # else
       # logger.info "pacote: #{data}, possui um formato inválido!"
     # end

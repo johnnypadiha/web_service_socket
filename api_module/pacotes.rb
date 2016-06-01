@@ -1,4 +1,4 @@
-
+require_relative '../service/processar_pacotes.rb'
 class Pacotes
   def self.processador(pacote)
     pacote = Pacotes::formatador(pacote)
@@ -40,6 +40,8 @@ class Pacotes
         print('Restauração Instantânea')
     when 9
         print('Alarme Instantâneo')
+        medidas = ProcessarPacotes.alarme_instantaneo(pacote)
+        logger.info medidas
     else
         print("pacote tipo: #{tipo_pacote}, ainda não suportado pelo WebService")
     end
