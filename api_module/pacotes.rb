@@ -1,8 +1,7 @@
-
+require_relative '../service/processar_pacotes.rb'
 class Pacotes
   def self.processador(pacote)
     pacote = Pacotes::formatador(pacote)
-    id_telemetria = pacote[0..3]
     tipo_pacote = pacote[4..5]
     p "id_telemetria: #{id_telemetria}"
     p "tipo_pacote: #{tipo_pacote}"
@@ -28,17 +27,23 @@ class Pacotes
 
         # medidas_brutas = pacote[10..21]
         Pacotes::configuracao(analogicas_brutas, negativas_brutas, digitais_brutas, timers_analogicas, timers_negativas, timers_digitais, timers_brutos)
-        firmware = pacote[6..9]
+        firmware = ProcessarPacotes::obtem_firmware pacote
     when 4
         print('Inicialização')
+        inicializacao = ProcessarPacotes.inicializacao pacote
+        logger.info inicializacao
     when 5
         print('Leitura Instantânea')
+        medidas = ProcessarPacotes.leituras_instantanea(pacote)
+        logger.info medidas
     when 7
         print('Em contagem para alarmar')
     when 8
         print('Restauração Instantânea')
     when 9
         print('Alarme Instantâneo')
+        medidas = ProcessarPacotes.leituras_instantanea(pacote)
+        logger.info medidas
     else
         print("pacote tipo: #{tipo_pacote}, ainda não suportado pelo WebService")
     end
