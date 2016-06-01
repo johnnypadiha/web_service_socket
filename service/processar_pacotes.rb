@@ -1,6 +1,7 @@
 class ProcessarPacotes
-
-  def self.alarme_instantaneo(pacote)
+  # Alarme Instantâneo
+  # Leitura Instantânea
+  def self.leituras_instantanea(pacote)
     init = 6
     index_A ||= 1
     index_N ||= 1

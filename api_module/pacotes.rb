@@ -34,13 +34,15 @@ class Pacotes
         print('Inicialização')
     when 5
         print('Leitura Instantânea')
+        medidas = ProcessarPacotes.leituras_instantanea(pacote)
+        logger.info medidas
     when 7
         print('Em contagem para alarmar')
     when 8
         print('Restauração Instantânea')
     when 9
         print('Alarme Instantâneo')
-        medidas = ProcessarPacotes.alarme_instantaneo(pacote)
+        medidas = ProcessarPacotes.leituras_instantanea(pacote)
         logger.info medidas
     else
         print("pacote tipo: #{tipo_pacote}, ainda não suportado pelo WebService")
