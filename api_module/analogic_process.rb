@@ -51,12 +51,12 @@ module AnalogicProcess
       # atualização de hora
       self.send_data Hora.gerar_atualizacao_hora
 
-    # valida se o pacote esta vindo em um formato válido Ex: <xxx>
-    # if (data[0] == "<" && data[data.length-3] == ">")
-      Pacotes.processador(data) unless data.nil?
-    # else
-      # logger.info "pacote: #{data}, possui um formato inválido!"
-    # end
+      # valida se o pacote esta vindo em um formato válido Ex: <xxx>
+      if data.present? and data.chars.first == '<' and data.chars.last == '>'
+        Pacotes.processador data
+      else
+        logger.info "pacote: #{data}, possui um formato inválido!"
+      end
       logger.info "Pacote recebido #{data}"
       logger.info "Telemetrias conectadas #{$lista_telemetria.size}"
     end
