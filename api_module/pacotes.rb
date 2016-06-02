@@ -17,16 +17,12 @@ class Pacotes
         negativas_brutas = pacote[74..90]
         digitais_brutas = pacote[91..91]
 
-        timers_brutos = pacote[92...141]
-
         timers_analogicas = pacote[92..123]
-
         timers_negativas = pacote[124..131]
-
         timers_digitais = pacote[132..140]
 
         # medidas_brutas = pacote[10..21]
-        Pacotes::configuracao(analogicas_brutas, negativas_brutas, digitais_brutas, timers_analogicas, timers_negativas, timers_digitais, timers_brutos)
+        Pacotes::configuracao(analogicas_brutas, negativas_brutas, digitais_brutas, timers_analogicas, timers_negativas, timers_digitais)
         firmware = ProcessarPacotes::obtem_firmware pacote
     when 4
         print('Inicialização')
@@ -56,7 +52,7 @@ class Pacotes
     pacote = pacote.tr!('>', '')
   end
 
-  def self.configuracao(analogicas_brutas, negativas_brutas, digitais_brutas, timers_analogicas, timers_negativas, timers_digitais, timers_brutos)
+  def self.configuracao(analogicas_brutas, negativas_brutas, digitais_brutas, timers_analogicas, timers_negativas, timers_digitais)
     # p "analógicas brutas: #{analogicas_brutas}"
     # p "\n NEGATIVAS brutas: #{negativas_brutas}"
     # p "\n TIMERs brutOs: #{timers_brutos.size}"
