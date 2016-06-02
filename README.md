@@ -5,4 +5,4 @@
 $ bundle exec puma -d -C config/puma.rb
 ```
 // Para executar parcialmente em localhost execute o arquivo
-que se encontra dentro da pasta 'itens_desenvolvimento'
+que se encontra dentro da pasta 'itens_desenvolvimento' em modo de desenvolvimento.

@@ -3,8 +3,8 @@ require_relative '../model/medida.rb'
 class MedidasDeafult
   def initialize
     ActiveRecord::Base.configurations = YAML.load(IO.read("../db/config.yml"))
-    #ActiveRecord::Base.establish_connection(:production)
-    ActiveRecord::Base.establish_connection(:development)
+    ActiveRecord::Base.establish_connection(:production)
+    #ActiveRecord::Base.establish_connection(:development)
     ActiveRecord::Base.default_timezone = :local
 
     gerar_medidas
