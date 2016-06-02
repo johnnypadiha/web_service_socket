@@ -3,8 +3,8 @@ require_relative '../model/medida.rb'
 class MedidasDeafult
   def initialize
     ActiveRecord::Base.configurations = YAML.load(IO.read("../db/config.yml"))
-    #ActiveRecord::Base.establish_connection(:production)
-    ActiveRecord::Base.establish_connection(:development)
+    ActiveRecord::Base.establish_connection(:production)
+    #ActiveRecord::Base.establish_connection(:development)
     ActiveRecord::Base.default_timezone = :local
 
     gerar_medidas
@@ -31,7 +31,7 @@ class MedidasDeafult
     Medida.find_or_create_by(codigo_medida:'A14', nome_medida:'A14', equipamento_id:1)
     Medida.find_or_create_by(codigo_medida:'A15', nome_medida:'A15', equipamento_id:1)
     Medida.find_or_create_by(codigo_medida:'A16', nome_medida:'A16', equipamento_id:1)
-    
+
     Medida.find_or_create_by(codigo_medida:'N1', nome_medida:'N1', equipamento_id:1)
     Medida.find_or_create_by(codigo_medida:'N2', nome_medida:'N2', equipamento_id:1)
     Medida.find_or_create_by(codigo_medida:'N3', nome_medida:'N3', equipamento_id:1)

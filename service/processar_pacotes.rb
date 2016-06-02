@@ -10,8 +10,10 @@ class ProcessarPacotes
     index_N ||= 1
     index_D ||= 1
     medidas = Hash.new
-
-    medidas[:nivel_sinal] = if pacote.size == 72
+    leitura = Hash.new
+    medidas[:codigo_telemetria] = ProcessarPacotes::obtem_telemetria_id pacote
+    medidas[:tipo_pacote] = (ProcessarPacotes::obtem_tipo_pacote pacote).to_i
+    leitura[:DBM] = if pacote.size == 72
       ProcessarPacotes::obtem_nivel_sinal(pacote, 58, 62)
     else
       ProcessarPacotes::obtem_nivel_sinal pacote
@@ -20,21 +22,21 @@ class ProcessarPacotes
     24.times do |i|
       case i + 1
       when 1..16
-        medidas["A#{index_A}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
+        leitura["A#{index_A}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
 
         index_A += 1
       when 17..20
-        medidas["N#{index_N}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
+        leitura["N#{index_N}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
 
         index_N += 1
       when 21..24
-        medidas["D#{index_D}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
+        leitura["D#{index_D}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
 
         index_D += 1
       end
       init += 2
     end
-
+    medidas[:leituras] = leitura
     medidas
   end
 

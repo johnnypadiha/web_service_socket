@@ -17,12 +17,14 @@ ActiveRecord::Schema.define(version: 20160602182155) do
   enable_extension "plpgsql"
 
   create_table "eventos", force: :cascade do |t|
-    t.integer "tipo_eventos_id"
-    t.integer "telemetrias_id"
-    t.boolean "reporte_faixa",       default: true
-    t.boolean "reporte_energia",     default: false
-    t.boolean "reporte_sinal",       default: false
-    t.boolean "reporte_temperatura", default: false
+    t.integer  "tipo_eventos_id"
+    t.integer  "telemetrias_id"
+    t.boolean  "reporte_faixa",       default: true
+    t.boolean  "reporte_energia",     default: false
+    t.boolean  "reporte_sinal",       default: false
+    t.boolean  "reporte_temperatura", default: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
   end
 
   create_table "medidas", force: :cascade do |t|
@@ -34,12 +36,14 @@ ActiveRecord::Schema.define(version: 20160602182155) do
   end
 
   create_table "medidas_eventos", force: :cascade do |t|
-    t.integer "medidas_id"
-    t.integer "eventos_id"
-    t.integer "reporte_medidas_id"
-    t.integer "faixa_id"
-    t.string  "nome_medida"
-    t.string  "valor"
+    t.integer  "medidas_id"
+    t.integer  "eventos_id"
+    t.integer  "reporte_medidas_id"
+    t.integer  "faixa_id"
+    t.string   "nome_medida"
+    t.string   "valor"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
   end
 
   create_table "raws", force: :cascade do |t|
@@ -60,8 +64,10 @@ ActiveRecord::Schema.define(version: 20160602182155) do
   end
 
   create_table "tipo_eventos", force: :cascade do |t|
-    t.integer "codigo"
-    t.string  "nome"
+    t.integer  "codigo"
+    t.string   "nome"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end

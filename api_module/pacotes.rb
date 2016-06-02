@@ -56,6 +56,7 @@ class Pacotes
         medidas = ProcessarPacotes.leituras_instantanea(pacote)
         logger.info medidas
       logger.info "\n"
+      Evento.persistir_evento medidas
 
     when ALARME_INSTANTANEO
       logger.info "\n"
