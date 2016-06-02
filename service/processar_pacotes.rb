@@ -1,7 +1,5 @@
 # encoding: utf-8
-
 require_relative '../service/processar_pacotes.rb'
-require_relative '../config/constantes.rb'
 class ProcessarPacotes
   # Alarme Instantâneo
   # Leitura Instantânea

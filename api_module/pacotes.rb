@@ -1,5 +1,4 @@
 require_relative '../service/processar_pacotes.rb'
-require_relative '../config/constantes.rb'
 class Pacotes
   def self.processador(pacote)
     pacote = Pacotes::formatador(pacote)

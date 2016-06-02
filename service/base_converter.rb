@@ -1,6 +1,4 @@
 # encoding: utf-8
-
-require_relative '../config/constantes.rb'
 module BaseConverter
   # Internal : Método responsavel por fazer a conversão do valor vindo em
   # ... hexadecimal para decimal, efetuar calculo base para obtensão do valor ...

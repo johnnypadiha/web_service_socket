@@ -1,4 +1,3 @@
-require_relative '../config/constantes.rb'
 class Hora
   def self.gerar_atualizacao_hora
     response = ''

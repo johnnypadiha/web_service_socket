@@ -1,6 +1,4 @@
 # encoding: utf-8
-
-require_relative '../config/constantes.rb'
 module CheckSum
   # Internal : Gera o Validador CheckSum para todos os pacotes a enviar para a telemetria
   #
