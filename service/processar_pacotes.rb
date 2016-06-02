@@ -41,7 +41,7 @@ class ProcessarPacotes
 
   def self.inicializacao(pacote)
     inicializacao = Hash.new
-    inicializacao[:codigo] = ProcessarPacotes::obtem_telemetria_id pacote
+    inicializacao[:codigo] = ProcessarPacotes::obtem_codigo_telemetria pacote
     inicializacao[:data] = Time.now
     inicializacao[:nivel_sinal] = ProcessarPacotes::obtem_nivel_sinal pacote
     logger.info inicializacao
@@ -59,7 +59,7 @@ class ProcessarPacotes
     end
   end
 
-  def self.obtem_telemetria_id(pacote, inicio_telemetria_id = 0, fim_telemetria_id = 3)
+  def self.obtem_codigo_telemetria(pacote, inicio_telemetria_id = 0, fim_telemetria_id = 3)
     return pacote[inicio_telemetria_id..fim_telemetria_id]
   end
 
