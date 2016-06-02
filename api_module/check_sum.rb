@@ -1,3 +1,6 @@
+# encoding: utf-8
+
+require_relative '../config/constantes.rb'
 module CheckSum
   # Internal : Gera o Validador CheckSum para todos os pacotes a enviar para a telemetria
   #
@@ -13,13 +16,13 @@ module CheckSum
     while i < comando.size
         if i % 2 == 1
           byte_pacote = comando[i - 1 .. i]
-          cs ^= byte_pacote.hex.to_s(10).to_i
+          cs ^= byte_pacote.hex.to_s(BASE_DEC).to_i
         end
       i += 1
     end
-    cs.to_s(16).rjust(2,'0').upcase
+    cs.to_s(BASE_HEXA).rjust(2,'0').upcase
 
-    comando += cs.to_s(16).rjust(2,'0').upcase
+    comando += cs.to_s(BASE_HEXA).rjust(2,'0').upcase
 
     comando
   end

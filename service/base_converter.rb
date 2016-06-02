@@ -1,27 +1,26 @@
+# encoding: utf-8
+
+require_relative '../config/constantes.rb'
 module BaseConverter
-
-  # Public : Recebe um decimal como parâmetro e converte para hexadecimal
+  # Internal : Método responsavel por fazer a conversão do valor vindo em
+  # ... hexadecimal para decimal, efetuar calculo base para obtensão do valor ...
+  # ... real e a arrendondamento do valor caso seja fracionado.
   #
-  # params_dec - Parâmetro contendo o decimal
-  # Retorna valor convertido em hexadecimal
-  def self.convert_to_hex(params_dec)
-    unless params_dec.blank?
-      data = params_dec.to_i
-      response = data.to_s(16)
-
-      return response.upcase
-    end
-  end
-
-  # Public : Recebe um hexadecimal como parâmetro e converte para decimal
-  #
-  # params_hex - Parâmetro contendo o hexadecimal
-  # Retorna valor convertido em decimal
-  def self.convert_to_dec(params_hex)
+  # params_hex - Objeto contendo a faixa em hexadecimal para tratamento
+  # value_dec - Inteiro contendo a faixa após conversão
+  # value_float - Float contendo a faixa após calculo base
+  # value - Inteiro contendo a faixa em decimal
+  # return - Retorna valor da faixa arrendonda e em decimal
+  def self.convert_value_dec(params_hex, min_faixa = 0, min_resto = 0, increment = 1)
     unless params_hex.blank?
-      response = params_hex.to_i(16)
+      value_dec = params_hex.to_i(BASE_HEXA)
+      value_float = (value_dec.to_f * 100 / 255)
+      value = value_float.to_i
 
-      return response
+      if value > min_faixa and (value_float % value) > min_resto
+        value += increment
+      end
+      return value
     end
   end
 end
