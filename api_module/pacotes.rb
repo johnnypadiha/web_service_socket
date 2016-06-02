@@ -6,74 +6,79 @@ class Pacotes
 
     case tipo_pacote.to_i
     when PERIODICO_OK
-      logger.info "\n"
-        logger.info("Periódico OK")
-        medidas = ProcessarPacotes.leituras_instantanea pacote
-        logger.info medidas
-      logger.info "\n"
+      logger.info "="*20
+      logger.info("Periódico OK")
+      medidas = ProcessarPacotes.leituras_instantanea pacote
+      logger.info medidas
       Evento.persistir_evento medidas
+      logger.info "="*20
+
     when PERIODICO_ALARMADO
-      logger.info "\n"
-        logger.info("Periódico Alarmado")
-        medidas = ProcessarPacotes.leituras_instantanea pacote
-        logger.info medidas
-      logger.info "\n"
+      logger.info "="*20
+      logger.info("Periódico Alarmado")
+      medidas = ProcessarPacotes.leituras_instantanea pacote
+      logger.info medidas
+      Evento.persistir_evento medidas
+      logger.info "="*20
 
     when CONFIGURACAO
-        print('Configuração')
-        analogicas_brutas = pacote[10..73]
-        negativas_brutas = pacote[74..90]
-        digitais_brutas = pacote[91..91]
+      logger.info "="*20
+      print('Configuração')
+      analogicas_brutas = pacote[10..73]
+      negativas_brutas = pacote[74..90]
+      digitais_brutas = pacote[91..91]
 
-        timers_analogicas = pacote[92..123]
-        timers_negativas = pacote[124..131]
-        timers_digitais = pacote[132..140]
+      timers_analogicas = pacote[92..123]
+      timers_negativas = pacote[124..131]
+      timers_digitais = pacote[132..140]
 
-        # medidas_brutas = pacote[10..21]
-        Pacotes::configuracao(analogicas_brutas, negativas_brutas, digitais_brutas, timers_analogicas, timers_negativas, timers_digitais)
-        firmware = ProcessarPacotes::obtem_firmware pacote
+      Pacotes::configuracao(analogicas_brutas, negativas_brutas, digitais_brutas, timers_analogicas, timers_negativas, timers_digitais)
+      firmware = ProcessarPacotes::obtem_firmware pacote
+      logger.info "="*20
 
     when INICIALIZACAO
-      logger.info "\n"
-        logger.info ("Inicialização")
-        inicializacao = ProcessarPacotes.inicializacao pacote
-        logger.info inicializacao
-      logger.info "\n"
+      logger.info "="*20
+      logger.info ("Inicialização")
+      ProcessarPacotes.inicializacao pacote
+      logger.info "="*20
 
     when LEITURA_INSTANTANEA
-      logger.info "\n"
-        logger.info("Leitura Instantânea")
-        medidas = ProcessarPacotes.leituras_instantanea pacote
-        logger.info medidas
-      logger.info "\n"
+      logger.info "="*20
+      logger.info("Leitura Instantânea")
+      medidas = ProcessarPacotes.leituras_instantanea pacote
+      logger.info medidas
+      Evento.persistir_evento medidas
+      logger.info "="*20
 
     when CONTAGEM_ALARMAR
-        print('Em contagem para alarmar')
+      logger.info "="*20
+      print('Em contagem para alarmar')
+      logger.info "="*20
 
     when NORMALIZACAO
-      logger.info "\n"
-        logger.info("Restauração Instantânea")
-        medidas = ProcessarPacotes.leituras_instantanea(pacote)
-        logger.info medidas
-      logger.info "\n"
+      logger.info "="*20
+      logger.info("Restauração Instantânea")
+      medidas = ProcessarPacotes.leituras_instantanea(pacote)
+      logger.info medidas
       Evento.persistir_evento medidas
+      logger.info "="*20
 
     when ALARME_INSTANTANEO
-      logger.info "\n"
-        logger.info("Alarme Instantâneo")
-        medidas = ProcessarPacotes.leituras_instantanea(pacote)
-        logger.info medidas
-      logger.info "\n"
+      logger.info "="*20
+      logger.info("Alarme Instantâneo")
+      medidas = ProcessarPacotes.leituras_instantanea(pacote)
+      logger.info medidas
+      Evento.persistir_evento medidas
+      logger.info "="*20
 
     when ID_RECEBIDO
-      logger.info "\n"
+      logger.info "="*20
       logger.info "ID RECEBIDO <#{pacote}>"
-      logger.info "\n"
+      logger.info "="*20
 
     else
-        print("pacote tipo: #{tipo_pacote}, ainda não suportado pelo WebService")
+      logger.info "pacote tipo: #{tipo_pacote}, ainda não suportado pelo WebService".yellow
     end
-
   end
 
   def self.formatador(pacote)

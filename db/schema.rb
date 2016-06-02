@@ -63,6 +63,16 @@ ActiveRecord::Schema.define(version: 20160602182155) do
     t.datetime "updated_at",         null: false
   end
 
+  create_table "telemetria", force: :cascade do |t|
+    t.integer  "codigo"
+    t.string   "firmware"
+    t.string   "ip"
+    t.string   "periodico"
+    t.string   "nivel_sinal"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
   create_table "tipo_eventos", force: :cascade do |t|
     t.integer  "codigo"
     t.string   "nome"
