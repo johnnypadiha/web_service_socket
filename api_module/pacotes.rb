@@ -2,15 +2,23 @@ require_relative '../service/processar_pacotes.rb'
 class Pacotes
   def self.processador(pacote)
     pacote = Pacotes::formatador(pacote)
-    tipo_pacote = pacote[4..5]
+    tipo_pacote = ProcessarPacotes::obtem_tipo_pacote pacote
 
     case tipo_pacote.to_i
     when 0
-        print('Periódico OK')
+      logger.info "\n"
+        logger.info("Periódico OK")
+        medidas = ProcessarPacotes.leituras_instantanea pacote
+        logger.info medidas
+      logger.info "\n"
     when 1
-        print('Periódico Alarmado')
+      logger.info "\n"
+        logger.info("Periódico Alarmado")
+        medidas = ProcessarPacotes.leituras_instantanea pacote
+        logger.info medidas
+      logger.info "\n"
     when 3
-        print('Configuração')
+        print("\nConfiguração")
         analogicas_brutas = pacote[11..74]
         negativas_brutas = pacote[75..90]
         digitais_brutas = pacote[91..92]
@@ -27,21 +35,35 @@ class Pacotes
         Pacotes::configuracao(analogicas_brutas, negativas_brutas, digitais_brutas, timers_analogicas, timers_negativas, timers_digitais, timers_brutos)
         firmware = ProcessarPacotes::obtem_firmware pacote
     when 4
-        print('Inicialização')
+      logger.info "\n"
+        logger.info ("Inicialização")
         inicializacao = ProcessarPacotes.inicializacao pacote
         logger.info inicializacao
+      logger.info "\n"
     when 5
-        print('Leitura Instantânea')
-        medidas = ProcessarPacotes.leituras_instantanea(pacote)
+      logger.info "\n"
+        logger.info("Leitura Instantânea")
+        medidas = ProcessarPacotes.leituras_instantanea pacote
         logger.info medidas
+      logger.info "\n"
     when 7
         print('Em contagem para alarmar')
     when 8
-        print('Restauração Instantânea')
-    when 9
-        print('Alarme Instantâneo')
+      logger.info "\n"
+        logger.info("Restauração Instantânea")
         medidas = ProcessarPacotes.leituras_instantanea(pacote)
         logger.info medidas
+      logger.info "\n"
+    when 9
+      logger.info "\n"
+        logger.info("Alarme Instantâneo")
+        medidas = ProcessarPacotes.leituras_instantanea(pacote)
+        logger.info medidas
+      logger.info "\n"
+    when 9999
+      logger.info "\n"
+      logger.info "ID RECEBIDO <#{pacote}>"
+      logger.info "\n"
     else
         print("pacote tipo: #{tipo_pacote}, ainda não suportado pelo WebService")
     end

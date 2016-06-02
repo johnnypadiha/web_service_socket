@@ -8,3 +8,100 @@ D, [2016-06-01T15:02:03.472346 #10193] DEBUG -- :   [1m[35mSaida Load (0.6ms)
 D, [2016-06-01T15:02:33.502607 #10193] DEBUG -- :   [1m[36mSaida Load (0.7ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
 D, [2016-06-01T15:03:03.534280 #10193] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
 D, [2016-06-01T15:03:33.557797 #10193] DEBUG -- :   [1m[36mSaida Load (0.6ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:09:49.866690 #4306] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+D, [2016-06-02T09:09:49.953032 #4306] DEBUG -- :   [1m[35mSQL (48.4ms)[0m  INSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"  [["pacote", "<0028>"], ["created_at", "2016-06-02 09:09:49.880013"], ["updated_at", "2016-06-02 09:09:49.880013"]]
+D, [2016-06-02T09:09:49.971739 #4306] DEBUG -- :   [1m[36m (18.1ms)[0m  [1mCOMMIT[0m
+D, [2016-06-02T09:11:12.520700 #4321] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+D, [2016-06-02T09:11:12.530897 #4321] DEBUG -- :   [1m[35mSQL (0.5ms)[0m  INSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"  [["pacote", "<0028>"], ["created_at", "2016-06-02 09:11:12.524333"], ["updated_at", "2016-06-02 09:11:12.524333"]]
+D, [2016-06-02T09:11:12.547390 #4321] DEBUG -- :   [1m[36m (15.9ms)[0m  [1mCOMMIT[0m
+D, [2016-06-02T09:12:32.438993 #4344] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+D, [2016-06-02T09:12:32.451328 #4344] DEBUG -- :   [1m[35mSQL (0.5ms)[0m  INSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"  [["pacote", "<0028>"], ["created_at", "2016-06-02 09:12:32.443103"], ["updated_at", "2016-06-02 09:12:32.443103"]]
+D, [2016-06-02T09:12:32.465309 #4344] DEBUG -- :   [1m[36m (13.3ms)[0m  [1mCOMMIT[0m
+D, [2016-06-02T09:14:03.641329 #4372] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+D, [2016-06-02T09:14:03.649781 #4372] DEBUG -- :   [1m[35mSQL (0.5ms)[0m  INSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"  [["pacote", "<0028>"], ["created_at", "2016-06-02 09:14:03.644206"], ["updated_at", "2016-06-02 09:14:03.644206"]]
+D, [2016-06-02T09:14:03.668730 #4372] DEBUG -- :   [1m[36m (18.4ms)[0m  [1mCOMMIT[0m
+D, [2016-06-02T09:16:49.120780 #4413] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+D, [2016-06-02T09:16:49.130026 #4413] DEBUG -- :   [1m[35mSQL (1.0ms)[0m  INSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"  [["pacote", "<0028>"], ["created_at", "2016-06-02 09:16:49.124340"], ["updated_at", "2016-06-02 09:16:49.124340"]]
+D, [2016-06-02T09:16:49.151443 #4413] DEBUG -- :   [1m[36m (20.9ms)[0m  [1mCOMMIT[0m
+D, [2016-06-02T09:17:12.324744 #4432] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+D, [2016-06-02T09:17:12.333838 #4432] DEBUG -- :   [1m[35mSQL (0.4ms)[0m  INSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"  [["pacote", "<0028>"], ["created_at", "2016-06-02 09:17:12.328287"], ["updated_at", "2016-06-02 09:17:12.328287"]]
+D, [2016-06-02T09:17:12.351818 #4432] DEBUG -- :   [1m[36m (17.5ms)[0m  [1mCOMMIT[0m
+D, [2016-06-02T09:18:41.771458 #4453] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+D, [2016-06-02T09:18:41.780846 #4453] DEBUG -- :   [1m[35mSQL (0.5ms)[0m  INSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"  [["pacote", "<0028>"], ["created_at", "2016-06-02 09:18:41.775111"], ["updated_at", "2016-06-02 09:18:41.775111"]]
+D, [2016-06-02T09:18:41.799816 #4453] DEBUG -- :   [1m[36m (18.4ms)[0m  [1mCOMMIT[0m
+D, [2016-06-02T09:19:04.284373 #4467] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+D, [2016-06-02T09:19:04.293243 #4467] DEBUG -- :   [1m[35mSQL (0.4ms)[0m  INSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"  [["pacote", "<0028>"], ["created_at", "2016-06-02 09:19:04.287301"], ["updated_at", "2016-06-02 09:19:04.287301"]]
+D, [2016-06-02T09:19:04.313001 #4467] DEBUG -- :   [1m[36m (19.2ms)[0m  [1mCOMMIT[0m
+D, [2016-06-02T09:19:39.214364 #4470] DEBUG -- :   [1m[36mSaida Load (32.7ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:20:09.260905 #4470] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:20:39.273732 #4470] DEBUG -- :   [1m[36mSaida Load (0.5ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:21:09.305450 #4470] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:21:39.337895 #4470] DEBUG -- :   [1m[36mSaida Load (0.6ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:22:09.370319 #4470] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:22:39.401717 #4470] DEBUG -- :   [1m[36mSaida Load (0.4ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:23:09.428047 #4470] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:23:39.460507 #4470] DEBUG -- :   [1m[36mSaida Load (1.3ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:24:09.470883 #4470] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:24:39.502727 #4470] DEBUG -- :   [1m[36mSaida Load (0.6ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:25:09.534454 #4470] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:25:39.539272 #4470] DEBUG -- :   [1m[36mSaida Load (0.5ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:26:16.805526 #4520] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+D, [2016-06-02T09:26:16.814678 #4520] DEBUG -- :   [1m[35mSQL (0.5ms)[0m  INSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"  [["pacote", "<0028>"], ["created_at", "2016-06-02 09:26:16.809134"], ["updated_at", "2016-06-02 09:26:16.809134"]]
+D, [2016-06-02T09:26:16.831649 #4520] DEBUG -- :   [1m[36m (16.4ms)[0m  [1mCOMMIT[0m
+D, [2016-06-02T09:26:29.102460 #4520] DEBUG -- :   [1m[35m (0.2ms)[0m  BEGIN
+D, [2016-06-02T09:26:29.103976 #4520] DEBUG -- :   [1m[36mSQL (0.4ms)[0m  [1mINSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"[0m  [["pacote", "<00280085D880808180838001000001000001006767674001010101C6AFFFCBFFFFFFFF75>"], ["created_at", "2016-06-02 09:26:29.102671"], ["updated_at", "2016-06-02 09:26:29.102671"]]
+D, [2016-06-02T09:26:29.119220 #4520] DEBUG -- :   [1m[35m (14.7ms)[0m  COMMIT
+D, [2016-06-02T09:26:49.275669 #4523] DEBUG -- :   [1m[36mSaida Load (0.9ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:27:19.312645 #4523] DEBUG -- :   [1m[35mSaida Load (0.7ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:27:49.327260 #4523] DEBUG -- :   [1m[36mSaida Load (0.5ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:28:19.359256 #4523] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:28:49.390982 #4523] DEBUG -- :   [1m[36mSaida Load (0.6ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:29:19.400959 #4523] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:29:49.433393 #4523] DEBUG -- :   [1m[36mSaida Load (0.6ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:29:57.990533 #4559] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+D, [2016-06-02T09:29:57.999810 #4559] DEBUG -- :   [1m[35mSQL (0.5ms)[0m  INSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"  [["pacote", "<0028>"], ["created_at", "2016-06-02 09:29:57.993924"], ["updated_at", "2016-06-02 09:29:57.993924"]]
+D, [2016-06-02T09:29:58.013481 #4559] DEBUG -- :   [1m[36m (13.1ms)[0m  [1mCOMMIT[0m
+D, [2016-06-02T09:30:06.348469 #4559] DEBUG -- :   [1m[35m (0.2ms)[0m  BEGIN
+D, [2016-06-02T09:30:06.349938 #4559] DEBUG -- :   [1m[36mSQL (0.4ms)[0m  [1mINSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"[0m  [["pacote", "<00280186D781808080838000000000000001016767674001010101C6AF0000000200000000FFCBFFFFFFFF7B>"], ["created_at", "2016-06-02 09:30:06.348685"], ["updated_at", "2016-06-02 09:30:06.348685"]]
+D, [2016-06-02T09:30:06.368026 #4559] DEBUG -- :   [1m[35m (17.6ms)[0m  COMMIT
+D, [2016-06-02T09:30:26.171976 #4559] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+D, [2016-06-02T09:30:26.173279 #4559] DEBUG -- :   [1m[35mSQL (0.4ms)[0m  INSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"  [["pacote", "<00280085D880808180838001000001000001006767674001010101C6AFFFCBFFFFFFFF75>"], ["created_at", "2016-06-02 09:30:26.172205"], ["updated_at", "2016-06-02 09:30:26.172205"]]
+D, [2016-06-02T09:30:26.190159 #4559] DEBUG -- :   [1m[36m (16.4ms)[0m  [1mCOMMIT[0m
+D, [2016-06-02T09:30:31.650479 #4562] DEBUG -- :   [1m[36mSaida Load (1.0ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:31:01.663604 #4562] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:31:31.687907 #4562] DEBUG -- :   [1m[36mSaida Load (0.4ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:32:01.696170 #4562] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:32:31.704354 #4562] DEBUG -- :   [1m[36mSaida Load (0.6ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:33:01.727649 #4562] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:33:31.756745 #4562] DEBUG -- :   [1m[36mSaida Load (0.6ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:34:01.760015 #4562] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:34:20.087257 #4602] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+D, [2016-06-02T09:34:20.096216 #4602] DEBUG -- :   [1m[35mSQL (0.4ms)[0m  INSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"  [["pacote", "<0028>"], ["created_at", "2016-06-02 09:34:20.090732"], ["updated_at", "2016-06-02 09:34:20.090732"]]
+D, [2016-06-02T09:34:20.106371 #4602] DEBUG -- :   [1m[36m (9.6ms)[0m  [1mCOMMIT[0m
+D, [2016-06-02T09:34:22.864700 #4602] DEBUG -- :   [1m[35m (0.2ms)[0m  BEGIN
+D, [2016-06-02T09:34:22.866197 #4602] DEBUG -- :   [1m[36mSQL (0.4ms)[0m  [1mINSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"[0m  [["pacote", "<00280886D780808180828001000000010001006766684901010101C6A7000E80FF00000200FFCDFFFFFFFF7F>"], ["created_at", "2016-06-02 09:34:22.864921"], ["updated_at", "2016-06-02 09:34:22.864921"]]
+D, [2016-06-02T09:34:22.871902 #4602] DEBUG -- :   [1m[35m (5.2ms)[0m  COMMIT
+D, [2016-06-02T09:34:53.630167 #4605] DEBUG -- :   [1m[36mSaida Load (0.9ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:34:57.705627 #4602] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+D, [2016-06-02T09:34:57.706962 #4602] DEBUG -- :   [1m[35mSQL (0.4ms)[0m  INSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"  [["pacote", "<00280185D880808080828101010000010000006767684901010101C6A7000E80FF00000000FFCDFFFFFFFF79>"], ["created_at", "2016-06-02 09:34:57.705850"], ["updated_at", "2016-06-02 09:34:57.705850"]]
+D, [2016-06-02T09:34:57.722210 #4602] DEBUG -- :   [1m[36m (14.8ms)[0m  [1mCOMMIT[0m
+D, [2016-06-02T09:35:15.019647 #4602] DEBUG -- :   [1m[35m (0.2ms)[0m  BEGIN
+D, [2016-06-02T09:35:15.021015 #4602] DEBUG -- :   [1m[36mSQL (0.4ms)[0m  [1mINSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"[0m  [["pacote", "<00280886D680808080828100000000000000016767674901010101C6A7000E80FF00000100FFCDFFFFFFFF73>"], ["created_at", "2016-06-02 09:35:15.019861"], ["updated_at", "2016-06-02 09:35:15.019861"]]
+D, [2016-06-02T09:35:15.035438 #4602] DEBUG -- :   [1m[35m (13.9ms)[0m  COMMIT
+D, [2016-06-02T09:35:23.654090 #4605] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:35:27.126024 #4602] DEBUG -- :   [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+D, [2016-06-02T09:35:27.127388 #4602] DEBUG -- :   [1m[35mSQL (0.4ms)[0m  INSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"  [["pacote", "<00280985D880808080828101000100000001006766684901010101C6A7000E81FF00000000FFCDFFFFFFFF71>"], ["created_at", "2016-06-02 09:35:27.126231"], ["updated_at", "2016-06-02 09:35:27.126231"]]
+D, [2016-06-02T09:35:27.140754 #4602] DEBUG -- :   [1m[36m (12.9ms)[0m  [1mCOMMIT[0m
+D, [2016-06-02T09:35:53.674387 #4605] DEBUG -- :   [1m[36mSaida Load (0.6ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:36:05.278064 #4602] DEBUG -- :   [1m[35m (0.2ms)[0m  BEGIN
+D, [2016-06-02T09:36:05.279359 #4602] DEBUG -- :   [1m[36mSQL (0.4ms)[0m  [1mINSERT INTO "raws" ("pacote", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"[0m  [["pacote", "<00280086D680808081828100000000000000006766674001010101C6AFFFCDFFFFFFFF7E>"], ["created_at", "2016-06-02 09:36:05.278281"], ["updated_at", "2016-06-02 09:36:05.278281"]]
+D, [2016-06-02T09:36:05.294646 #4602] DEBUG -- :   [1m[35m (14.8ms)[0m  COMMIT
+D, [2016-06-02T09:36:23.683780 #4605] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:36:53.715474 #4605] DEBUG -- :   [1m[36mSaida Load (0.6ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:37:23.746354 #4605] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:37:53.766429 #4605] DEBUG -- :   [1m[36mSaida Load (0.6ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:38:23.798124 #4605] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:38:53.817783 #4605] DEBUG -- :   [1m[36mSaida Load (0.6ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:39:23.847928 #4605] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
+D, [2016-06-02T09:39:53.879309 #4605] DEBUG -- :   [1m[36mSaida Load (0.6ms)[0m  [1mSELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1[0m
+D, [2016-06-02T09:40:23.897617 #4605] DEBUG -- :   [1m[35mSaida Load (0.6ms)[0m  SELECT  "saidas".* FROM "saidas" WHERE (cancelado = 'f' and data_processamento is NULL)  ORDER BY "saidas"."id" ASC LIMIT 1
