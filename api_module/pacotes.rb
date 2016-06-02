@@ -11,7 +11,7 @@ class Pacotes
         medidas = ProcessarPacotes.leituras_instantanea pacote
         logger.info medidas
       logger.info "\n"
-
+      Evento.persistir_evento medidas
     when PERIODICO_ALARMADO
       logger.info "\n"
         logger.info("Periódico Alarmado")
