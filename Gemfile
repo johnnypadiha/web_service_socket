@@ -2,6 +2,8 @@ source 'https://rubygems.org'
 
   gem 'standalone_migrations'
 
+  gem 'colorize'
+
 group :development do
   # gem 'capistrano', '~> 3.4.0'
   gem 'eventmachine'

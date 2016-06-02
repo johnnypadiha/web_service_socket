@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160601112541) do
+ActiveRecord::Schema.define(version: 20160602174405) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,6 +31,16 @@ ActiveRecord::Schema.define(version: 20160601112541) do
     t.string   "tipo_comando"
     t.datetime "created_at",         null: false
     t.datetime "updated_at",         null: false
+  end
+
+  create_table "telemetria", force: :cascade do |t|
+    t.integer  "codigo"
+    t.string   "firmware"
+    t.string   "ip"
+    t.string   "periodico"
+    t.string   "nivel_sinal"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
 end
