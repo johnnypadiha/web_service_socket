@@ -18,21 +18,17 @@ class Pacotes
         logger.info medidas
       logger.info "\n"
     when 3
-        print("\nConfiguração")
-        analogicas_brutas = pacote[11..74]
-        negativas_brutas = pacote[75..90]
-        digitais_brutas = pacote[91..92]
+        print('Configuração')
+        analogicas_brutas = pacote[10..73]
+        negativas_brutas = pacote[74..90]
+        digitais_brutas = pacote[91..91]
 
-        timers_brutos = pacote[93...141]
-
-        timers_analogicas = pacote[93...125]
-
-        timers_negativas = pacote[125...133]
-
-        timers_digitais = pacote[133...141]
+        timers_analogicas = pacote[92..123]
+        timers_negativas = pacote[124..131]
+        timers_digitais = pacote[132..140]
 
         # medidas_brutas = pacote[10..21]
-        Pacotes::configuracao(analogicas_brutas, negativas_brutas, digitais_brutas, timers_analogicas, timers_negativas, timers_digitais, timers_brutos)
+        Pacotes::configuracao(analogicas_brutas, negativas_brutas, digitais_brutas, timers_analogicas, timers_negativas, timers_digitais)
         firmware = ProcessarPacotes::obtem_firmware pacote
     when 4
       logger.info "\n"
@@ -76,15 +72,21 @@ class Pacotes
     pacote = pacote.tr!('>', '')
   end
 
-  def self.configuracao(analogicas_brutas, negativas_brutas, digitais_brutas, timers_analogicas, timers_negativas, timers_digitais, timers_brutos)
+  def self.configuracao(analogicas_brutas, negativas_brutas, digitais_brutas, timers_analogicas, timers_negativas, timers_digitais)
     # p "analógicas brutas: #{analogicas_brutas}"
     # p "\n NEGATIVAS brutas: #{negativas_brutas}"
-    p "\n TIMERs brutOs: #{timers_brutos.size}"
-    p "\n TIMERs ana: #{timers_analogicas.size}"
-    p "\n TIMERs neg: #{timers_negativas.size}"
-    p "\n TIMERs digi: #{timers_digitais}"
+    # p "\n TIMERs brutOs: #{timers_brutos.size}"
+    # p "\n TIMERs ana: #{timers_analogicas}"
+    p "\n TIMERs neg: #{timers_negativas}"
+    # p "\n TIMERs digi: #{timers_digitais}"
 
-    digitais_bin = digitais_brutas.to_i(16).to_s(2)
+    digitais_bin = digitais_brutas.hex.to_s(2)
+
+    digitais_bin = digitais_bin.rjust(4,'0')
+
+    digitais_bin = digitais_bin[0..3]
+
+
     cont = 0
     time_cont = 0
     # medida = Array.new
@@ -93,9 +95,11 @@ class Pacotes
 
     16.times do |i|
       # medidas[:"A#{i+1}"] = analogicas_brutas[cont ... cont+4]
-      medidas[:"A#{i+1}-min"] = analogicas_brutas[cont ... cont+2].to_i(16)
-      medidas[:"A#{i+1}-max"] = analogicas_brutas[cont+2 ... cont+4].to_i(16)
-      medidas[:"A#{i+1}-timer"] = timers_analogicas[time_cont ... time_cont+2].to_i(16)
+      medidas[:"A#{i+1}-min"] = analogicas_brutas[cont ... cont+2].to_i(16) * 100 / 255
+      medidas[:"A#{i+1}-max"] = analogicas_brutas[cont+2 ... cont+4].to_i(16) * 100 / 255
+      medidas[:"A#{i+1}-max"] = analogicas_brutas[cont+2 ... cont+4].to_i(16) * 100 / 255
+
+      medidas[:"A#{i+1}-timer"] = timers_analogicas[time_cont ... time_cont+2].hex.to_s(10)
 
       time_cont = time_cont+2
       cont = cont+4
@@ -106,9 +110,9 @@ class Pacotes
 
     4.times do |i|
       # medidas[:"N#{i+1}"] = negativas_brutas[cont ... cont+4]
-      medidas[:"N#{i+1}-min"] = negativas_brutas[cont ... cont+2].to_i(16)
-      medidas[:"N#{i+1}-max"] = negativas_brutas[cont+2 ... cont+4].to_i(16)
-      medidas[:"N#{i+1}-timer"] = timers_negativas[time_cont ... time_cont+2].to_i(16)
+      medidas[:"N#{i+1}-min"] = negativas_brutas[cont ... cont+2].to_i(16) * 100 / 255
+      medidas[:"N#{i+1}-max"] = negativas_brutas[cont+2 ... cont+4].to_i(16) * 100 / 255
+      medidas[:"N#{i+1}-timer"] = timers_negativas[time_cont ... time_cont+2]#.hex.to_s(10)
       time_cont = time_cont+2
       cont = cont+4
     end
@@ -123,7 +127,7 @@ class Pacotes
     4.times do |i|
       # medidas[:"D#{i+1}"] = digitais_bin
       medidas[:"D#{i+1}-normal"] = digitais_bin[i-1]
-      medidas[:"D#{i+1}-timer"] = timers_digitais[time_cont ... time_cont+2].to_i(16)
+      medidas[:"D#{i+1}-timer"] = timers_digitais[time_cont ... time_cont+2].hex.to_s(10)
       time_cont = time_cont+2
     end
 
@@ -132,8 +136,9 @@ class Pacotes
     # end
 
      medidas.each do |k,v|
-       logger.info "#{k} => #{v}"
-       logger.info "-----------------"
+    #    logger.info "#{k} => #{v}"
+       p "#{k} => #{v}"
+    #    logger.info "-----------------"
      end
 
     # min = med[cont,2]
