@@ -26,7 +26,7 @@ module AnalogicProcess
 
       if telemetria.nil?
         if id_telemetria == 'xxxx'
-          Saida.create(deleted: false, cancelado: false, codigo_equipamento: 28, tentativa: 0, tipo_comando: 4)
+          Saida.create(deleted: false, cancelado: false, codigo_equipamento: 9999, tentativa: 0, tipo_comando: 4)
           send_data "teste de leitura instantanea requisitada para o id 28"
         else
           logger.info "A Telemetria de ID #{id_telemetria} não comunicou com o sistema"
