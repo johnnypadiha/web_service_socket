@@ -44,7 +44,7 @@ namespace :deploy do
   task :stop do
     on roles(:web) do
         execute "kill -s SIGUSR2 $(cat #{deploy_to}/tmp/pids/puma.pid)"
-        execute "kill -s SIGUSR2 $(cat #{deploy_to}/tmp/pids/gerente.pid)"
+      #  execute "kill -s SIGUSR2 $(cat #{deploy_to}/tmp/pids/gerente.pid)"
     end
   end
 

@@ -23,15 +23,16 @@ class ProcessarPacotes
     24.times do |i|
       case i + 1
       when 1..16
-        leitura["A#{index_A}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
+        leitura["A#{index_A}".to_sym] = pacote[init...init+2].hex
 
         index_A += 1
       when 17..20
-        leitura["N#{index_N}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
+        leitura["N#{index_N}".to_sym] = pacote[init...init+2].hex
 
         index_N += 1
       when 21..24
-        leitura["D#{index_D}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
+        logger.info"#{pacote[init...init+2]}".red
+        leitura["D#{index_D}".to_sym] = pacote[init...init+2].hex
 
         index_D += 1
       end
