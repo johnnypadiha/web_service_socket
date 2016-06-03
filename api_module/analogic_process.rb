@@ -37,6 +37,7 @@ module AnalogicProcess
         telemetria[:socket].send_data GerenteModule.obter_pacote(data)
       end
     else
+      logger.info "Pacote recebido #{data}".green
       index = $lista_telemetria.find_index { |t| t[:id] == id }
       if index.nil?
         $lista_telemetria << {porta: porta, ip: ip, id: id, hora: hora, socket: self}
@@ -57,7 +58,6 @@ module AnalogicProcess
       else
         logger.info "pacote: #{data}, possui um formato inválido!"
       end
-      logger.info "Pacote recebido #{data}"
       logger.info "Telemetrias conectadas #{$lista_telemetria.size}"
     end
     close_connection if data =~ /quit/i

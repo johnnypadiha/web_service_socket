@@ -9,6 +9,10 @@ require 'active_support/time'
   def api(ip,porta)
     logger.info("RUN API --------------------")
     EventMachine.run {
+      EventMachine.error_handler do |e|
+        logger.info "Exception during event: #{e.message} (#{e.class})"
+        logger.info (e.backtrace || [])[0..10].join("\n")
+      end
       timer = EventMachine::PeriodicTimer.new(180) do
         index = []
         index = $lista_telemetria.map.with_index{|v, i| i if v[:hora].to_time < 5.minutes.ago}.compact
