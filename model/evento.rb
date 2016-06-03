@@ -1,13 +1,19 @@
 class Evento < ActiveRecord::Base
+  include Logging
   belongs_to :tipo_evento
   #belongs_to :telemetria
   has_many :medidas_eventos
 
   def self.persistir_evento(medidas)
-    telemetria = 1
-    tipo_evento = TipoEvento.tipo_evento medidas[:tipo_pacote]
-    evento = Evento.create(tipo_eventos_id: tipo_evento.id, telemetrias_id: telemetria)
+    telemetria = Telemetria.find_by_codigo(medidas[:codigo_telemetria].to_i)
+    if telemetria.present?
+      tipo_evento = TipoEvento.tipo_evento medidas[:tipo_pacote]
+      evento = Evento.create(tipo_eventos_id: tipo_evento.id, telemetrias_id: telemetria.id)
 
-    MedidasEvento.persistir_medidas_evento(evento, medidas)
+      MedidasEvento.persistir_medidas_evento(evento, medidas)
+    else
+      puts "Pacote não persistido!! A telemetria ID #{medidas[:codigo_telemetria]} Não cadastrada no sistema!".red
+      logger.info "Pacote persistido!! A telemetria ID #{medidas[:codigo_telemetria]} Não cadastrada no sistema!"
+    end
   end
 end
