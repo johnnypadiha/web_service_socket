@@ -1,17 +1,7 @@
-require 'active_record'
-require_relative '../model/medida.rb'
-class MedidasDeafult
-  def initialize
-    ActiveRecord::Base.configurations = YAML.load(IO.read("../db/config.yml"))
-    ActiveRecord::Base.establish_connection(:production)
-    #ActiveRecord::Base.establish_connection(:development)
-    ActiveRecord::Base.default_timezone = :local
+require_relative '../../model/medida.rb'
 
-    gerar_medidas
-  end
-
-  def gerar_medidas
-
+class AdicionaMedidasDefault < ActiveRecord::Migration
+  def change
     Medida.find_or_create_by(codigo_medida:'DBM', nome_medida: 'Nivel Sinal', equipamento_id: 1)
 
     Medida.find_or_create_by(codigo_medida:'A1', nome_medida:'A1', equipamento_id:1)
@@ -42,5 +32,3 @@ class MedidasDeafult
     Medida.find_or_create_by(codigo_medida:'D4', nome_medida:'D4', equipamento_id:1)
   end
 end
-
-MedidasDeafult.new

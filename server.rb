@@ -10,7 +10,7 @@ require 'active_support/time'
     logger.info("RUN API --------------------")
     EventMachine.run {
       EventMachine.error_handler do |e|
-        logger.info "Exception during event: #{e.message} (#{e.class})"
+        logger.info "Exception during event: #{e.message} (#{e.class})".red
         logger.info (e.backtrace || [])[0..10].join("\n")
       end
       timer = EventMachine::PeriodicTimer.new(180) do
