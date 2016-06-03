@@ -61,6 +61,100 @@ class ProcessarPacotes
     end
   end
 
+  #  1 - operadora = "TIM"
+  #  2 - operadora = "VIVO M2M / SMARTCENTER"
+  #  3 - operadora = "BRASIL TELECOM"
+  #  4 - operadora = "VIVO"
+  #  5 - operadora = "OI"
+  def self.configuracao(pacote)
+
+    configuracao_hex = Hash.new
+    telemetria = Hash.new
+    configuracao = Hash.new
+
+    configuracao_hex[:analogicas] = pacote[10..73]
+    configuracao_hex[:negativas] = pacote[74..90]
+    configuracao_hex[:digitais] = pacote[91..91]
+    configuracao_hex[:timers_analogicas] = pacote[92..123]
+    configuracao_hex[:timers_negativas] = pacote[124..131]
+    configuracao_hex[:timers_digitais] = pacote[132..140]
+    configuracao_hex[:timer_periodico] = pacote[148..151]
+    configuracao_hex[:operadora] = pacote[152..153]
+    configuracao_hex[:ip_primario_1octeto] = pacote[154..155]
+    configuracao_hex[:ip_primario_2octeto] = pacote[156..157]
+    configuracao_hex[:ip_primario_3octeto] = pacote[158..159]
+    configuracao_hex[:ip_primario_4octeto] = pacote[160..161]
+    configuracao_hex[:porta_ip_primario] = pacote[162..165]
+    configuracao_hex[:ip_secundario_1octeto] = pacote[166..167]
+    configuracao_hex[:ip_secundario_2octeto] = pacote[168..169]
+    configuracao_hex[:ip_secundario_3octeto] = pacote[170..171]
+    configuracao_hex[:ip_secundario_4octeto] = pacote[172..173]
+    configuracao_hex[:porta_ip_secundario] = pacote[174..177]
+    configuracao_hex[:host] = pacote[178..183]
+    configuracao_hex[:porta_dns] = pacote[184..187]
+
+    telemetria[:data] = Time.now
+    telemetria[:codigo] = ProcessarPacotes::obtem_codigo_telemetria pacote
+    telemetria[:ip_primario] = "#{configuracao_hex[:ip_primario_1octeto].hex}.#{configuracao_hex[:ip_primario_2octeto].hex}.#{configuracao_hex[:ip_primario_3octeto].hex}.#{configuracao_hex[:ip_primario_4octeto].hex}"
+    telemetria[:ip_secundario] = "#{configuracao_hex[:ip_secundario_1octeto].hex}.#{configuracao_hex[:ip_secundario_2octeto].hex}.#{configuracao_hex[:ip_secundario_3octeto].hex}.#{configuracao_hex[:ip_secundario_4octeto].hex}"
+    telemetria[:porta_ip_primario] = configuracao_hex[:porta_ip_primario].hex
+    telemetria[:porta_ip_secundario] = configuracao_hex[:porta_ip_secundario].hex
+    telemetria[:operadora] = configuracao_hex[:operadora].hex
+    telemetria[:host] = configuracao_hex[:host].hex == 0 ? 0 : configuracao_hex[:host].split.pack('H*').gsub("\0","")
+    telemetria[:porta_dns] = configuracao_hex[:porta_dns].hex
+
+    medidas = ProcessarPacotes.processa_configuracao configuracao_hex
+
+    configuracao[:telemetria] = telemetria
+    configuracao[:medidas] = medidas
+
+    p configuracao
+  end
+
+
+  #digitais_bin = pega o Hexa converte para binario, garante que ele tenha 4 digitos e pega as 4 posições
+  def self.processa_configuracao (configuracao_hex)
+     digitais_bin = configuracao_hex[:digitais].hex.to_s(BASE_BIN).rjust(4,'0')[0..3]
+
+     timer_periodico = configuracao_hex[:timer_periodico].hex / BASE_SEGUNDOS
+
+     cont = 0
+     time_cont = 0
+     medidas = Hash.new
+
+    QTDE_ANALOGICAS.times do |i|
+      medidas[:"A#{i+1}-min"] = BaseConverter.convert_value_dec configuracao_hex[:analogicas][cont ... cont+2]
+      medidas[:"A#{i+1}-max"] = BaseConverter.convert_value_dec configuracao_hex[:analogicas][cont+2 ... cont+4]
+      medidas[:"A#{i+1}-timer"] = configuracao_hex[:timers_analogicas][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
+
+      time_cont = time_cont+2
+      cont = cont+4
+    end
+
+    cont = 0
+    time_cont = 0
+
+    QTDE_NEGATIVAS.times do |i|
+      medidas[:"N#{i+1}-min"] = BaseConverter.convert_value_dec configuracao_hex[:negativas][cont ... cont+2]
+      medidas[:"N#{i+1}-max"] = BaseConverter.convert_value_dec configuracao_hex[:negativas][cont+2 ... cont+4]
+      medidas[:"N#{i+1}-timer"] = configuracao_hex[:timers_negativas][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
+      time_cont = time_cont+2
+      cont = cont+4
+    end
+
+    time_cont = 0
+
+    QTDE_DIGITAIS.times do |i|
+      medidas[:"D#{i+1}-normal"] = digitais_bin[i-1]
+      medidas[:"D#{i+1}-timer"] = configuracao_hex[:timers_digitais][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
+      time_cont = time_cont+2
+    end
+
+     medidas.each do |k,v|
+       p "#{k} => #{v}"
+     end
+  end
+
   def self.obtem_codigo_telemetria(pacote, inicio_telemetria_id = 0, fim_telemetria_id = 3)
     return pacote[inicio_telemetria_id..fim_telemetria_id]
   end
