@@ -144,10 +144,6 @@ class ProcessarPacotes
       medidas[:"D#{i+1}-timer"] = configuracao_hex[:timers_digitais][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
       time_cont = time_cont+2
     end
-
-    medidas.each do |k,v|
-      p "#{k} => #{v}"
-    end
   end
 
   def self.obtem_codigo_telemetria(pacote, inicio_telemetria_id = 0, fim_telemetria_id = 3)
