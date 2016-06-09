@@ -29,7 +29,6 @@ require 'active_support/time'
         $lista_telemetria.each do |t|
           logger_connection.info "ID : #{t[:id]} - IP #{t[:ip]} - Hora da Conexão #{t[:hora]}"
         end
-        logger_connection.info "-----------------------------------------"
       end
       EventMachine.start_server ip, porta, AnalogicProcess
     }

@@ -24,4 +24,7 @@ module CheckSum
 
     comando
   end
+
+  def validar_check_sum(pacote)
+  end
 end

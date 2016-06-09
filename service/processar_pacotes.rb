@@ -14,11 +14,12 @@ class ProcessarPacotes
     leitura = Hash.new
     medidas[:codigo_telemetria] = ProcessarPacotes::obtem_codigo_telemetria pacote
     medidas[:tipo_pacote] = (ProcessarPacotes::obtem_tipo_pacote pacote).to_i
-    leitura[:DBM] = if pacote.size == 72
-      ProcessarPacotes::obtem_nivel_sinal(pacote, 58, 62)
-    else
-      ProcessarPacotes::obtem_nivel_sinal pacote
-    end
+    leitura[:DBM] =
+      if pacote.size == 72
+        ProcessarPacotes::obtem_nivel_sinal(pacote, 58, 62)
+      else
+        ProcessarPacotes::obtem_nivel_sinal pacote
+      end
 
     24.times do |i|
       case i + 1
