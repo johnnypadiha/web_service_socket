@@ -78,4 +78,59 @@ class Pacotes
     pacote = pacote.tr!('>', '')
   end
 
+  def self.pacote_is_valido(pacote)
+    package_is_valid = false
+    pacote_recebido = ''
+    # Validação do codigo da telemetria / chaves / tamanho minimo
+    package_is_valid =
+      if pacote.present? && pacote.chars.first == '<' && pacote.chars.last == '>' && pacote.size >= 6
+        pacote_recebido = Pacotes.formatador pacote
+        codigo_telemetria = ProcessarPacotes.obtem_codigo_telemetria(pacote_recebido)
+        /^\d{4}$/ === codigo_telemetria
+      end
+
+    if package_is_valid && pacote_recebido.present?
+      package_is_valid =
+        if pacote_recebido.size == SIZE_ID_TELEMETRIA
+          true
+        elsif ProcessarPacotes.obtem_codigo_telemetria(pacote_recebido).to_i == 0
+          true
+        else
+          Pacotes.validar_tipo_pacote pacote_recebido
+        end
+    end
+
+    package_is_valid
+  end
+
+  def self.validar_tipo_pacote(pacote)
+    package_type_is_valid = false
+    tipo_pacote = ProcessarPacotes.obtem_tipo_pacote(pacote)
+    package_type_is_valid  = /^\d{2}$/ === tipo_pacote
+
+    package_type_is_valid =
+      if package_type_is_valid
+        Pacotes.validar_tipo_tamanho_pacote pacote
+      else
+        false
+      end
+  end
+
+  def self.validar_tipo_tamanho_pacote(pacote)
+    package_length_is_valid = false
+    tipo_pacote = ProcessarPacotes.obtem_tipo_pacote(pacote)
+
+    package_length_is_valid =
+      case tipo_pacote.to_i
+      when PERIODICO_OK # 72
+        pacote.size == SIZE_PERIODICO_OK ? true : false
+      when ALARME_INSTANTANEO, NORMALIZACAO, LEITURA_INSTANTANEA, INICIALIZACAO, PERIODICO_ALARMADO # 88 caracteres
+        pacote.size == SIZE_PACOTES_DEFAULT ? true : false
+      when CONFIGURACAO # 190
+        pacote.size == SIZE_CONFIGURACAO ? true : false
+      else
+        false
+      end
+  end
+
 end
