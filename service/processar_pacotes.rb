@@ -20,7 +20,7 @@ class ProcessarPacotes
       ProcessarPacotes::obtem_nivel_sinal pacote
     end
 
-    24.times do |i|
+    TOTAL_MEDIDAS.times do |i|
       case i + 1
       when 1..16
         leitura["A#{index_A}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
@@ -113,8 +113,8 @@ class ProcessarPacotes
   #digitais_bin = pega o Hexa converte para binario, garante que ele tenha 4 digitos e pega as 4 posições
   def self.processa_configuracao (configuracao_hex)
     digitais_bin = configuracao_hex[:digitais].hex.to_s(BASE_BIN).rjust(4,'0')[0..3]
-    cont = 0
-    time_cont = 0
+    cont = ZERA_CONTAGEM
+    time_cont = ZERA_CONTAGEM
     medidas = Hash.new
 
     QTDE_ANALOGICAS.times do |i|
@@ -124,8 +124,8 @@ class ProcessarPacotes
       time_cont = time_cont+2
       cont = cont+4
     end
-    cont = 0
-    time_cont = 0
+    cont = ZERA_CONTAGEM
+    time_cont = ZERA_CONTAGEM
     QTDE_NEGATIVAS.times do |i|
       medidas[:"N#{i+1}-min"] = BaseConverter.convert_value_dec configuracao_hex[:negativas][cont ... cont+2]
       medidas[:"N#{i+1}-max"] = BaseConverter.convert_value_dec configuracao_hex[:negativas][cont+2 ... cont+4]
@@ -133,7 +133,7 @@ class ProcessarPacotes
       time_cont = time_cont+2
       cont = cont+4
     end
-    time_cont = 0
+    time_cont = ZERA_CONTAGEM
     QTDE_DIGITAIS.times do |i|
       medidas[:"D#{i+1}-normal"] = digitais_bin[i-1]
       medidas[:"D#{i+1}-timer"] = configuracao_hex[:timers_digitais][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
