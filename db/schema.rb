@@ -66,7 +66,13 @@ ActiveRecord::Schema.define(version: 20160603175400) do
   create_table "telemetria", force: :cascade do |t|
     t.integer  "codigo"
     t.string   "firmware"
-    t.string   "ip"
+    t.string   "ip_primario"
+    t.string   "ip_secundario"
+    t.integer   "porta_ip_primario"
+    t.integer   "porta_ip_secundario"
+    t.integer   "operadora"
+    t.string   "host"
+    t.integer   "porta_dns"
     t.string   "periodico"
     t.string   "nivel_sinal"
     t.datetime "created_at",  null: false

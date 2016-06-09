@@ -21,7 +21,7 @@ class ProcessarPacotes
         ProcessarPacotes::obtem_nivel_sinal pacote
       end
 
-    24.times do |i|
+    TOTAL_MEDIDAS.times do |i|
       case i + 1
       when 1..16
         leitura["A#{index_A}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
@@ -50,16 +50,11 @@ class ProcessarPacotes
     inicializacao[:nivel_sinal] = ProcessarPacotes::obtem_nivel_sinal pacote
     logger.info inicializacao
 
-    telemetria = TelemetriaController::find_telemetria inicializacao
-    if telemetria.blank?
-      logger.info "A telemetria #{inicializacao[:codigo]} não está cadastrada no sistema e o pacote da mesma foi rejeitado.".red
+    result = ProcessarPacotes::find_and_update_telemetria inicializacao
+    if result
+      logger.info "Inicialização da telemetria #{inicializacao[:codigo]} processada e persistida com sucesso!".blue
     else
-      result = TelemetriaController::atualiza_telemetria telemetria, inicializacao
-      if result
-        logger.info 'Inicialização persistida com sucesso.'.blue
-      else
-        logger.info "Houveram erros ao persistir inicialização da telemetria #{inicializacao[:codigo]}.".red
-      end
+      logger.info "Houveram erros ao persistir o pacote de Inicialização da telemetria #{inicializacao[:codigo]}".red
     end
   end
 
@@ -94,6 +89,7 @@ class ProcessarPacotes
     configuracao_hex[:porta_dns] = pacote[184..187]
     telemetria[:data] = Time.now
     telemetria[:codigo] = ProcessarPacotes::obtem_codigo_telemetria pacote
+    telemetria[:firmware] = ProcessarPacotes::obtem_firmware pacote
     telemetria[:ip_primario] = "#{configuracao_hex[:ip_primario_1octeto].hex}.#{configuracao_hex[:ip_primario_2octeto].hex}.#{configuracao_hex[:ip_primario_3octeto].hex}.#{configuracao_hex[:ip_primario_4octeto].hex}"
     telemetria[:ip_secundario] = "#{configuracao_hex[:ip_secundario_1octeto].hex}.#{configuracao_hex[:ip_secundario_2octeto].hex}.#{configuracao_hex[:ip_secundario_3octeto].hex}.#{configuracao_hex[:ip_secundario_4octeto].hex}"
     telemetria[:porta_ip_primario] = configuracao_hex[:porta_ip_primario].hex
@@ -101,18 +97,27 @@ class ProcessarPacotes
     telemetria[:operadora] = configuracao_hex[:operadora].hex
     telemetria[:host] = configuracao_hex[:host].hex == 0 ? 0 : configuracao_hex[:host].split.pack('H*').gsub("\0","")
     telemetria[:porta_dns] = configuracao_hex[:porta_dns].hex
+    telemetria[:timer_periodico] = configuracao_hex[:timer_periodico].hex / BASE_SEGUNDOS
+
     medidas = ProcessarPacotes.processa_configuracao configuracao_hex
     configuracao[:telemetria] = telemetria
     configuracao[:medidas] = medidas
-    p configuracao
+
+    result = ProcessarPacotes::find_and_update_telemetria configuracao[:telemetria]
+    if result
+      logger.info "Configuração da telemetria #{configuracao[:telemetria][:codigo]} processada e persistida com sucesso!".blue
+    else
+      logger.info "Houveram erros ao persistir o pacote de Configuração da telemetria #{configuracao[:telemetria][:codigo]}".red
+    end
   end
+
   #digitais_bin = pega o Hexa converte para binario, garante que ele tenha 4 digitos e pega as 4 posições
   def self.processa_configuracao (configuracao_hex)
-     digitais_bin = configuracao_hex[:digitais].hex.to_s(BASE_BIN).rjust(4,'0')[0..3]
-     timer_periodico = configuracao_hex[:timer_periodico].hex / BASE_SEGUNDOS
-     cont = 0
-     time_cont = 0
-     medidas = Hash.new
+    digitais_bin = configuracao_hex[:digitais].hex.to_s(BASE_BIN).rjust(4,'0')[0..3]
+    cont = ZERA_CONTAGEM
+    time_cont = ZERA_CONTAGEM
+    medidas = Hash.new
+
     QTDE_ANALOGICAS.times do |i|
       medidas[:"A#{i+1}-min"] = BaseConverter.convert_value_dec configuracao_hex[:analogicas][cont ... cont+2]
       medidas[:"A#{i+1}-max"] = BaseConverter.convert_value_dec configuracao_hex[:analogicas][cont+2 ... cont+4]
@@ -120,8 +125,8 @@ class ProcessarPacotes
       time_cont = time_cont+2
       cont = cont+4
     end
-    cont = 0
-    time_cont = 0
+    cont = ZERA_CONTAGEM
+    time_cont = ZERA_CONTAGEM
     QTDE_NEGATIVAS.times do |i|
       medidas[:"N#{i+1}-min"] = BaseConverter.convert_value_dec configuracao_hex[:negativas][cont ... cont+2]
       medidas[:"N#{i+1}-max"] = BaseConverter.convert_value_dec configuracao_hex[:negativas][cont+2 ... cont+4]
@@ -129,15 +134,12 @@ class ProcessarPacotes
       time_cont = time_cont+2
       cont = cont+4
     end
-    time_cont = 0
+    time_cont = ZERA_CONTAGEM
     QTDE_DIGITAIS.times do |i|
       medidas[:"D#{i+1}-normal"] = digitais_bin[i-1]
       medidas[:"D#{i+1}-timer"] = configuracao_hex[:timers_digitais][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
       time_cont = time_cont+2
     end
-     medidas.each do |k,v|
-       p "#{k} => #{v}"
-     end
   end
 
   def self.obtem_codigo_telemetria(pacote, inicio_telemetria_id = 0, fim_telemetria_id = 3)
@@ -156,5 +158,22 @@ class ProcessarPacotes
     id_pacote = pacote[inicio_id..fim_id]
 
     return id_pacote.blank? ? '9999' : id_pacote
+  end
+
+  def self.find_and_update_telemetria(params)
+    telemetria = TelemetriaController::find_telemetria params
+    if telemetria.blank?
+      return logger.info "A telemetria #{params[:codigo]} não está cadastrada no sistema e o pacote da mesma foi rejeitado.".red
+      return false
+    else
+      result = TelemetriaController::atualiza_telemetria telemetria, params
+      if result
+        logger.info "Dados da telemetria #{params[:codigo]} atualizados com sucesso.".blue
+        return true
+      else
+        logger.info "Houveram erros ao atualizar dados da telemetria #{params[:codigo]}.".red
+        return false
+      end
+    end
   end
 end
