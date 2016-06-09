@@ -18,7 +18,7 @@ class TelemetriaController
       telemetria.periodico           = params[:timer_periodico] unless params[:timer_periodico].blank?
 
       if telemetria.save
-        return true
+        return true, telemetria.id
       else
         return false
       end
