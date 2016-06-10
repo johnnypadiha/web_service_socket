@@ -67,7 +67,7 @@ module AnalogicProcess
         Pacotes.processador data
       end
     else
-      logger.info "pacote: #{data}, possui um formato inválido!".red
+      logger.info "pacote: #{data}, possui um formato inválido!".yellow
     end
       logger.info "Telemetrias conectadas #{$lista_telemetria.size}".green
   end
