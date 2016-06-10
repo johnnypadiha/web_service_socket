@@ -1,6 +1,8 @@
 # encoding: utf-8
 require_relative '../service/processar_pacotes.rb'
 require_relative '../controller/telemetria_controller.rb'
+require_relative '../controller/medidas_controller.rb'
+
 class ProcessarPacotes
   # Alarme Instantâneo
   # Leitura Instantânea
@@ -63,6 +65,9 @@ class ProcessarPacotes
   #  3 - operadora = "BRASIL TELECOM"
   #  4 - operadora = "VIVO"
   #  5 - operadora = "OI"
+
+  # Recebe um haxadecimal e converte para String, caso se 0 não tenta converter
+  # telemetria[:host] = configuracao_hex[:host].hex == 0 ? 0 : configuracao_hex[:host].split.pack('H*').gsub("\0","")
   def self.configuracao(pacote)
     configuracao_hex = Hash.new
     telemetria = Hash.new
@@ -99,13 +104,14 @@ class ProcessarPacotes
     telemetria[:porta_dns] = configuracao_hex[:porta_dns].hex
     telemetria[:timer_periodico] = configuracao_hex[:timer_periodico].hex / BASE_SEGUNDOS
 
-    medidas = ProcessarPacotes.processa_configuracao configuracao_hex
+    analogicas, negativas, digitais = ProcessarPacotes.processa_configuracao configuracao_hex
     configuracao[:telemetria] = telemetria
-    configuracao[:medidas] = medidas
 
-    result = ProcessarPacotes::find_and_update_telemetria configuracao[:telemetria]
+    result, id_telemetria = ProcessarPacotes::find_and_update_telemetria configuracao[:telemetria]
+
     if result
       logger.info "Configuração da telemetria #{configuracao[:telemetria][:codigo]} processada e persistida com sucesso!".blue
+      MedidasController::create_medidas id_telemetria, analogicas, negativas, digitais
     else
       logger.info "Houveram erros ao persistir o pacote de Configuração da telemetria #{configuracao[:telemetria][:codigo]}".red
     end
@@ -117,29 +123,39 @@ class ProcessarPacotes
     cont = ZERA_CONTAGEM
     time_cont = ZERA_CONTAGEM
     medidas = Hash.new
-
+    analogicas = Hash.new
+    negativas = Hash.new
+    digitais = Hash.new
     QTDE_ANALOGICAS.times do |i|
-      medidas[:"A#{i+1}-min"] = BaseConverter.convert_value_dec configuracao_hex[:analogicas][cont ... cont+2]
-      medidas[:"A#{i+1}-max"] = BaseConverter.convert_value_dec configuracao_hex[:analogicas][cont+2 ... cont+4]
-      medidas[:"A#{i+1}-timer"] = configuracao_hex[:timers_analogicas][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
+      fundo_escala = Hash.new
+      fundo_escala[:"minimo"] = BaseConverter.convert_value_dec configuracao_hex[:analogicas][cont ... cont+2]
+      fundo_escala[:"maximo"] = BaseConverter.convert_value_dec configuracao_hex[:analogicas][cont+2 ... cont+4]
+      fundo_escala[:"timer"] = configuracao_hex[:timers_analogicas][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
+      analogicas[:"A#{i+1}"] = fundo_escala
       time_cont = time_cont+2
       cont = cont+4
     end
     cont = ZERA_CONTAGEM
     time_cont = ZERA_CONTAGEM
     QTDE_NEGATIVAS.times do |i|
-      medidas[:"N#{i+1}-min"] = BaseConverter.convert_value_dec configuracao_hex[:negativas][cont ... cont+2]
-      medidas[:"N#{i+1}-max"] = BaseConverter.convert_value_dec configuracao_hex[:negativas][cont+2 ... cont+4]
-      medidas[:"N#{i+1}-timer"] = configuracao_hex[:timers_negativas][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
+      fundo_escala = Hash.new
+      fundo_escala[:"minimo"] = BaseConverter.convert_value_dec configuracao_hex[:negativas][cont ... cont+2]
+      fundo_escala[:"maximo"] = BaseConverter.convert_value_dec configuracao_hex[:negativas][cont+2 ... cont+4]
+      fundo_escala[:"timer"] = configuracao_hex[:timers_negativas][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
+      negativas[:"N#{i+1}"] = fundo_escala
       time_cont = time_cont+2
       cont = cont+4
     end
     time_cont = ZERA_CONTAGEM
     QTDE_DIGITAIS.times do |i|
-      medidas[:"D#{i+1}-normal"] = digitais_bin[i-1]
-      medidas[:"D#{i+1}-timer"] = configuracao_hex[:timers_digitais][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
+      fundo_escala = Hash.new
+      fundo_escala[:"normal"] = digitais_bin[i-1]
+      fundo_escala[:"timer"] = configuracao_hex[:timers_digitais][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
+      digitais[:"D#{i+1}"] = fundo_escala
       time_cont = time_cont+2
     end
+
+     return analogicas, negativas, digitais
   end
 
   def self.obtem_codigo_telemetria(pacote, inicio_telemetria_id = 0, fim_telemetria_id = 3)
@@ -162,14 +178,15 @@ class ProcessarPacotes
 
   def self.find_and_update_telemetria(params)
     telemetria = TelemetriaController::find_telemetria params
+
     if telemetria.blank?
-      return logger.info "A telemetria #{params[:codigo]} não está cadastrada no sistema e o pacote da mesma foi rejeitado.".red
+      logger.info "A telemetria #{params[:codigo]} não está cadastrada no sistema e o pacote da mesma foi rejeitado.".red
       return false
     else
-      result = TelemetriaController::atualiza_telemetria telemetria, params
+      result, id_telemetria = TelemetriaController::atualiza_telemetria telemetria, params
       if result
         logger.info "Dados da telemetria #{params[:codigo]} atualizados com sucesso.".blue
-        return true
+        return true, id_telemetria
       else
         logger.info "Houveram erros ao atualizar dados da telemetria #{params[:codigo]}.".red
         return false

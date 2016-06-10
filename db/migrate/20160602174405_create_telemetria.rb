@@ -13,7 +13,7 @@ class CreateTelemetria < ActiveRecord::Migration
       t.string :periodico
       t.string :nivel_sinal
 
-      t.timestamps null: false
+      t.timestamps null: true
     end
   end
 end
