@@ -8,7 +8,7 @@ class Evento < ActiveRecord::Base
     telemetria = Telemetria.find_by_codigo(medidas[:codigo_telemetria].to_i)
     if telemetria.present?
       tipo_evento = TipoEvento.tipo_evento medidas[:tipo_pacote]
-      evento = Evento.create(tipo_eventos_id: tipo_evento.id, telemetrias_id: telemetria.id)
+      evento = Evento.create(tipo_eventos_id: tipo_evento.id, telemetrias_id: telemetria.id, nivel_sinal: medidas[:DBM])
 
       MedidasEvento.persistir_medidas_evento(evento, medidas)
     else

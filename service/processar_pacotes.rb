@@ -16,14 +16,13 @@ class ProcessarPacotes
     leitura = Hash.new
     medidas[:codigo_telemetria] = ProcessarPacotes::obtem_codigo_telemetria pacote
     medidas[:tipo_pacote] = (ProcessarPacotes::obtem_tipo_pacote pacote).to_i
-    leitura[:DBM] =
-      if pacote.size == 72
-        ProcessarPacotes::obtem_nivel_sinal(pacote, 58, 62)
-      else
-        ProcessarPacotes::obtem_nivel_sinal pacote
-      end
+    medidas[:DBM] = if pacote.size == 72
+      ProcessarPacotes::obtem_nivel_sinal(pacote, 58, 62)
+    else
+      ProcessarPacotes::obtem_nivel_sinal pacote
+    end
 
-    TOTAL_MEDIDAS.times do |i|
+    24.times do |i|
       case i + 1
       when 1..16
         leitura["A#{index_A}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
@@ -120,8 +119,8 @@ class ProcessarPacotes
   #digitais_bin = pega o Hexa converte para binario, garante que ele tenha 4 digitos e pega as 4 posições
   def self.processa_configuracao (configuracao_hex)
     digitais_bin = configuracao_hex[:digitais].hex.to_s(BASE_BIN).rjust(4,'0')[0..3]
-    cont = ZERA_CONTAGEM
-    time_cont = ZERA_CONTAGEM
+    cont = 0
+    time_cont = 0
     medidas = Hash.new
     analogicas = Hash.new
     negativas = Hash.new
@@ -135,8 +134,8 @@ class ProcessarPacotes
       time_cont = time_cont+2
       cont = cont+4
     end
-    cont = ZERA_CONTAGEM
-    time_cont = ZERA_CONTAGEM
+    cont = 0
+    time_cont = 0
     QTDE_NEGATIVAS.times do |i|
       fundo_escala = Hash.new
       fundo_escala[:"minimo"] = BaseConverter.convert_value_dec configuracao_hex[:negativas][cont ... cont+2]
@@ -146,7 +145,7 @@ class ProcessarPacotes
       time_cont = time_cont+2
       cont = cont+4
     end
-    time_cont = ZERA_CONTAGEM
+    time_cont = 0
     QTDE_DIGITAIS.times do |i|
       fundo_escala = Hash.new
       fundo_escala[:"normal"] = digitais_bin[i-1]
