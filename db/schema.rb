@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(version: 20160609173100) do
     t.boolean  "reporte_energia",     default: false
     t.boolean  "reporte_sinal",       default: false
     t.boolean  "reporte_temperatura", default: false
+    t.string   "nivel_sinal"
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
   end

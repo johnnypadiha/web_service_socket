@@ -7,7 +7,7 @@ class CreateEvento < ActiveRecord::Migration
       t.boolean :reporte_energia, default: false
       t.boolean :reporte_sinal, default: false
       t.boolean :reporte_temperatura, default:false
-
+      t.string :nivel_sinal
       t.timestamps null: false
     end
   end
