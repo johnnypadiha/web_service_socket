@@ -77,6 +77,8 @@ module AnalogicProcess
   end
 
   def unbind
+    logger_socket.info "Telemetria desconectada"
+    #self.close_connection
     puts "-- someone disconnected from the echo server!"
   end
 end
