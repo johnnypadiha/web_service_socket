@@ -7,7 +7,7 @@ require_relative '../service/base_converter'
 module AnalogicProcess
   $lista_telemetria = []
   def initialize
-    logger_socket.info "#{self}"
+    logger_socket.info "INITIALIZE ---> #{self}"
   end
 
   def post_init
@@ -15,12 +15,14 @@ module AnalogicProcess
     logger.info "\t--Registrando Telemetria--\n"
     porta, ip = Socket.unpack_sockaddr_in(get_peername)
     logger.info "IP #{ip} Conectado!"
+    logger_socket.info "POST_INIT ---> #{self}"
   end
 
   def receive_data data
     data.chomp!
     porta, ip =  Socket.unpack_sockaddr_in(get_peername)
 
+    logger_socket.info "RECEIVE_DATA ---> #{self}"
       # valida se o pacote esta vindo em um formato válido Ex: <xxx>
     if Pacotes.pacote_is_valido data
       id = data[1..4]
