@@ -65,6 +65,10 @@ module AnalogicProcess
           $lista_telemetria[index][:ip] = ip
           $lista_telemetria[index][:id] = id
           $lista_telemetria[index][:hora] = hora
+          if $lista_telemetria[index][:socket] != self
+            logger_socket.info 'Existe um socket antigo e o mesmo será fechado'
+            $lista_telemetria[index][:socket].close_connection
+          end
           $lista_telemetria[index][:socket] = self
         end
         Raw.create(pacote: data)
