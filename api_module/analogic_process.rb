@@ -6,6 +6,10 @@ include CheckSum
 require_relative '../service/base_converter'
 module AnalogicProcess
   $lista_telemetria = []
+  def initialize
+    logger_socket.info "#{self}"
+  end
+
   def post_init
     logger.info "-- Telemetria Conectada!"
     logger.info "\t--Registrando Telemetria--\n"
