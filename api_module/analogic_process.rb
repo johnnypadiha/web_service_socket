@@ -6,7 +6,9 @@ include CheckSum
 require_relative '../service/base_converter'
 module AnalogicProcess
   $lista_telemetria = []
+  $sockets_conectados = []
   def initialize
+    $sockets_conectados << {socket: self}
     logger_socket.info "INITIALIZE ---> #{self}"
   end
 
@@ -26,8 +28,9 @@ module AnalogicProcess
       # valida se o pacote esta vindo em um formato válido Ex: <xxx>
     if Pacotes.pacote_is_valido data
       id = data[1..4]
-      hora = Time.now
       if id.to_i == 0
+        cadastrar_telemetria(self, id)
+
         logger.info "Gerente comunicando..."
 
         pacote_formatado = Pacotes.formatador data
@@ -57,20 +60,7 @@ module AnalogicProcess
         end
       else
         logger.info "Pacote recebido #{data}".green
-        index = $lista_telemetria.find_index { |t| t[:id] == id }
-        if index.nil?
-          $lista_telemetria << {porta: porta, ip: ip, id: id, hora: hora, socket: self}
-        else
-          $lista_telemetria[index][:porta] = porta
-          $lista_telemetria[index][:ip] = ip
-          $lista_telemetria[index][:id] = id
-          $lista_telemetria[index][:hora] = hora
-          if $lista_telemetria[index][:socket] != self
-            logger_socket.info 'Existe um socket antigo e o mesmo será fechado'
-            $lista_telemetria[index][:socket].close_connection
-          end
-          $lista_telemetria[index][:socket] = self
-        end
+        cadastrar_telemetria(self, id)
         Raw.create(pacote: data)
         # atualização de hora
         self.send_data Hora.gerar_atualizacao_hora
@@ -86,5 +76,24 @@ module AnalogicProcess
     logger_socket.info "Telemetria desconectada"
     #self.close_connection
     puts "-- someone disconnected from the echo server!"
+  end
+
+  def cadastrar_telemetria(socket, id)
+    hora = Time.now
+    porta, ip = Socket.unpack_sockaddr_in(get_peername)
+    index = $lista_telemetria.find_index { |t| t[:id] == id }
+    if index.nil?
+      $lista_telemetria << {porta: porta, ip: ip, id: id, hora: hora, socket: self}
+    else
+      $lista_telemetria[index][:porta] = porta
+      $lista_telemetria[index][:ip] = ip
+      $lista_telemetria[index][:id] = id
+      $lista_telemetria[index][:hora] = hora
+      if $lista_telemetria[index][:socket] != self
+        logger_socket.info 'Existe um socket antigo e o mesmo será fechado'
+        $lista_telemetria[index][:socket].close_connection
+      end
+      $lista_telemetria[index][:socket] = self
+    end
   end
 end
