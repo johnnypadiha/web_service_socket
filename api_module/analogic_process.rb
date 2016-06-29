@@ -61,7 +61,7 @@ module AnalogicProcess
       else
         logger.info "Pacote recebido #{data}".green
         cadastrar_telemetria(self, id)
-        Raw.create(pacote: data)
+        # Raw.create(pacote: data)
         # atualização de hora
         self.send_data Hora.gerar_atualizacao_hora
         Pacotes.processador data

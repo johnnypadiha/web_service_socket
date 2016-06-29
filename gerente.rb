@@ -15,10 +15,10 @@ class Gerente
 
   def start_gerente
     EventMachine.run {
-      @timer = EventMachine::PeriodicTimer.new(30) do
-        logger.info "Checando tabela de saida...."
-        GerenteModule.checar_saida
-      end
+      # @timer = EventMachine::PeriodicTimer.new(30) do
+        # logger.info "Checando tabela de saida...."
+        # GerenteModule.checar_saida
+      # end
       EventMachine::connect @ip, @porta, GerenteModule
     }
   end

@@ -8,37 +8,37 @@ class Pacotes
     when PERIODICO_OK
       logger.info "="*20
       logger.info("Periódico OK")
-      medidas = ProcessarPacotes.leituras_instantanea pacote
-      logger.info medidas
-      Evento.persistir_evento medidas
+      # medidas = ProcessarPacotes.leituras_instantanea pacote
+      # logger.info medidas
+      # Evento.persistir_evento medidas
       logger.info "="*20
 
     when PERIODICO_ALARMADO
       logger.info "="*20
       logger.info("Periódico Alarmado")
-      medidas = ProcessarPacotes.leituras_instantanea pacote
-      logger.info medidas
-      Evento.persistir_evento medidas
+      # medidas = ProcessarPacotes.leituras_instantanea pacote
+      # logger.info medidas
+      # Evento.persistir_evento medidas
       logger.info "="*20
 
     when CONFIGURACAO
       logger.info "="*20
       logger.info ("Configuração")
-      ProcessarPacotes.configuracao pacote
+      # ProcessarPacotes.configuracao pacote
       logger.info "="*20
 
     when INICIALIZACAO
       logger.info "="*20
       logger.info ("Inicialização")
-      ProcessarPacotes.inicializacao pacote
+      # ProcessarPacotes.inicializacao pacote
       logger.info "="*20
 
     when LEITURA_INSTANTANEA
       logger.info "="*20
       logger.info("Leitura Instantânea")
-      medidas = ProcessarPacotes.leituras_instantanea pacote
-      logger.info medidas
-      Evento.persistir_evento medidas
+      # medidas = ProcessarPacotes.leituras_instantanea pacote
+      # logger.info medidas
+      # Evento.persistir_evento medidas
       logger.info "="*20
 
     when CONTAGEM_ALARMAR
@@ -49,17 +49,17 @@ class Pacotes
     when NORMALIZACAO
       logger.info "="*20
       logger.info("Restauração Instantânea")
-      medidas = ProcessarPacotes.leituras_instantanea(pacote)
-      logger.info medidas
-      Evento.persistir_evento medidas
+      # medidas = ProcessarPacotes.leituras_instantanea(pacote)
+      # logger.info medidas
+      # Evento.persistir_evento medidas
       logger.info "="*20
 
     when ALARME_INSTANTANEO
       logger.info "="*20
       logger.info("Alarme Instantâneo")
-      medidas = ProcessarPacotes.leituras_instantanea(pacote)
-      logger.info medidas
-      Evento.persistir_evento medidas
+      # medidas = ProcessarPacotes.leituras_instantanea(pacote)
+      # logger.info medidas
+      # Evento.persistir_evento medidas
       logger.info "="*20
 
     when ID_RECEBIDO

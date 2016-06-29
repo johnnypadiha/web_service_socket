@@ -8,8 +8,9 @@ default: &default
 
 development:
   <<: *default
-  database: telemetria_analogica_development
+  database: telemetria_development
+
 production:
   <<: *default
-  host: 45.55.233.137
-  database: telemetria_analogica_production
+  # host: 45.55.233.137
+  # database: telemetria_analogica_production
