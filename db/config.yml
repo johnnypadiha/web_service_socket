@@ -13,4 +13,4 @@ development:
 production:
   <<: *default
   # host: 45.55.233.137
-  # database: telemetria_analogica_production
+  database: telemetria_production
