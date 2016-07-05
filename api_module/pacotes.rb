@@ -30,7 +30,7 @@ class Pacotes
     when INICIALIZACAO
       logger.info "="*20
       logger.info ("Inicialização")
-      # ProcessarPacotes.inicializacao pacote
+      ProcessarPacotes.inicializacao pacote
       logger.info "="*20
 
     when LEITURA_INSTANTANEA
