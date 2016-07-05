@@ -24,7 +24,7 @@ class Pacotes
     when CONFIGURACAO
       logger.info "="*20
       logger.info ("Configuração")
-      # ProcessarPacotes.configuracao pacote
+      ProcessarPacotes.configuracao pacote
       logger.info "="*20
 
     when INICIALIZACAO

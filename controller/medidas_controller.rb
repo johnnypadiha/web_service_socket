@@ -1,48 +1,68 @@
 class MedidasController
 
   def self.create_medidas(id_telemetria, analogicas, negativas, digitais)
+    equipamentos = Equipamento.where(telemetria_id: id_telemetria)
 
-    analogicas.each do |key, value|
-      medida = Medida.new
-      medida.codigo_medida = key.to_s
-      medida.equipamento_id = id_telemetria
-      medida.timer = value[:timer]
-      medida.created_at = Time.now
-      medida.updated_at = Time.now
-      if medida.save
-        faixa = Faixa.new
-        faixa.medida_id = medida.id
-        faixa.minimo = value[:minimo]
-        faixa.maximo = value[:maximo]
-        faixa.save
+    equipamentos.each do |equipamento|
+      codigos_by_equipamento = EquipamentosCodigo.where(equipamento_id: equipamento.id).includes(:codigo)
+
+      codigos_by_equipamento.each do |codigo_by_equipamento|
+
+        medida = Medida.new
+
+        analogicas.each do |k, v|
+          if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
+            medida.timer = v[:timer]
+            @faixa = v
+          end
+        end
+        negativas.each do |k, v|
+          if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
+            medida.timer = v[:timer]
+            @faixa = v
+          end
+        end
+        digitais.each do |k, v|
+          if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
+            medida.timer = v[:timer]
+            @faixa = v
+          end
+        end
+        ultima_medida = Medida.where(equipamento_id: equipamento, codigo_medida: codigo_by_equipamento.codigo.codigo).last
+
+        medida.equipamento_id = equipamento.id
+        ultima_medida ? medida.nome = ultima_medida.nome : medida.nome = codigo_by_equipamento.codigo.codigo
+        ultima_medida ? medida.unidade_medida = ultima_medida.unidade_medida : medida.unidade_medida = nil
+        ultima_medida ? medida.reporte_medida_id = ultima_medida.reporte_medida_id : medida.reporte_medida_id = nil
+        medida.disponivel_ambiente = codigo_by_equipamento.disponivel_ambiente
+        ultima_medida ? medida.gauge = ultima_medida.gauge : medida.gauge = nil
+        medida.temperatura_ambiente = codigo_by_equipamento.disponivel_temperatura
+        ultima_medida ? medida.grandeza = ultima_medida.grandeza : medida.grandeza = nil
+        ultima_medida ? medida.divisor = ultima_medida.divisor : medida.divisor = nil
+        ultima_medida ? medida.multiplo = ultima_medida.multiplo : medida.multiplo = nil
+        ultima_medida ? medida.indice = ultima_medida.indice : medida.indice = nil
+        medida.codigo_medida = codigo_by_equipamento.codigo.codigo
+        ultima_medida ? medida.estado_normal = ultima_medida.estado_normal : medida.estado_normal = nil
+
+        if medida.save
+          self.persiste_faixas medida, @faixa, ultima_medida
+        end
+
       end
     end
+  end
 
-    negativas.each do |key, value|
-      medida = Medida.new
-      medida.codigo_medida = key.to_s
-      medida.equipamento_id = id_telemetria
-      medida.timer = value[:timer]
-      medida.created_at = Time.now
-      medida.updated_at = Time.now
-      if medida.save
-        faixa = Faixa.new
-        faixa.medida_id = medida.id
-        faixa.minimo = value[:minimo]
-        faixa.maximo = value[:maximo]
-        faixa.save
-      end
-    end
-
-    digitais.each do |key, value|
-      medida = Medida.new
-      medida.codigo_medida = key.to_s
-      medida.equipamento_id = id_telemetria
-      medida.timer = value[:timer]
-      medida.estado_normal = value[:normal]
-      medida.created_at = Time.now
-      medida.updated_at = Time.now
-      medida.save
+  def self.persiste_faixas medida, faixa, ultima_medida
+    ultima_medida ? ultimas_faixas = Faixa.where(medida_id: ultima_medida.id).order(:status_faixa) : ultimas_faixas = []
+    if medida.codigo_medida[0] == 'D'
+      faixa = Faixa.create(medida_id: medida.id, status_faixa: 1, disable: false, minimo: faixa[:normal], maximo: faixa[:normal].to_i + 0.99 )
+      faixa = Faixa.create(medida_id: medida.id, status_faixa: 2, disable: false, minimo: 50, maximo: 51 )
+      normal = faixa[:normal] == 0 ? 1 : 0
+      faixa = Faixa.create(medida_id: medida.id, status_faixa: 3, disable: false, minimo: normal, maximo: normal.to_i + 0.99 )
+    else
+      faixa = Faixa.create(medida_id: medida.id, status_faixa: 1, disable: false, minimo: faixa[:minimo], maximo: faixa[:maximo] )
+      faixa = Faixa.create(medida_id: medida.id, status_faixa: 2, disable: false, minimo: ultimas_faixas[1] ? ultimas_faixas[1].minimo : 0, maximo: ultimas_faixas[1] ? ultimas_faixas[1].maximo : 0 )
+      faixa = Faixa.create(medida_id: medida.id, status_faixa: 3, disable: false, minimo: ultimas_faixas[2] ? ultimas_faixas[2].minimo : 0, maximo: ultimas_faixas[2] ? ultimas_faixas[2].maximo : 0  )
     end
   end
 end
