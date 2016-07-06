@@ -2,11 +2,15 @@ class MedidasController
 
   def self.create_medidas(id_telemetria, analogicas, negativas, digitais)
     equipamentos = Equipamento.where(telemetria_id: id_telemetria)
+    equipamentos_evento = []
+    persistir_evento = false
 
     equipamentos.each do |equipamento|
       codigos_by_equipamento = EquipamentosCodigo.where(equipamento_id: equipamento.id).includes(:codigo)
 
       codigos_by_equipamento.each do |codigo_by_equipamento|
+
+        equipamentos_evento.push(codigo_by_equipamento.equipamento_id)
 
         medida = Medida.new
 
@@ -45,24 +49,37 @@ class MedidasController
         ultima_medida ? medida.estado_normal = ultima_medida.estado_normal : medida.estado_normal = nil
 
         if medida.save
+          persistir_evento = true
           self.persiste_faixas medida, @faixa, ultima_medida
         end
 
       end
     end
+      persistir_evento ? (self.persiste_evento_configuracao equipamentos_evento.uniq!) : false
   end
 
   def self.persiste_faixas medida, faixa, ultima_medida
     ultima_medida ? ultimas_faixas = Faixa.where(medida_id: ultima_medida.id).order(:status_faixa) : ultimas_faixas = []
     if medida.codigo_medida[0] == 'D'
-      faixa = Faixa.create(medida_id: medida.id, status_faixa: 1, disable: false, minimo: faixa[:normal], maximo: faixa[:normal].to_i + 0.99 )
-      faixa = Faixa.create(medida_id: medida.id, status_faixa: 2, disable: false, minimo: 50, maximo: 51 )
+      Faixa.create(medida_id: medida.id, status_faixa: 1, disable: false, minimo: faixa[:normal], maximo: faixa[:normal].to_i + 0.99 )
+      Faixa.create(medida_id: medida.id, status_faixa: 2, disable: false, minimo: 50, maximo: 51 )
       normal = faixa[:normal] == 0 ? 1 : 0
-      faixa = Faixa.create(medida_id: medida.id, status_faixa: 3, disable: false, minimo: normal, maximo: normal.to_i + 0.99 )
+      Faixa.create(medida_id: medida.id, status_faixa: 3, disable: false, minimo: normal, maximo: normal.to_i + 0.99 )
     else
-      faixa = Faixa.create(medida_id: medida.id, status_faixa: 1, disable: false, minimo: faixa[:minimo], maximo: faixa[:maximo] )
-      faixa = Faixa.create(medida_id: medida.id, status_faixa: 2, disable: false, minimo: ultimas_faixas[1] ? ultimas_faixas[1].minimo : 0, maximo: ultimas_faixas[1] ? ultimas_faixas[1].maximo : 0 )
-      faixa = Faixa.create(medida_id: medida.id, status_faixa: 3, disable: false, minimo: ultimas_faixas[2] ? ultimas_faixas[2].minimo : 0, maximo: ultimas_faixas[2] ? ultimas_faixas[2].maximo : 0  )
+      Faixa.create(medida_id: medida.id, status_faixa: 1, disable: false, minimo: faixa[:minimo], maximo: faixa[:maximo] )
+      Faixa.create(medida_id: medida.id, status_faixa: 2, disable: false, minimo: ultimas_faixas[1] ? ultimas_faixas[1].minimo : 0, maximo: ultimas_faixas[1] ? ultimas_faixas[1].maximo : 0 )
+      Faixa.create(medida_id: medida.id, status_faixa: 3, disable: false, minimo: ultimas_faixas[2] ? ultimas_faixas[2].minimo : 0, maximo: ultimas_faixas[2] ? ultimas_faixas[2].maximo : 0  )
     end
   end
+
+  def self.persiste_evento_configuracao(equipamentos_evento)
+    id_configuracao_inicial_analogica = 21
+    id_inicializacao_analogica = 20
+
+    equipamentos_evento.each do |equipamento|
+      ultima_inicializacao = Evento.where(status_id: id_inicializacao_analogica, equipamento_id: equipamento, created_at: Time.now().beginning_of_day..Time.now().end_of_day).includes(:status).last
+      Evento.create(equipamento_id: equipamento, status_id: id_configuracao_inicial_analogica, reporte_faixa: false, reporte_energia: false, reporte_sinal: false, reporte_temperatura: false, nivel_sinal: ultima_inicializacao ? ultima_inicializacao.nivel_sinal : nil)
+    end
+  end
+
 end

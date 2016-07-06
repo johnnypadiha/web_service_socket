@@ -1,6 +1,8 @@
 class Evento < ActiveRecord::Base
+  self.table_name = 'main.eventos'
   include Logging
   belongs_to :tipo_evento
+  belongs_to :status
   #belongs_to :telemetria
   has_many :medidas_eventos
 
