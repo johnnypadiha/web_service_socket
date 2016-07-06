@@ -6,7 +6,6 @@ class TelemetriaController
   def self.atualiza_telemetria(telemetria, params)
     unless params.blank?
       telemetria.updated_at               = params[:data] unless params[:data].blank?
-      telemetria.nivel_sinal              = params[:nivel_sinal] unless params[:nivel_sinal].blank?
       telemetria.firmware                 = params[:firmware] unless params[:firmware].blank?
       telemetria.ip_server_primario       = params[:ip_primario] unless params[:ip_primario].blank?
       telemetria.ip_server_secundario     = params[:ip_secundario] unless params[:ip_secundario].blank?
