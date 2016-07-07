@@ -1,4 +1,5 @@
 class MedidasEvento < ActiveRecord::Base
+  self.table_name = "main.medidas_eventos"
   belongs_to :evento
   belongs_to :medida
   #belongs_to :reporte_medida

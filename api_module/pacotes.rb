@@ -1,4 +1,5 @@
 require_relative '../service/processar_pacotes.rb'
+require_relative '../service/separar_medida_equipamento.rb'
 class Pacotes
   def self.processador(pacote)
     pacote = Pacotes::formatador(pacote)
@@ -36,9 +37,11 @@ class Pacotes
     when LEITURA_INSTANTANEA
       logger.info "="*20
       logger.info("Leitura Instantânea")
-      # medidas = ProcessarPacotes.leituras_instantanea pacote
+      medidas = ProcessarPacotes.leituras_instantanea pacote
+      pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
+
       # logger.info medidas
-      # Evento.persistir_evento medidas
+      Evento.persistir_evento pacote_equipamento
       logger.info "="*20
 
     when CONTAGEM_ALARMAR
@@ -57,7 +60,8 @@ class Pacotes
     when ALARME_INSTANTANEO
       logger.info "="*20
       logger.info("Alarme Instantâneo")
-      # medidas = ProcessarPacotes.leituras_instantanea(pacote)
+      medidas = ProcessarPacotes.leituras_instantanea pacote
+      pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
       # logger.info medidas
       # Evento.persistir_evento medidas
       logger.info "="*20

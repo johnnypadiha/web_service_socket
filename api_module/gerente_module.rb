@@ -16,7 +16,7 @@ class GerenteModule < EventMachine::Connection
   end
 
   def unbind
-    @timer.cancel
+    #@timer.cancel
     logger.info 'Gerente disconectado!'
   end
 
