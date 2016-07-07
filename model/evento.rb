@@ -16,9 +16,8 @@ class Evento < ActiveRecord::Base
     colecao_medida_evento = []
     eventos.each do |evento|
       equipamento = Equipamento.includes(:medidas, medidas: :faixas).find(evento[:id_equipamento])
-      equipamento.medidas_equipamento evento
-      equipamento.medidas.each do |medida|
-        if evento.key?(medida.codigo_medida.to_sym)
+      equipamento_medidas = equipamento.medidas_equipamento evento
+      equipamento_medidas.each do |medida|
           faixa_atual = medida.faixas.select {|s| s.minimo.to_i >= evento[medida.codigo_medida.to_sym].to_i && s.maximo.to_i <= evento[medida.codigo_medida.to_sym].to_i}.first
           status_faixa = faixa_atual.present? ? faixa_atual.status_faixa : 1
 
@@ -44,7 +43,6 @@ class Evento < ActiveRecord::Base
           medida_evento.status_faixa = status_faixa
           medida_evento.reporte_medida_id = medida.reporte_medida_id
           colecao_medida_evento << medida_evento
-        end
       end
       novo_evento = Evento.new
       novo_evento.equipamento_id = equipamento.id
