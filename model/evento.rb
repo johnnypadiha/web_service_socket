@@ -1,3 +1,4 @@
+# encoding: utf-8
 class Evento < ActiveRecord::Base
   self.table_name = 'main.eventos'
 
@@ -69,6 +70,24 @@ class Evento < ActiveRecord::Base
     equipamentos_evento.each do |equipamento|
       ultima_inicializacao = Evento.where(status_id: id_inicializacao_analogica, equipamento_id: equipamento, created_at: Time.now().beginning_of_day..Time.now().end_of_day).includes(:status).last
       Evento.create(equipamento_id: equipamento, status_id: id_configuracao_inicial_analogica, reporte_faixa: false, reporte_energia: false, reporte_sinal: false, reporte_temperatura: false, nivel_sinal: ultima_inicializacao ? ultima_inicializacao.nivel_sinal : nil)
+    end
+  end
+  
+  def self.persistir_inicializacao equipamentos, pacote, status_inicializacao: 20
+    equipamentos.each do |equipamento|
+      new_evento = Evento.new
+      new_evento.equipamento_id = equipamento[:id_equipamento]
+      new_evento.status_id = status_inicializacao
+      new_evento.reporte_faixa = false
+      new_evento.reporte_energia = false
+      new_evento.reporte_sinal = false
+      new_evento.reporte_temperatura = false
+      new_evento.nivel_sinal = pacote[:DBM]
+      if new_evento.save
+        logger.info "O novo evento de Inicialização foi persistido com sucesso para o equipamento #{equipamento[:id_equipamento]} - #{equipamento[:nome]}".blue
+      else
+        logger.info "Houveram erros ao persistir o evento de Inicialização para o equipamento #{equipamento[:id_equipamento]} - #{equipamento[:nome]}".red
+      end
     end
   end
 end

@@ -1,6 +1,6 @@
 class TelemetriaController
   def self.find_telemetria(params)
-    return Telemetria.find_by_codigo(params[:codigo].to_i)
+    return Telemetria.find_by_codigo(params[:codigo_telemetria].to_i)
   end
 
   def self.atualiza_telemetria(telemetria, params)

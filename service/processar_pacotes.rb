@@ -21,19 +21,14 @@ class ProcessarPacotes
   end
 
   def self.inicializacao pacote
-    inicializacao               = Hash.new
-    inicializacao[:codigo]      = ProcessarPacotes::obtem_codigo_telemetria pacote
-    inicializacao[:data]        = Time.now
-    inicializacao[:nivel_sinal] = ProcessarPacotes::obtem_nivel_sinal pacote
-    inicializacao[:leituras]    = ProcessarPacotes::obtem_medidas pacote
+    inicializacao = Hash.new
+    inicializacao[:codigo_telemetria] = ProcessarPacotes::obtem_codigo_telemetria pacote
+    inicializacao[:data] = Time.now
+    inicializacao[:DBM] = ProcessarPacotes::obtem_nivel_sinal pacote
+    inicializacao[:leituras] = ProcessarPacotes::obtem_medidas pacote
     logger.info inicializacao
 
-    result = ProcessarPacotes::find_and_update_telemetria inicializacao
-    if result
-      logger.info "Inicialização da telemetria #{inicializacao[:codigo]} processada e persistida com sucesso!".blue
-    else
-      logger.info "Houveram erros ao persistir o pacote de Inicialização da telemetria #{inicializacao[:codigo]}".red
-    end
+    return inicializacao
   end
 
   #  1 - operadora = "TIM"
@@ -69,7 +64,7 @@ class ProcessarPacotes
     configuracao_hex[:host] = pacote[178..183]
     configuracao_hex[:porta_dns] = pacote[184..187]
     telemetria[:data] = Time.now
-    telemetria[:codigo] = ProcessarPacotes::obtem_codigo_telemetria pacote
+    telemetria[:codigo_telemetria] = ProcessarPacotes::obtem_codigo_telemetria pacote
     telemetria[:firmware] = ProcessarPacotes::obtem_firmware pacote
     telemetria[:ip_primario] = "#{configuracao_hex[:ip_primario_1octeto].hex}.#{configuracao_hex[:ip_primario_2octeto].hex}.#{configuracao_hex[:ip_primario_3octeto].hex}.#{configuracao_hex[:ip_primario_4octeto].hex}"
     telemetria[:ip_secundario] = "#{configuracao_hex[:ip_secundario_1octeto].hex}.#{configuracao_hex[:ip_secundario_2octeto].hex}.#{configuracao_hex[:ip_secundario_3octeto].hex}.#{configuracao_hex[:ip_secundario_4octeto].hex}"
@@ -86,10 +81,10 @@ class ProcessarPacotes
     result, id_telemetria = ProcessarPacotes::find_and_update_telemetria configuracao[:telemetria]
 
     if result
-      logger.info "Configuração da telemetria #{configuracao[:telemetria][:codigo]} processada e persistida com sucesso!".blue
+      logger.info "Configuração da telemetria #{configuracao[:telemetria][:codigo_telemetria]} processada e persistida com sucesso!".blue
       Medida::create_medidas id_telemetria, analogicas, negativas, digitais
     else
-      logger.info "Houveram erros ao persistir o pacote de Configuração da telemetria #{configuracao[:telemetria][:codigo]}".red
+      logger.info "Houveram erros ao persistir o pacote de Configuração da telemetria #{configuracao[:telemetria][:codigo_telemetria]}".red
     end
   end
 
@@ -156,15 +151,15 @@ class ProcessarPacotes
     telemetria = TelemetriaController::find_telemetria params
 
     if telemetria.blank?
-      logger.info "A telemetria #{params[:codigo]} não está cadastrada no sistema e o pacote da mesma foi rejeitado.".red
+      logger.info "A telemetria #{params[:codigo_telemetria]} não está cadastrada no sistema e o pacote da mesma foi rejeitado.".red
       return false
     else
       result, id_telemetria = TelemetriaController::atualiza_telemetria telemetria, params
       if result
-        logger.info "Dados da telemetria #{params[:codigo]} atualizados com sucesso.".blue
+        logger.info "Dados da telemetria #{params[:codigo_telemetria]} atualizados com sucesso.".blue
         return true, id_telemetria
       else
-        logger.info "Houveram erros ao atualizar dados da telemetria #{params[:codigo]}.".red
+        logger.info "Houveram erros ao atualizar dados da telemetria #{params[:codigo_telemetria]}.".red
         return false
       end
     end
