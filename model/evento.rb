@@ -23,11 +23,11 @@ class Evento < ActiveRecord::Base
 
           case status_faixa.to_i
           when 3
-            codigo_evento = INICIALIZACAO_OK unless codigo_evento == INICIALIZACAO_ALARME || codigo_evento == INICIALIZACAO_ALERTA
+            codigo_evento = LEITURA_INSTANTANEA_OK unless codigo_evento == LEITURA_INSTANTANEA_ALARME || codigo_evento == LEITURA_INSTANTANEA_ALERTA
           when 2
-            codigo_evento = INICIALIZACAO_ALERTA unless codigo_evento == INICIALIZACAO_ALARME
+            codigo_evento = LEITURA_INSTANTANEA_ALERTA unless codigo_evento == LEITURA_INSTANTANEA_ALARME
           when 1
-            codigo_evento = INICIALIZACAO_ALARME
+            codigo_evento = LEITURA_INSTANTANEA_ALARME
           end
 
           if status_faixa.to_i == 2 || status_faixa.to_i == 1
