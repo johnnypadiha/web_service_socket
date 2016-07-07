@@ -31,7 +31,11 @@ class Pacotes
     when INICIALIZACAO
       logger.info "="*20
       logger.info ("Inicialização")
-      ProcessarPacotes.inicializacao pacote
+      pacote_processado = ProcessarPacotes.inicializacao pacote
+      unless pacote_processado.blank?
+        pacote_equipamentos = SepararMedidaEquipamento.obter_pacote_equipamento pacote_processado
+        Evento.persistir_inicializacao pacote_equipamentos, pacote_processado unless pacote_equipamentos.blank?
+      end
       logger.info "="*20
 
     when LEITURA_INSTANTANEA

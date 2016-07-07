@@ -1,3 +1,4 @@
+# encoding: utf-8
 class Evento < ActiveRecord::Base
   self.table_name = 'main.eventos'
 
@@ -58,6 +59,24 @@ class Evento < ActiveRecord::Base
           med_evento.save
         end
         colecao_medida_evento = []
+      end
+    end
+  end
+
+  def self.persistir_inicializacao equipamentos, pacote, status_inicializacao: 20
+    equipamentos.each do |equipamento|
+      new_evento = Evento.new
+      new_evento.equipamento_id = equipamento[:id_equipamento]
+      new_evento.status_id = status_inicializacao
+      new_evento.reporte_faixa = false
+      new_evento.reporte_energia = false
+      new_evento.reporte_sinal = false
+      new_evento.reporte_temperatura = false
+      new_evento.nivel_sinal = pacote[:DBM]
+      if new_evento.save
+        logger.info "O novo evento de Inicialização foi persistido com sucesso para o equipamento #{equipamento[:id_equipamento]} - #{equipamento[:nome]}".blue
+      else
+        logger.info "Houveram erros ao persistir o evento de Inicialização para o equipamento #{equipamento[:id_equipamento]} - #{equipamento[:nome]}".red
       end
     end
   end
