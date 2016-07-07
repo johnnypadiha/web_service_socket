@@ -7,13 +7,8 @@ class ProcessarPacotes
   # Alarme Instantâneo
   # Leitura Instantânea
   # Periodico
-  def self.leituras_instantanea(pacote)
-    init = 6
-    index_A ||= 1
-    index_N ||= 1
-    index_D ||= 1
+  def self.leituras_instantanea pacote
     medidas = Hash.new
-    leitura = Hash.new
     medidas[:codigo_telemetria] = ProcessarPacotes::obtem_codigo_telemetria pacote
     medidas[:tipo_pacote] = (ProcessarPacotes::obtem_tipo_pacote pacote).to_i
     medidas[:DBM] = if pacote.size == 72
@@ -22,33 +17,16 @@ class ProcessarPacotes
       ProcessarPacotes::obtem_nivel_sinal pacote
     end
 
-    24.times do |i|
-      case i + 1
-      when 1..16
-        leitura["A#{index_A}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
-
-        index_A += 1
-      when 17..20
-        leitura["N#{index_N}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
-
-        index_N += 1
-      when 21..24
-        logger.info"#{pacote[init...init+2]}".red
-        leitura["D#{index_D}".to_sym] = pacote[init...init+2].hex
-
-        index_D += 1
-      end
-      init += 2
-    end
-    medidas[:leituras] = leitura
+    medidas[:leituras] = ProcessarPacotes::obtem_medidas pacote
     medidas
   end
 
-  def self.inicializacao(pacote)
-    inicializacao = Hash.new
-    inicializacao[:codigo] = ProcessarPacotes::obtem_codigo_telemetria pacote
-    inicializacao[:data] = Time.now
+  def self.inicializacao pacote
+    inicializacao               = Hash.new
+    inicializacao[:codigo]      = ProcessarPacotes::obtem_codigo_telemetria pacote
+    inicializacao[:data]        = Time.now
     inicializacao[:nivel_sinal] = ProcessarPacotes::obtem_nivel_sinal pacote
+    inicializacao[:leituras]    = ProcessarPacotes::obtem_medidas pacote
     logger.info inicializacao
 
     result = ProcessarPacotes::find_and_update_telemetria inicializacao
@@ -191,5 +169,31 @@ class ProcessarPacotes
         return false
       end
     end
+  end
+
+  def self.obtem_medidas pacote
+    init = 6
+    index_A ||= 1
+    index_N ||= 1
+    index_D ||= 1
+    leitura = Hash.new
+
+    TOTAL_MEDIDAS.times do |i|
+      case i + 1
+      when 1..16
+        leitura["A#{index_A}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
+        index_A += 1
+
+      when 17..20
+        leitura["N#{index_N}".to_sym] = BaseConverter.convert_value_dec pacote[init...init+2]
+        index_N += 1
+
+      when 21..24
+        leitura["D#{index_D}".to_sym] = pacote[init...init+2].hex
+        index_D += 1
+      end
+      init += 2
+    end
+    return leitura
   end
 end

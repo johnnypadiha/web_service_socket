@@ -55,7 +55,8 @@ class MedidasController
 
       end
     end
-      persistir_evento ? (self.persiste_evento_configuracao equipamentos_evento.uniq!) : false
+      equipamentos_evento = equipamentos_evento.uniq
+      persistir_evento ? (self.persiste_evento_configuracao equipamentos_evento) : false
   end
 
   def self.persiste_faixas medida, faixa, ultima_medida
