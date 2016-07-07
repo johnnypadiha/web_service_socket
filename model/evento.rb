@@ -61,4 +61,14 @@ class Evento < ActiveRecord::Base
       end
     end
   end
+
+  def self.persiste_evento_configuracao(equipamentos_evento)
+    id_configuracao_inicial_analogica = 21
+    id_inicializacao_analogica = 20
+
+    equipamentos_evento.each do |equipamento|
+      ultima_inicializacao = Evento.where(status_id: id_inicializacao_analogica, equipamento_id: equipamento, created_at: Time.now().beginning_of_day..Time.now().end_of_day).includes(:status).last
+      Evento.create(equipamento_id: equipamento, status_id: id_configuracao_inicial_analogica, reporte_faixa: false, reporte_energia: false, reporte_sinal: false, reporte_temperatura: false, nivel_sinal: ultima_inicializacao ? ultima_inicializacao.nivel_sinal : nil)
+    end
+  end
 end

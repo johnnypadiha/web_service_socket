@@ -1,7 +1,6 @@
 # encoding: utf-8
 require_relative '../service/processar_pacotes.rb'
 require_relative '../controller/telemetria_controller.rb'
-require_relative '../controller/medidas_controller.rb'
 
 class ProcessarPacotes
   # Alarme Instantâneo
@@ -88,7 +87,7 @@ class ProcessarPacotes
 
     if result
       logger.info "Configuração da telemetria #{configuracao[:telemetria][:codigo]} processada e persistida com sucesso!".blue
-      MedidasController::create_medidas id_telemetria, analogicas, negativas, digitais
+      Medida::create_medidas id_telemetria, analogicas, negativas, digitais
     else
       logger.info "Houveram erros ao persistir o pacote de Configuração da telemetria #{configuracao[:telemetria][:codigo]}".red
     end
