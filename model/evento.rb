@@ -19,18 +19,18 @@ class Evento < ActiveRecord::Base
       equipamento_medidas = equipamento.medidas_equipamento evento
       equipamento_medidas.each do |medida|
           faixa_atual = medida.faixas.select {|s| s.minimo.to_i >= evento[medida.codigo_medida.to_sym].to_i && s.maximo.to_i <= evento[medida.codigo_medida.to_sym].to_i}.first
-          status_faixa = faixa_atual.present? ? faixa_atual.status_faixa : 1
+          status_faixa = faixa_atual.present? ? faixa_atual.status_faixa : ALARME
 
           case status_faixa.to_i
-          when 3
+          when OK
             codigo_evento = LEITURA_INSTANTANEA_OK unless codigo_evento == LEITURA_INSTANTANEA_ALARME || codigo_evento == LEITURA_INSTANTANEA_ALERTA
-          when 2
+          when ALERTA
             codigo_evento = LEITURA_INSTANTANEA_ALERTA unless codigo_evento == LEITURA_INSTANTANEA_ALARME
-          when 1
+          when ALARME
             codigo_evento = LEITURA_INSTANTANEA_ALARME
           end
 
-          if status_faixa.to_i == 2 || status_faixa.to_i == 1
+          if status_faixa.to_i == ALERTA || status_faixa.to_i == ALARME
             reporte_faixa = true if medida.reporte_medida_id == REPORTE_FAIXA
             reporte_sinal = true if medida.reporte_medida_id == REPORTE_SINAL
             reporte_energia = true if medida.reporte_medida_id == REPORTE_ENERGIA
