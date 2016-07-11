@@ -21,7 +21,7 @@ module Logging
  end
 
  def self.logger_socket
-   @logger_telemetria_connection ||= Logger.new("telemetry_socket.log")
+   @logger_telemetria_socket ||= Logger.new("telemetry_socket.log")
  end
- 
+
 end

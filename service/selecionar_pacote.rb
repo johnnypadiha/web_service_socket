@@ -34,6 +34,8 @@ class SelecionarPacote
       codigo_evento =
       if args[:codigo_atual].to_i == args[:alarme].to_i || args[:codigo_atual].to_i == args[:alerta].to_i
         args[:codigo_atual].to_i == args[:alarme].to_i ? args[:alarme] : args[:alerta]
+      else
+        args[:ok]
       end
     when ALERTA
       codigo_evento = args[:codigo_atual].to_i == args[:alarme].to_i ? args[:alarme] : args[:alerta]
