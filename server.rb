@@ -13,28 +13,23 @@ require 'active_support/time'
         logger.info "Exception during event: #{e.message} (#{e.class})".red
         logger.info (e.backtrace || [])[0..10].join("\n")
       end
-      # EventMachine::PeriodicTimer.new(120) do
-      #   logger_connection.info("Total de sockets conectados : #{$sockets_conectados.size}")
-      #   logger_connection.info("Verificando a Existência de sockets fantasma...")
-      #   index_conexao_fantasma = []
-      #   index_conexao_fantasma = $sockets_conectados.map.with_index{|v, i| i unless $lista_telemetria.map{|obj| obj.has_value?(v)} }.compact
-      #
-      #   socket_fantasma = false
-      #   $sockets_conectados.each_with_index do |sc, i|
-      #     $lista_telemetria.each do |lt|
-      #       socket_fantasma = !lt.has_value?(sc[:socket])
-      #
-      #       break if socket_fantasma
-      #     end
-      #
-      #     if socket_fantasma
-      #       $sockets_conectados[i][:socket].close_connection
-      #       logger_connection.info("SOCKET FANTASMA DETECTADO E DESCONECTADO : #{$sockets_conectados[i][:socket]}")
-      #       $sockets_conectados.delete_at(i)
-      #     end
-      #
-      #   end
-      # end
+
+      EventMachine::PeriodicTimer.new(10) do
+        logger_connection.info("Total de sockets conectados : #{$sockets_conectados.size}")
+        logger_connection.info("Total de telemetrias conectadas : #{$lista_telemetria.size}")
+        logger_connection.info("Verificando a Existência de sockets fantasma...")
+
+        $sockets_conectados.each do |socket_conectado|
+          socket_valido = $lista_telemetria.select{|telemetria| telemetria[:socket] == socket_conectado[:socket] }
+
+          if socket_valido.blank? and socket_conectado[:hora] < 2.minutes.ago
+            socket_conectado[:socket].close_connection
+            logger_connection.info("SOCKET FANTASMA DETECTADO E DESCONECTADO : #{socket_conectado[:socket]}")
+            $sockets_conectados.delete_if {|s| s[:socket] == socket_conectado[:socket] }
+          end
+        end
+      end
+
       timer = EventMachine::PeriodicTimer.new(180) do
         index = []
         index = $lista_telemetria.map.with_index{|v, i| i if v[:hora].to_time < 5.minutes.ago}.compact
