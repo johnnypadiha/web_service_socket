@@ -18,6 +18,7 @@ class Evento < ActiveRecord::Base
     reporte_temperatura = false
     colecao_medida_evento = []
     eventos.each do |evento|
+      codigo_evento = 0
       equipamento = Equipamento.includes(:medidas, medidas: :faixas).find(evento[:id_equipamento])
       equipamento_medidas = equipamento.medidas_equipamento evento
       equipamento_medidas.each do |medida|
