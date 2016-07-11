@@ -1,4 +1,6 @@
 # encoding: utf-8
+require_relative '../service/selecionar_pacote.rb'
+
 class Evento < ActiveRecord::Base
   self.table_name = 'main.eventos'
 
@@ -22,14 +24,7 @@ class Evento < ActiveRecord::Base
           faixa_atual = medida.faixas.select {|s| s.minimo.to_i >= evento[medida.codigo_medida.to_sym].to_i && s.maximo.to_i <= evento[medida.codigo_medida.to_sym].to_i}.first
           status_faixa = faixa_atual.present? ? faixa_atual.status_faixa : ALARME
 
-          case status_faixa.to_i
-          when OK
-            codigo_evento = LEITURA_INSTANTANEA_OK unless codigo_evento == LEITURA_INSTANTANEA_ALARME || codigo_evento == LEITURA_INSTANTANEA_ALERTA
-          when ALERTA
-            codigo_evento = LEITURA_INSTANTANEA_ALERTA unless codigo_evento == LEITURA_INSTANTANEA_ALARME
-          when ALARME
-            codigo_evento = LEITURA_INSTANTANEA_ALARME
-          end
+          codigo_evento =  SelecionarPacote.new({codigo_atual: codigo_evento, codigo_pacote: evento[:codigo_pacote], status_faixa: status_faixa}).seleciona_pacote
 
           if status_faixa.to_i == ALERTA || status_faixa.to_i == ALARME
             reporte_faixa = true if medida.reporte_medida_id == REPORTE_FAIXA
@@ -72,7 +67,7 @@ class Evento < ActiveRecord::Base
       Evento.create(equipamento_id: equipamento, status_id: id_configuracao_inicial_analogica, reporte_faixa: false, reporte_energia: false, reporte_sinal: false, reporte_temperatura: false, nivel_sinal: ultima_inicializacao ? ultima_inicializacao.nivel_sinal : nil)
     end
   end
-  
+
   def self.persistir_inicializacao equipamentos, pacote, status_inicializacao: 20
     equipamentos.each do |equipamento|
       new_evento = Evento.new
