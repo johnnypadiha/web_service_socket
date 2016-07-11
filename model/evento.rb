@@ -24,9 +24,10 @@ class Evento < ActiveRecord::Base
       equipamento_medidas.each do |medida|
           faixa_atual = medida.faixas.select {|s| s.minimo.to_i >= evento[medida.codigo_medida.to_sym].to_i && s.maximo.to_i <= evento[medida.codigo_medida.to_sym].to_i}.first
           status_faixa = faixa_atual.present? ? faixa_atual.status_faixa : ALARME
-
+          # next if medida.faixas.present?
           codigo_evento =  SelecionarPacote.new({codigo_atual: codigo_evento, codigo_pacote: evento[:codigo_pacote], status_faixa: status_faixa}).seleciona_pacote
-
+          logger.info "Codigo do Evento = #{codigo_evento} - Medida #{medida}"
+          p "Codigo do Evento = #{codigo_evento} - Medida #{medida}"
           if status_faixa.to_i == ALERTA || status_faixa.to_i == ALARME
             reporte_faixa = true if medida.reporte_medida_id == REPORTE_FAIXA
             reporte_sinal = true if medida.reporte_medida_id == REPORTE_SINAL
