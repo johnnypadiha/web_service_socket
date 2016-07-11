@@ -8,7 +8,7 @@ module AnalogicProcess
   $lista_telemetria = []
   $sockets_conectados = []
   def initialize
-    $sockets_conectados << {socket: self}
+    $sockets_conectados << {socket: self, hora: Time.now}
     logger_socket.info "INITIALIZE ---> #{self}"
   end
 
