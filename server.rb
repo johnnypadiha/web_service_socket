@@ -14,7 +14,7 @@ require 'active_support/time'
         logger.info (e.backtrace || [])[0..10].join("\n")
       end
 
-      EventMachine::PeriodicTimer.new(10) do
+      EventMachine::PeriodicTimer.new(120) do
         logger_connection.info("Total de sockets conectados : #{$sockets_conectados.size}")
         logger_connection.info("Total de telemetrias conectadas : #{$lista_telemetria.size}")
         logger_connection.info("Verificando a Existência de sockets fantasma...")
