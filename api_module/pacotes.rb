@@ -14,21 +14,25 @@ class Pacotes
     when PERIODICO_OK
       logger.info "="*20
       logger.info("Periódico OK")
-      medidas = ProcessarPacotes.leituras_instantanea pacote
-      pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
+      Thread.new do
+        medidas = ProcessarPacotes.leituras_instantanea pacote
+        pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
 
-      # logger.info medidas
-      Evento.persistir_evento pacote_equipamento
+        # logger.info medidas
+        Evento.persistir_evento pacote_equipamento
+      end
       logger.info "="*20
 
     when PERIODICO_ALARMADO
       logger.info "="*20
       logger.info("Periódico Alarmado")
-      medidas = ProcessarPacotes.leituras_instantanea pacote
-      pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
+      Thread.new do
+        medidas = ProcessarPacotes.leituras_instantanea pacote
+        pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
 
-      # logger.info medidas
-      Evento.persistir_evento pacote_equipamento
+        # logger.info medidas
+        Evento.persistir_evento pacote_equipamento
+      end
       logger.info "="*20
 
     when CONFIGURACAO

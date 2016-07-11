@@ -33,12 +33,12 @@ class SelecionarPacote
     when OK
       codigo_evento =
       if args[:codigo_atual].to_i == args[:alarme].to_i || args[:codigo_atual].to_i == args[:alerta].to_i
-        args[:codigo_atual].to_i == args[:alarme].to_i ? args[:alarme] : args[:alerta]
+        args[:codigo_atual].to_i == args[:alarme].to_i ? args[:alarme].to_i : args[:alerta].to_i
       else
-        args[:ok]
+        args[:ok].to_i
       end
     when ALERTA
-      codigo_evento = args[:codigo_atual].to_i == args[:alarme].to_i ? args[:alarme] : args[:alerta]
+      codigo_evento = args[:codigo_atual].to_i == args[:alarme].to_i ? args[:alarme].to_i : args[:alerta].to_i
     when ALARME
       codigo_evento = args[:alarme].to_i
     end
