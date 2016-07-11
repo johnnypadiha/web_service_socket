@@ -60,8 +60,15 @@ module AnalogicProcess
         end
       else
         logger.info "Pacote recebido #{data}".green
+        data = Pacotes::formatador data
+
+        if !TelemetriaController::verifica_telemetria data
+          logger.fatal "A Telemetria não está cadastrada no sistema e o pacote da mesma foi rejeitado!".red
+          self.close_connection
+          return false
+        end
+
         cadastrar_telemetria(self, id)
-        # Raw.create(pacote: data)
         # atualização de hora
         self.send_data Hora.gerar_atualizacao_hora
         Pacotes.processador data
@@ -74,8 +81,6 @@ module AnalogicProcess
 
   def unbind
     logger_socket.info "Telemetria desconectada"
-    #self.close_connection
-    puts "-- someone disconnected from the echo server!"
   end
 
   def cadastrar_telemetria(socket, id)
