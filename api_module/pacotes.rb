@@ -5,6 +5,11 @@ class Pacotes
     pacote = Pacotes::formatador(pacote)
     tipo_pacote = ProcessarPacotes::obtem_tipo_pacote pacote
 
+    if !TelemetriaController::verifica_telemetria pacote
+      logger.fatal "A Telemetria não está cadastrada no sistema e o pacote da mesma foi rejeitado!".red
+      return false
+    end
+
     case tipo_pacote.to_i
     when PERIODICO_OK
       logger.info "="*20

@@ -3,6 +3,12 @@ class TelemetriaController
     return Telemetria.find_by_codigo(params[:codigo_telemetria].to_i)
   end
 
+  def self.verifica_telemetria pacote
+    telemetria = Hash.new
+    telemetria[:codigo_telemetria] = ProcessarPacotes::obtem_codigo_telemetria(pacote)
+    return TelemetriaController.find_telemetria(telemetria).present? ? true : false
+  end
+
   def self.atualiza_telemetria(telemetria, params)
     unless params.blank?
       telemetria.updated_at               = params[:data] unless params[:data].blank?
