@@ -21,7 +21,9 @@ class SelecionarPacote
       alarme = 17
     when LEITURA_INSTANTANEA
       SelecionarPacote.filtrar_codigo_evento({status_faixa: status_faixa, ok: 11, alerta: 20, alarme: 19, codigo_atual: codigo_atual})
-    when NORMALIZACAO, ALARME_INSTANTANEO
+    when NORMALIZACAO
+      SelecionarPacote.filtrar_codigo_evento({status_faixa: status_faixa, ok: 15, alerta: 23, alarme: 24, codigo_atual: codigo_atual})
+    when ALARME_INSTANTANEO
       'Implementar'
     else
       'Implementar'
