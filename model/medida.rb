@@ -65,7 +65,7 @@ class Medida < ActiveRecord::Base
     end
       equipamentos_evento = equipamentos_evento.uniq
       if equipamentos_evento.present?
-        Evento::persistir_evento_configuracao equipamentos_evento
+        Evento::persiste_evento_configuracao equipamentos_evento
       else
         Logging.info "É necessário cadastrar um equipamento e/ou pelo menos uma medida para que o evento de configuração seja persistido. Telemetria ID: #{id_telemetria}"
         return false
