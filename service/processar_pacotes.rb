@@ -152,12 +152,8 @@ class ProcessarPacotes
 
   def self.find_and_update_telemetria(params)
     telemetria = TelemetriaController::find_telemetria params
+    result, id_telemetria = TelemetriaController::atualiza_telemetria telemetria, params
 
-    if telemetria.blank?
-      logger.info "A telemetria #{params[:codigo_telemetria]} não está cadastrada no sistema e o pacote da mesma foi rejeitado.".red
-      return false
-    else
-      result, id_telemetria = TelemetriaController::atualiza_telemetria telemetria, params
       if result
         logger.info "Dados da telemetria #{params[:codigo_telemetria]} atualizados com sucesso.".blue
         return true, id_telemetria
