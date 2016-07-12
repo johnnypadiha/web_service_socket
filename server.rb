@@ -15,19 +15,7 @@ require 'active_support/time'
       end
 
       EventMachine::PeriodicTimer.new(120) do
-        logger_connection.info("Total de sockets conectados : #{$sockets_conectados.size}")
-        logger_connection.info("Total de telemetrias conectadas : #{$lista_telemetria.size}")
-        logger_connection.info("Verificando a Existência de sockets fantasma...")
-
-        $sockets_conectados.each do |socket_conectado|
-          socket_valido = $lista_telemetria.select{|telemetria| telemetria[:socket] == socket_conectado[:socket] }
-
-          if socket_valido.blank? and socket_conectado[:hora] < 2.minutes.ago
-            socket_conectado[:socket].close_connection
-            logger_connection.info("SOCKET FANTASMA DETECTADO E DESCONECTADO : #{socket_conectado[:socket]}")
-            $sockets_conectados.delete_if {|s| s[:socket] == socket_conectado[:socket] }
-          end
-        end
+        verifica_sockets_fantasma
       end
 
       timer = EventMachine::PeriodicTimer.new(180) do
@@ -49,5 +37,21 @@ require 'active_support/time'
       end
       EventMachine.start_server ip, porta, AnalogicProcess
     }
+  end
+
+  def verifica_sockets_fantasma
+    logger_connection.info("Total de sockets conectados : #{$sockets_conectados.size}")
+    logger_connection.info("Total de telemetrias conectadas : #{$lista_telemetria.size}")
+    logger_connection.info("Verificando a Existência de sockets fantasma...")
+
+    $sockets_conectados.each do |socket_conectado|
+      socket_valido = $lista_telemetria.select{|telemetria| telemetria[:socket] == socket_conectado[:socket] }
+
+      if socket_valido.blank? and socket_conectado[:hora] < 2.minutes.ago
+        socket_conectado[:socket].close_connection
+        logger_connection.info("SOCKET FANTASMA DETECTADO E DESCONECTADO : #{socket_conectado[:socket]}")
+        $sockets_conectados.delete_if {|s| s[:socket] == socket_conectado[:socket] }
+      end
+    end
   end
 end

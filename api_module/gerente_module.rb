@@ -17,7 +17,7 @@ class GerenteModule < EventMachine::Connection
 
   def unbind
     #@timer.cancel
-    logger.info 'Gerente disconectado!'
+    logger.info 'Gerente desconectado!'
   end
 
   def self.checar_saida
