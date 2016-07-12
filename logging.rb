@@ -26,7 +26,7 @@ module Logging
  def self.method_missing(prioridade, *args)
    case prioridade
    when :info
-     Logging.logger.info("#{args[0]}".green)
+     Logging.logger.info("#{args[0]}")
    when :debug
      Logging.logger.debug("#{args[0]}".green)
    when :fatal

@@ -55,7 +55,7 @@ class Medida < ActiveRecord::Base
           if medida.save
             self.persiste_faixas medida, @faixa, ultima_medida
           else
-            Logging.info "problemas ao persistir a medida: #{medida.codigo_medida} da telemetria código: #{equipamento.telemetria.codigo}"
+            Logging.error "problemas ao persistir a medida: #{medida.codigo_medida} da telemetria código: #{equipamento.telemetria.codigo}"
           end
         else
           Logging.warn "Não existem mudanças na configuração da medida: #{medida.codigo_medida} da telemetria código: #{equipamento.telemetria.codigo}"
@@ -66,7 +66,7 @@ class Medida < ActiveRecord::Base
       if equipamentos_evento.present?
         Evento::persiste_evento_configuracao equipamentos_evento
       else
-        Logging.info "É necessário cadastrar um equipamento e/ou pelo menos uma medida para que o evento de configuração seja persistido. Telemetria ID: #{id_telemetria}"
+        Logging.warn "É necessário cadastrar um equipamento e/ou pelo menos uma medida para que o evento de configuração seja persistido. Telemetria ID: #{id_telemetria}"
         return false
       end
   end

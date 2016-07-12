@@ -1,6 +1,5 @@
 class SepararMedidaEquipamento
   def self.obter_pacote_equipamento(medidas)
-    p medidas
     telemetria = Telemetria.find_by_codigo(medidas[:codigo_telemetria])
     eqm = {}
     evento = []
@@ -17,6 +16,6 @@ class SepararMedidaEquipamento
       evento << eqm
       eqm = {}
     end
-    p evento
+    evento
   end
 end

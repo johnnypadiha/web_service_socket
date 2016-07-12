@@ -77,9 +77,9 @@ class Evento < ActiveRecord::Base
       new_evento.reporte_temperatura = false
       new_evento.nivel_sinal = pacote[:DBM]
       if new_evento.save
-        logger.info "O novo evento de Inicialização foi persistido com sucesso para o equipamento #{equipamento[:id_equipamento]} - #{equipamento[:nome]}".blue
+        Logging.info "O novo evento de Inicialização foi persistido com sucesso para o equipamento de ID #{equipamento[:id_equipamento]}".blue
       else
-        logger.info "Houveram erros ao persistir o evento de Inicialização para o equipamento #{equipamento[:id_equipamento]} - #{equipamento[:nome]}".red
+        Logging.error "Houveram erros ao persistir o evento de Inicialização para o equipamento #{equipamento[:id_equipamento]}"
       end
     end
   end
