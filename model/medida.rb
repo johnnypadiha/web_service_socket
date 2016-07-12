@@ -50,7 +50,6 @@ class Medida < ActiveRecord::Base
         ultima_medida ? medida.multiplo = ultima_medida.multiplo : medida.multiplo = nil
         ultima_medida ? medida.indice = ultima_medida.indice : medida.indice = nil
         medida.codigo_medida = codigo_by_equipamento.codigo.codigo
-        ultima_medida ? medida.estado_normal = ultima_medida.estado_normal : medida.estado_normal = nil
 
         if self.faixas_medidas_mudaram ultima_medida, medida, @faixa
           if medida.save

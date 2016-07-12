@@ -41,7 +41,6 @@ ActiveRecord::Schema.define(version: 20160609173100) do
     t.string   "nome_medida"
     t.integer  "equipamento_id"
     t.integer  "timer"
-    t.integer  "estado_normal"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
