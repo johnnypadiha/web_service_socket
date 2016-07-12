@@ -11,18 +11,8 @@ class SelecionarPacote
     case codigo_pacote.to_i
     when PERIODICO_OK, PERIODICO_ALARMADO
       SelecionarPacote.filtrar_codigo_evento({status_faixa: status_faixa, ok: 8, alerta: 10, alarme: 9, codigo_atual: codigo_atual})
-    when CONFIGURACAO
-      ok = 4
-      alerta = 21
-      alarme = 19
-    when INICIALIZACAO
-      ok = 12
-      alerta = 18
-      alarme = 17
     when LEITURA_INSTANTANEA
       SelecionarPacote.filtrar_codigo_evento({status_faixa: status_faixa, ok: 11, alerta: 20, alarme: 19, codigo_atual: codigo_atual})
-    when NORMALIZACAO, ALARME_INSTANTANEO
-      'Implementar'
     else
       'Implementar'
     end

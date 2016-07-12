@@ -20,7 +20,7 @@ module Logging
  end
 
  def self.logger_socket
-   @logger_telemetria_socket ||= Logger.new("telemetry_socket.log")
+   @logger_socket ||= Logger.new("telemetry_socket.log")
  end
 
  def self.method_missing(prioridade, *args)
