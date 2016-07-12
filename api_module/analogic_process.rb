@@ -60,8 +60,15 @@ module AnalogicProcess
         end
       else
         logger.info "Pacote recebido #{data}".green
+        data = Pacotes::formatador data
+
+        if !TelemetriaController::verifica_telemetria data
+          logger.fatal "A Telemetria não está cadastrada no sistema e o pacote da mesma foi rejeitado!".red
+          close_socket
+          return false
+        end
+
         cadastrar_telemetria(self, id)
-        # Raw.create(pacote: data)
         # atualização de hora
         self.send_data Hora.gerar_atualizacao_hora
         Pacotes.processador data
@@ -74,8 +81,6 @@ module AnalogicProcess
 
   def unbind
     logger_socket.info "Telemetria desconectada"
-    #self.close_connection
-    puts "-- someone disconnected from the echo server!"
   end
 
   def cadastrar_telemetria(socket, id)
@@ -95,5 +100,15 @@ module AnalogicProcess
       end
       $lista_telemetria[index][:socket] = self
     end
+  end
+
+  # Internal : Fecha socket que normalmente foi criado para telemetrias que não ...
+  # ... possuem cadastro no sistema.
+  #
+  # self - Socket
+  # $sockets_conectados - Lista de sockets que estão conectados no momento.
+  def close_socket
+    self.close_connection
+    $sockets_conectados.delete_if {|s| s[:socket] == self }
   end
 end

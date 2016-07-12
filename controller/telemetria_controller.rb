@@ -3,6 +3,11 @@ class TelemetriaController
     return Telemetria.find_by_codigo(params[:codigo_telemetria].to_i)
   end
 
+  # Internal : Verifica se o código da telemetria recebido no pacote está cadastrado...
+  # ,,, como uma Telemetria.
+  #
+  # pacote - Parâmetro contendo o pacote recebido da Telemetria
+  # return Boolean
   def self.verifica_telemetria pacote
     telemetria = Hash.new
     telemetria[:codigo_telemetria] = ProcessarPacotes::obtem_codigo_telemetria(pacote)
