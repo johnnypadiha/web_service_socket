@@ -5,10 +5,17 @@ class GerenteModule < EventMachine::Connection
   def initialize(*args)
     super
     $gerente = self
+    manager_connection
+  end
+
+  def manager_connection
+    EventMachine::PeriodicTimer.new(60) do
+      send_id
+    end
   end
 
   def post_init
-   send_data '<0000>'
+   send_id
   end
 
   def receive_data(data)
@@ -48,5 +55,9 @@ class GerenteModule < EventMachine::Connection
 
     pacote = pacote[8..pacote.size]
     "<#{gerar_check_sum(pacote)}>"
+  end
+
+  def send_id
+    send_data '<0000>'
   end
 end

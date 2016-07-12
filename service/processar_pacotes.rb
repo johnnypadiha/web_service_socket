@@ -154,13 +154,12 @@ class ProcessarPacotes
     telemetria = TelemetriaController::find_telemetria params
     result, id_telemetria = TelemetriaController::atualiza_telemetria telemetria, params
 
-      if result
-        logger.info "Dados da telemetria #{params[:codigo_telemetria]} atualizados com sucesso.".blue
-        return true, id_telemetria
-      else
-        logger.info "Houveram erros ao atualizar dados da telemetria #{params[:codigo_telemetria]}.".red
-        return false
-      end
+    if result
+      logger.info "Dados da telemetria #{params[:codigo_telemetria]} atualizados com sucesso.".blue
+      return true, id_telemetria
+    else
+      logger.info "Houveram erros ao atualizar dados da telemetria #{params[:codigo_telemetria]}.".red
+      return false
     end
   end
 
