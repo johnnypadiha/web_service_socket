@@ -26,15 +26,15 @@ module Logging
  def self.method_missing(prioridade, *args)
    case prioridade
    when :info
-     Logging.logger.info("#{args[0]}")
+     Logging.logger.info("#{args[0]}".green)
    when :debug
-     Logging.logger.debug("#{args[0]}")
+     Logging.logger.debug("#{args[0]}".green)
    when :fatal
-     Logging.logger.fatal("#{args[0]}")
+     Logging.logger.fatal("#{args[0]}".red)
    when :error
-     Logging.logger.error("#{args[0]}")
+     Logging.logger.error("#{args[0]}".red)
    when :warn
-     Logging.logger.warn("#{args[0]}")
+     Logging.logger.warn("#{args[0]}".yellow)
    else
      Logging.logger.fatal("O metodo chamado não existe!")
    end

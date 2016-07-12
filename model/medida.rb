@@ -8,7 +8,6 @@ class Medida < ActiveRecord::Base
   def self.create_medidas(id_telemetria, analogicas, negativas, digitais)
     equipamentos = Equipamento.where(telemetria_id: id_telemetria)
     equipamentos_evento = []
-    persistir_evento = false
 
     equipamentos.each do |equipamento|
       codigos_by_equipamento = EquipamentosCodigo.where(equipamento_id: equipamento.id).includes(:codigo)
@@ -53,19 +52,54 @@ class Medida < ActiveRecord::Base
         medida.codigo_medida = codigo_by_equipamento.codigo.codigo
         ultima_medida ? medida.estado_normal = ultima_medida.estado_normal : medida.estado_normal = nil
 
-        if medida.save
-          persistir_evento = true
-          self.persiste_faixas medida, @faixa, ultima_medida
+        if self.faixas_medidas_mudaram ultima_medida, medida, @faixa
+          if medida.save
+            self.persiste_faixas medida, @faixa, ultima_medida
+          else
+            Logging.info "problemas ao persistir a medida: #{medida.codigo_medida} da telemetria código: #{equipamento.telemetria.codigo}"
+          end
+        else
+          Logging.warn "Não existem mudanças na configuração da medida: #{medida.codigo_medida} da telemetria código: #{equipamento.telemetria.codigo}"
         end
-
       end
     end
       equipamentos_evento = equipamentos_evento.uniq
-      persistir_evento ? (Evento::persiste_evento_configuracao equipamentos_evento) : false
+      if equipamentos_evento.present?
+        Evento::persistir_evento_configuracao equipamentos_evento
+      else
+        Logging.info "É necessário cadastrar um equipamento e/ou pelo menos uma medida para que o evento de configuração seja persistido. Telemetria ID: #{id_telemetria}"
+        return false
+      end
+  end
+
+  # verifica se a media de configuração que esta tentando ser persistida possui algum dado novo ou é igual a ultima enviada
+  # se retornar true é uma sinalização de que a faixa tem novos dados, se não ele é igual a última
+  #
+  # ultima_faixa: contem apenas a faixa verda, por que o pacote de configuração envia apenas esta
+  #
+  def self.faixas_medidas_mudaram ultima_medida, medida, faixa
+    timer = medida.timer
+    codigo = medida.codigo_medida
+    ultima_medida ? (ultimas_faixas = self.busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
+
+    ultima_faixa = ultimas_faixas.first
+    if ultima_faixa.present?
+      if (ultima_faixa.minimo.to_f == faixa[:minimo]) && (ultima_faixa.maximo.to_f == faixa[:maximo]) && (timer == ultima_medida.timer)
+        return false
+      else
+        return true
+      end
+    else
+      return true
+    end
+  end
+
+  def self.busca_faixas_medida medida_id
+    faixas = Faixa.where(medida_id: medida_id).order(:status_faixa)
   end
 
   def self.persiste_faixas medida, faixa, ultima_medida
-    ultima_medida ? ultimas_faixas = Faixa.where(medida_id: ultima_medida.id).order(:status_faixa) : ultimas_faixas = []
+    ultima_medida ? (ultimas_faixas = self.busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
     if medida.codigo_medida[0] == 'D'
       Faixa.create(medida_id: medida.id, status_faixa: 1, disable: false, minimo: faixa[:normal], maximo: faixa[:normal].to_i + 0.99 )
       Faixa.create(medida_id: medida.id, status_faixa: 2, disable: false, minimo: 50, maximo: 51 )

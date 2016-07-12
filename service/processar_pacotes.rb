@@ -81,8 +81,11 @@ class ProcessarPacotes
     result, id_telemetria = ProcessarPacotes::find_and_update_telemetria configuracao[:telemetria]
 
     if result
-      logger.info "Configuração da telemetria #{configuracao[:telemetria][:codigo_telemetria]} processada e persistida com sucesso!".blue
-      Medida::create_medidas id_telemetria, analogicas, negativas, digitais
+      if Medida::create_medidas id_telemetria, analogicas, negativas, digitais
+        logger.info "Configuração da telemetria #{configuracao[:telemetria][:codigo_telemetria]} processada e persistida com sucesso!".blue
+      else
+        logger.info "Problemas ao persistir configuração da telemetria código: #{configuracao[:telemetria][:codigo_telemetria]}".red
+      end
     else
       logger.info "Houveram erros ao persistir o pacote de Configuração da telemetria #{configuracao[:telemetria][:codigo_telemetria]}".red
     end
