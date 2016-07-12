@@ -64,22 +64,23 @@ class Pacotes
     when NORMALIZACAO
       logger.info "="*20
       logger.info("Restauração Instantânea")
-      # medidas = ProcessarPacotes.leituras_instantanea(pacote)
-      # logger.info medidas
-      # Evento.persistir_evento medidas
+      Thread.new do
+        medidas = ProcessarPacotes.leituras_instantanea pacote
+        pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
+        novo_pacote_equipamento = AlarmeNormalizacao.new({pacote: pacote_equipamento}).detectar_alteracao
+        Evento.persistir_evento novo_pacote_equipamento if novo_pacote_equipamento.present?
+      end
       logger.info "="*20
 
     when ALARME_INSTANTANEO
       logger.info "="*20
       logger.info("Alarme Instantâneo")
-      medidas = ProcessarPacotes.leituras_instantanea pacote
-      pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
-
-      novo_pacote_equipamento = AlarmeNormalizacao.new({pacote: pacote_equipamento}).detectar_alteracao
-      Evento.persistir_evento novo_pacote_equipamento if novo_pacote_equipamento.present?
-
-      # logger.info medidas
-      # Evento.persistir_evento medidas
+      Thread.new do
+        medidas = ProcessarPacotes.leituras_instantanea pacote
+        pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
+        novo_pacote_equipamento = AlarmeNormalizacao.new({pacote: pacote_equipamento}).detectar_alteracao
+        Evento.persistir_evento novo_pacote_equipamento if novo_pacote_equipamento.present?
+      end
       logger.info "="*20
 
     when ID_RECEBIDO
