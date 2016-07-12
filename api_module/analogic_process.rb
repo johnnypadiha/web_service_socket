@@ -64,7 +64,7 @@ module AnalogicProcess
 
         if !TelemetriaController::verifica_telemetria data
           logger.fatal "A Telemetria não está cadastrada no sistema e o pacote da mesma foi rejeitado!".red
-          self.close_connection
+          close_socket
           return false
         end
 
@@ -100,5 +100,15 @@ module AnalogicProcess
       end
       $lista_telemetria[index][:socket] = self
     end
+  end
+
+  # Internal : Fecha socket que normalmente foi criado para telemetrias que não ...
+  # ... possuem cadastro no sistema.
+  #
+  # self - Socket
+  # $sockets_conectados - Lista de sockets que estão conectados no momento.
+  def close_socket
+    self.close_connection
+    $sockets_conectados.delete_if {|s| s[:socket] == self }
   end
 end
