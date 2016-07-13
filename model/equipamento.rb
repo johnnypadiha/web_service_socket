@@ -15,7 +15,7 @@ class Equipamento < ActiveRecord::Base
   def medidas_equipamento(evento)
     event = []
     evento.each do |key, value|
-      medida = Medida.includes(:faixas).where(codigo_medida: key.to_s).where(equipamento_id: self.id).last
+      medida = Medida.includes(:faixas).where(id_local: key.to_s).where(equipamento_id: self.id).last
 
       event << medida if medida.present?
     end

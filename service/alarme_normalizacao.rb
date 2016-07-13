@@ -12,14 +12,14 @@ class AlarmeNormalizacao
       equipamento = Equipamento.find(pack[:id_equipamento])
 
       equipamento.medidas_equipamento(pack).each do |medida|
-        faixa_atual = medida.faixas.select {|s| s.minimo.to_i >= pack[medida.codigo_medida.to_sym].to_i && s.maximo.to_i <= pack[medida.codigo_medida.to_sym].to_i}.first
+        faixa_atual = medida.faixas.select {|s| s.minimo.to_i >= pack[medida.id_local.to_sym].to_i && s.maximo.to_i <= pack[medida.id_local.to_sym].to_i}.first
         status_faixa = faixa_atual.present? ? faixa_atual.status_faixa : ALARME
 
         medida_evento = {
                           medida_id: medida.id,
-                          valor: pack[medida.codigo_medida.to_sym],
+                          valor: pack[medida.id_local.to_sym],
                           status_faixa: status_faixa,
-                          codigo_medida: medida.codigo_medida
+                          id_local: medida.id_local
                         }
 
         medidas_eventos_colecao << medida_evento
@@ -36,7 +36,7 @@ class AlarmeNormalizacao
       end
     end
 
-    p novo_pacote
+    novo_pacote
   end
 
   def self.detecta_mudanca_faixa(ultimas_medidas_evento, medidas_colecao)

@@ -3,9 +3,6 @@ require_relative '../service/processar_pacotes.rb'
 require_relative '../controller/telemetria_controller.rb'
 
 class ProcessarPacotes
-  # Alarme Instantâneo
-  # Leitura Instantânea
-  # Periodico
   def self.leituras_instantanea pacote
     medidas = Hash.new
     medidas[:codigo_telemetria] = ProcessarPacotes::obtem_codigo_telemetria pacote
@@ -26,8 +23,6 @@ class ProcessarPacotes
     inicializacao[:data] = Time.now
     inicializacao[:DBM] = ProcessarPacotes::obtem_nivel_sinal pacote
     inicializacao[:leituras] = ProcessarPacotes::obtem_medidas pacote
-    logger.info inicializacao
-
     return inicializacao
   end
 

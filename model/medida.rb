@@ -36,7 +36,7 @@ class Medida < ActiveRecord::Base
             @faixa = v
           end
         end
-        ultima_medida = Medida.where(equipamento_id: equipamento, codigo_medida: codigo_by_equipamento.codigo.codigo).last
+        ultima_medida = Medida.where(equipamento_id: equipamento, id_local: codigo_by_equipamento.codigo.codigo).last
 
         medida.equipamento_id = equipamento.id
         ultima_medida ? medida.nome = ultima_medida.nome : medida.nome = codigo_by_equipamento.codigo.codigo
@@ -49,16 +49,16 @@ class Medida < ActiveRecord::Base
         ultima_medida ? medida.divisor = ultima_medida.divisor : medida.divisor = nil
         ultima_medida ? medida.multiplo = ultima_medida.multiplo : medida.multiplo = nil
         ultima_medida ? medida.indice = ultima_medida.indice : medida.indice = nil
-        medida.codigo_medida = codigo_by_equipamento.codigo.codigo
+        medida.id_local = codigo_by_equipamento.codigo.codigo
 
         if self.faixas_medidas_mudaram ultima_medida, medida, @faixa
           if medida.save
             self.persiste_faixas medida, @faixa, ultima_medida
           else
-            Logging.error "problemas ao persistir a medida: #{medida.codigo_medida} da telemetria código: #{equipamento.telemetria.codigo}"
+            Logging.error "problemas ao persistir a medida: #{medida.id_local} da telemetria código: #{equipamento.telemetria.codigo}"
           end
         else
-          Logging.warn "Não existem mudanças na configuração da medida: #{medida.codigo_medida} da telemetria código: #{equipamento.telemetria.codigo}"
+          Logging.warn "Não existem mudanças na configuração da medida: #{medida.id_local} da telemetria código: #{equipamento.telemetria.codigo}"
         end
       end
     end
@@ -78,7 +78,7 @@ class Medida < ActiveRecord::Base
   #
   def self.faixas_medidas_mudaram ultima_medida, medida, faixa
     timer = medida.timer
-    codigo = medida.codigo_medida
+    codigo = medida.id_local
     ultima_medida ? (ultimas_faixas = self.busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
 
     ultima_faixa = ultimas_faixas.first
@@ -99,7 +99,7 @@ class Medida < ActiveRecord::Base
 
   def self.persiste_faixas medida, faixa, ultima_medida
     ultima_medida ? (ultimas_faixas = self.busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
-    if medida.codigo_medida[0] == 'D'
+    if medida.id_local[0] == 'D'
       Faixa.create(medida_id: medida.id, status_faixa: 1, disable: false, minimo: faixa[:normal], maximo: faixa[:normal].to_i + 0.99 )
       Faixa.create(medida_id: medida.id, status_faixa: 2, disable: false, minimo: 50, maximo: 51 )
       normal = faixa[:normal] == 0 ? 1 : 0
