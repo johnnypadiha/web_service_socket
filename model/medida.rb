@@ -49,7 +49,7 @@ class Medida < ActiveRecord::Base
         ultima_medida ? medida.divisor = ultima_medida.divisor : medida.divisor = nil
         ultima_medida ? medida.multiplo = ultima_medida.multiplo : medida.multiplo = nil
         ultima_medida ? medida.indice = ultima_medida.indice : medida.indice = nil
-        medida.id_local = codigo_by_equipamento.codigo.codigo
+        medida.id_local = self.codigo_to_id_local(codigo_by_equipamento.codigo.codigo)
 
         if self.faixas_medidas_mudaram ultima_medida, medida, @faixa
           if medida.save
@@ -69,6 +69,61 @@ class Medida < ActiveRecord::Base
         Logging.warn "É necessário cadastrar um equipamento e/ou pelo menos uma medida para que o evento de configuração seja persistido. Telemetria ID: #{id_telemetria}"
         return false
       end
+  end
+
+  def self.codigo_to_id_local codigo
+    case codigo
+    when 'A1'
+      return 1
+    when 'A2'
+      return 2
+    when 'A3'
+      return 4
+    when 'A4'
+      return 4
+    when 'A5'
+      return 5
+    when 'A6'
+      return 6
+    when 'A7'
+      return 7
+    when 'A8'
+      return 8
+    when 'A9'
+      return 9
+    when 'A10'
+      return 10
+    when 'A11'
+      return 11
+    when 'A12'
+      return 12
+    when 'A13'
+      return 13
+    when 'A14'
+      return 14
+    when 'A15'
+      return 15
+    when 'A16'
+      return 16
+    when 'N1'
+      return 17
+    when 'N2'
+      return 18
+    when 'N3'
+      return 19
+    when 'N4'
+      return 20
+    when 'D1'
+      return 21
+    when 'D2'
+      return 22
+    when 'D3'
+      return 23
+    when 'D4'
+      return 24
+    else
+      return 0
+    end
   end
 
   # verifica se a media de configuração que esta tentando ser persistida possui algum dado novo ou é igual a ultima enviada
