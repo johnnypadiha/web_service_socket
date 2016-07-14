@@ -99,7 +99,7 @@ class Medida < ActiveRecord::Base
 
   def self.persiste_faixas medida, faixa, ultima_medida
     ultima_medida ? (ultimas_faixas = self.busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
-    if medida.id_local >= 20 and medida.id_local <= 24
+    if medida.id_local >= 21 and medida.id_local <= 24
       Faixa.create(medida_id: medida.id, status_faixa: 1, disable: false, minimo: faixa[:normal], maximo: faixa[:normal].to_i + 0.99 )
       Faixa.create(medida_id: medida.id, status_faixa: 2, disable: false, minimo: 50, maximo: 51 )
       normal = faixa[:normal] == 0 ? 1 : 0
