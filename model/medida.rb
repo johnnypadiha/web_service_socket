@@ -51,6 +51,7 @@ class Medida < ActiveRecord::Base
         indice = codigo_by_equipamento.codigo.id
         indice = indice - 1
         ultima_medida ? medida.indice = ultima_medida.indice : medida.indice = indice
+        ultima_medida ? medida.reporte_medida_id = ultima_medida.reporte_medida_id : medida.reporte_medida_id = nil
         medida.id_local = codigo_by_equipamento.codigo.id
 
         if self.faixas_medidas_mudaram ultima_medida, medida, @faixa
