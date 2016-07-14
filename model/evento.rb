@@ -44,20 +44,24 @@ class Evento < ActiveRecord::Base
           medida_evento.reporte_medida_id = medida.reporte_medida_id
           colecao_medida_evento << medida_evento
       end
-      novo_evento = Evento.new
-      novo_evento.equipamento_id = equipamento.id
-      novo_evento.status_id = Status.find_by_codigo(codigo_evento).id
-      novo_evento.reporte_faixa = reporte_faixa
-      novo_evento.reporte_sinal = reporte_sinal
-      novo_evento.reporte_energia = reporte_energia
-      novo_evento.reporte_temperatura = reporte_temperatura
+      if equipamento_medidas.present?
+        novo_evento = Evento.new
+        novo_evento.equipamento_id = equipamento.id
+        novo_evento.status_id = Status.find_by_codigo(codigo_evento).id
+        novo_evento.reporte_faixa = reporte_faixa
+        novo_evento.reporte_sinal = reporte_sinal
+        novo_evento.reporte_energia = reporte_energia
+        novo_evento.reporte_temperatura = reporte_temperatura
 
-      if novo_evento.save
-        colecao_medida_evento.each do |med_evento|
-          med_evento.evento_id = novo_evento.id
-          med_evento.save
+        if novo_evento.save
+          colecao_medida_evento.each do |med_evento|
+            med_evento.evento_id = novo_evento.id
+            med_evento.save
+          end
+          colecao_medida_evento = []
         end
-        colecao_medida_evento = []
+      else
+        Logging.warn "Evento não foi persistido pois ainda não existem medidas para o equipamento de nome #{equipamento.nome} e ID #{equipamento.id}"
       end
     end
   end
