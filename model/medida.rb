@@ -8,7 +8,7 @@ class Medida < ActiveRecord::Base
   def self.create_medidas(id_telemetria, analogicas, negativas, digitais)
     equipamentos = Equipamento.where(telemetria_id: id_telemetria)
     equipamentos_evento = []
-
+    medidas = []
     equipamentos.each do |equipamento|
       codigos_by_equipamento = EquipamentosCodigo.where(equipamento_id: equipamento.id).includes(:codigo)
 
@@ -53,6 +53,7 @@ class Medida < ActiveRecord::Base
 
         if self.faixas_medidas_mudaram ultima_medida, medida, @faixa
           if medida.save
+            medidas << medida
             self.persiste_faixas medida, @faixa, ultima_medida
           else
             Logging.error "problemas ao persistir a medida: #{medida.id_local} da telemetria código: #{equipamento.telemetria.codigo}"
@@ -64,7 +65,7 @@ class Medida < ActiveRecord::Base
     end
       equipamentos_evento = equipamentos_evento.uniq
       if equipamentos_evento.present?
-        Evento::persiste_evento_configuracao equipamentos_evento
+        Evento::persiste_evento_configuracao equipamentos_evento, medidas
       else
         Logging.warn "É necessário cadastrar um equipamento e/ou pelo menos uma medida para que o evento de configuração seja persistido. Telemetria ID: #{id_telemetria}"
         return false
