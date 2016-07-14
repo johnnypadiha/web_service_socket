@@ -31,31 +31,34 @@ class Pacotes
       logger.info "="*20
 
     when CONFIGURACAO
-      logger.info "="*20
-      logger.info ("Configuração")
-      ProcessarPacotes.configuracao pacote
-      logger.info "="*20
-
-    when INICIALIZACAO
-      logger.info "="*20
-      logger.info ("Inicialização")
-      pacote_processado = ProcessarPacotes.inicializacao pacote
-      unless pacote_processado.blank?
-        pacote_equipamentos = SepararMedidaEquipamento.obter_pacote_equipamento pacote_processado
-        Evento.persistir_inicializacao pacote_equipamentos, pacote_processado unless pacote_equipamentos.blank?
+      Thread.new do
+        logger.info "="*20
+        logger.info ("Configuração")
+        ProcessarPacotes.configuracao pacote
+        logger.info "="*20
       end
-      logger.info "="*20
-
+    when INICIALIZACAO
+      Thread.new do
+        logger.info "="*20
+        logger.info ("Inicialização")
+        pacote_processado = ProcessarPacotes.inicializacao pacote
+        unless pacote_processado.blank?
+          pacote_equipamentos = SepararMedidaEquipamento.obter_pacote_equipamento pacote_processado
+          Evento.persistir_inicializacao pacote_equipamentos, pacote_processado unless pacote_equipamentos.blank?
+        end
+        logger.info "="*20
+      end
     when LEITURA_INSTANTANEA
-      logger.info "="*20
-      logger.info("Leitura Instantânea")
-      medidas = ProcessarPacotes.leituras_instantanea pacote
-      pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
+      Thread.new do
+        logger.info "="*20
+        logger.info("Leitura Instantânea")
+        medidas = ProcessarPacotes.leituras_instantanea pacote
+        pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
 
-      # logger.info medidas
-      Evento.persistir_evento pacote_equipamento
-      logger.info "="*20
-
+        # logger.info medidas
+        Evento.persistir_evento pacote_equipamento
+        logger.info "="*20
+      end
     when CONTAGEM_ALARMAR
       logger.info "="*20
       print('Em contagem para alarmar')
