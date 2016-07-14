@@ -25,7 +25,7 @@ class TelemetriaController
       telemetria.operadora                = params[:operadora] unless params[:operadora].blank?
       telemetria.host_server              = params[:host] unless params[:host].blank?
       telemetria.porta_host               = params[:porta_dns] unless params[:porta_dns].blank?
-      telemetria.periodico                = params[:timer_periodico] unless params[:timer_periodico].blank?
+      telemetria.periodico                = params[:timer_periodico].to_i * 60 unless params[:timer_periodico].blank?
 
       if telemetria.save
         return true, telemetria.id
