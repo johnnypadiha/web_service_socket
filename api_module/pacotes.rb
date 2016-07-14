@@ -10,11 +10,13 @@ class Pacotes
       logger.info "="*20
       logger.info("Periódico OK")
       Thread.new do
-        medidas = ProcessarPacotes.leituras_instantanea pacote
-        pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
+        ActiveRecord::Base.connection_pool.with_connection do
+          medidas = ProcessarPacotes.leituras_instantanea pacote
+          pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
 
-        # logger.info medidas
-        Evento.persistir_evento pacote_equipamento
+          # logger.info medidas
+          Evento.persistir_evento pacote_equipamento
+        end
       end
       logger.info "="*20
 
@@ -22,40 +24,51 @@ class Pacotes
       logger.info "="*20
       logger.info("Periódico Alarmado")
       Thread.new do
-        medidas = ProcessarPacotes.leituras_instantanea pacote
-        pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
+        ActiveRecord::Base.connection_pool.with_connection do
+          medidas = ProcessarPacotes.leituras_instantanea pacote
+          pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
 
-        # logger.info medidas
-        Evento.persistir_evento pacote_equipamento
+          # logger.info medidas
+          Evento.persistir_evento pacote_equipamento
+        end
       end
       logger.info "="*20
 
     when CONFIGURACAO
-      logger.info "="*20
-      logger.info ("Configuração")
-      ProcessarPacotes.configuracao pacote
-      logger.info "="*20
-
-    when INICIALIZACAO
-      logger.info "="*20
-      logger.info ("Inicialização")
-      pacote_processado = ProcessarPacotes.inicializacao pacote
-      unless pacote_processado.blank?
-        pacote_equipamentos = SepararMedidaEquipamento.obter_pacote_equipamento pacote_processado
-        Evento.persistir_inicializacao pacote_equipamentos, pacote_processado unless pacote_equipamentos.blank?
+      Thread.new do
+        ActiveRecord::Base.connection_pool.with_connection do
+          logger.info "="*20
+          logger.info ("Configuração")
+          ProcessarPacotes.configuracao pacote
+          logger.info "="*20
+        end
       end
-      logger.info "="*20
-
+    when INICIALIZACAO
+      Thread.new do
+        ActiveRecord::Base.connection_pool.with_connection do
+          logger.info "="*20
+          logger.info ("Inicialização")
+          pacote_processado = ProcessarPacotes.inicializacao pacote
+          unless pacote_processado.blank?
+            pacote_equipamentos = SepararMedidaEquipamento.obter_pacote_equipamento pacote_processado
+            Evento.persistir_inicializacao pacote_equipamentos, pacote_processado unless pacote_equipamentos.blank?
+          end
+          logger.info "="*20
+        end
+      end
     when LEITURA_INSTANTANEA
-      logger.info "="*20
-      logger.info("Leitura Instantânea")
-      medidas = ProcessarPacotes.leituras_instantanea pacote
-      pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
+      Thread.new do
+        ActiveRecord::Base.connection_pool.with_connection do
+          logger.info "="*20
+          logger.info("Leitura Instantânea")
+          medidas = ProcessarPacotes.leituras_instantanea pacote
+          pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
 
-      # logger.info medidas
-      Evento.persistir_evento pacote_equipamento
-      logger.info "="*20
-
+          # logger.info medidas
+          Evento.persistir_evento pacote_equipamento
+          logger.info "="*20
+        end
+      end
     when CONTAGEM_ALARMAR
       logger.info "="*20
       print('Em contagem para alarmar')
@@ -65,10 +78,12 @@ class Pacotes
       logger.info "="*20
       logger.info("Restauração Instantânea")
       Thread.new do
-        medidas = ProcessarPacotes.leituras_instantanea pacote
-        pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
-        novo_pacote_equipamento = AlarmeNormalizacao.new({pacote: pacote_equipamento}).detectar_alteracao
-        Evento.persistir_evento novo_pacote_equipamento if novo_pacote_equipamento.present?
+        ActiveRecord::Base.connection_pool.with_connection do
+          medidas = ProcessarPacotes.leituras_instantanea pacote
+          pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
+          novo_pacote_equipamento = AlarmeNormalizacao.new({pacote: pacote_equipamento}).detectar_alteracao
+          Evento.persistir_evento novo_pacote_equipamento if novo_pacote_equipamento.present?
+        end
       end
       logger.info "="*20
 
@@ -76,10 +91,12 @@ class Pacotes
       logger.info "="*20
       logger.info("Alarme Instantâneo")
       Thread.new do
-        medidas = ProcessarPacotes.leituras_instantanea pacote
-        pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
-        novo_pacote_equipamento = AlarmeNormalizacao.new({pacote: pacote_equipamento}).detectar_alteracao
-        Evento.persistir_evento novo_pacote_equipamento if novo_pacote_equipamento.present?
+        ActiveRecord::Base.connection_pool.with_connection do
+          medidas = ProcessarPacotes.leituras_instantanea pacote
+          pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
+          novo_pacote_equipamento = AlarmeNormalizacao.new({pacote: pacote_equipamento}).detectar_alteracao
+          Evento.persistir_evento novo_pacote_equipamento if novo_pacote_equipamento.present?
+        end
       end
       logger.info "="*20
 

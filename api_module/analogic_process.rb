@@ -21,62 +21,64 @@ module AnalogicProcess
   end
 
   def receive_data data
-    data.chomp!
-    porta, ip =  Socket.unpack_sockaddr_in(get_peername)
+    Thread.new do
+      data.chomp!
+      porta, ip =  Socket.unpack_sockaddr_in(get_peername)
 
-    logger_socket.info "RECEIVE_DATA ---> #{self}"
-      # valida se o pacote esta vindo em um formato válido Ex: <xxx>
-    if Pacotes.pacote_is_valido data
-      id = data[1..4]
-      if id.to_i == 0
-        cadastrar_telemetria(self, id)
+      logger_socket.info "RECEIVE_DATA ---> #{self}"
+        # valida se o pacote esta vindo em um formato válido Ex: <xxx>
+      if Pacotes.pacote_is_valido data
+        id = data[1..4]
+        if id.to_i == 0
+          cadastrar_telemetria(self, id)
 
-        logger.info "Gerente comunicando..."
+          logger.info "Gerente comunicando..."
 
-        pacote_formatado = Pacotes.formatador data
-        id_telemetria = ProcessarPacotes.obtem_codigo_telemetria(pacote_formatado, 4, 7)
-        telemetria =
-          if id_telemetria.nil?
-            id_telemetria
-          else
-            $lista_telemetria.find { |t| t[:id] == id_telemetria }
-          end
-
-        if telemetria.nil?
-          if id_telemetria == 'xxxx'
-            Saida.create(deleted: false, cancelado: false, codigo_equipamento: 9999, tentativa: 0, tipo_comando: 4)
-            send_data "teste de leitura instantanea requisitada para o id 28".blue
-          else
-            if pacote_formatado.size == 4
-              logger.info "Gerente enviou o ID".blue
+          pacote_formatado = Pacotes.formatador data
+          id_telemetria = ProcessarPacotes.obtem_codigo_telemetria(pacote_formatado, 4, 7)
+          telemetria =
+            if id_telemetria.nil?
+              id_telemetria
             else
-              logger.info "A Telemetria de ID #{id_telemetria} não comunicou com o sistema ou não é uma Telemetria vádia".red
+              $lista_telemetria.find { |t| t[:id] == id_telemetria }
             end
+
+          if telemetria.nil?
+            if id_telemetria == 'xxxx'
+              Saida.create(deleted: false, cancelado: false, codigo_equipamento: 9999, tentativa: 0, tipo_comando: 4)
+              send_data "teste de leitura instantanea requisitada para o id 28".blue
+            else
+              if pacote_formatado.size == 4
+                logger.info "Gerente enviou o ID".blue
+              else
+                logger.info "A Telemetria de ID #{id_telemetria} não comunicou com o sistema ou não é uma Telemetria vádia".red
+              end
+            end
+          else
+            logger.info "Telemetria encontrada #{telemetria}"
+            logger.info "Enviando pacote para telemetria"
+            telemetria[:socket].send_data GerenteModule.obter_pacote(data)
           end
         else
-          logger.info "Telemetria encontrada #{telemetria}"
-          logger.info "Enviando pacote para telemetria"
-          telemetria[:socket].send_data GerenteModule.obter_pacote(data)
+          logger.info "Pacote recebido #{data}".green
+          data = Pacotes::formatador data
+
+          if !TelemetriaController::verifica_telemetria data
+            logger.fatal "A Telemetria não está cadastrada no sistema e o pacote da mesma foi rejeitado!".red
+            close_socket
+            return false
+          end
+
+          cadastrar_telemetria(self, id)
+          # atualização de hora
+          self.send_data Hora.gerar_atualizacao_hora
+          Pacotes.processador data
         end
       else
-        logger.info "Pacote recebido #{data}".green
-        data = Pacotes::formatador data
-
-        if !TelemetriaController::verifica_telemetria data
-          logger.fatal "A Telemetria não está cadastrada no sistema e o pacote da mesma foi rejeitado!".red
-          close_socket
-          return false
-        end
-
-        cadastrar_telemetria(self, id)
-        # atualização de hora
-        self.send_data Hora.gerar_atualizacao_hora
-        Pacotes.processador data
+        logger.info "pacote: #{data}, possui um formato inválido!".yellow
       end
-    else
-      logger.info "pacote: #{data}, possui um formato inválido!".yellow
+        logger.info "Telemetrias conectadas #{$lista_telemetria.size}".green
     end
-      logger.info "Telemetrias conectadas #{$lista_telemetria.size}".green
   end
 
   def unbind
