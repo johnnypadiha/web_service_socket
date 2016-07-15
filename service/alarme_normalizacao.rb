@@ -12,12 +12,12 @@ class AlarmeNormalizacao
       equipamento = Equipamento.find(pack[:id_equipamento])
 
       equipamento.medidas_equipamento(pack).each do |medida|
-        faixa_atual = medida.faixas.select {|s| s.minimo.to_i >= pack[medida.id_local.to_sym].to_i && s.maximo.to_i <= pack[medida.id_local.to_sym].to_i}.first
+        faixa_atual = medida.faixas.select {|s| s.minimo.to_i >= pack[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i && s.maximo.to_i <= pack[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i}.first
         status_faixa = faixa_atual.present? ? faixa_atual.status_faixa : ALARME
 
         medida_evento = {
                           medida_id: medida.id,
-                          valor: pack[medida.id_local.to_sym],
+                          valor: pack[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i,
                           status_faixa: status_faixa,
                           id_local: medida.id_local
                         }
