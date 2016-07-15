@@ -61,7 +61,7 @@ class Evento < ActiveRecord::Base
           colecao_medida_evento = []
         end
       else
-        Logging.warn "Evento não foi persistido pois ainda não existem medidas para o equipamento de nome #{equipamento.nome} e ID #{equipamento.id}"
+        Logging.warn "Evento não foi persistido pois ainda não existem medidas para o equipamento  #{equipamento.nome} e ID #{equipamento.id}"
       end
     end
   end
