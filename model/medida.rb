@@ -36,7 +36,7 @@ class Medida < ActiveRecord::Base
             @faixa = v
           end
         end
-        ultima_medida = Medida.where(equipamento_id: equipamento, id_local: codigo_by_equipamento.codigo.codigo).last
+        ultima_medida = Medida.where(equipamento_id: equipamento, id_local: codigo_by_equipamento.codigo.id).last
 
         medida.equipamento_id = equipamento.id
         ultima_medida ? medida.nome = ultima_medida.nome : medida.nome = codigo_by_equipamento.codigo.codigo
@@ -48,7 +48,10 @@ class Medida < ActiveRecord::Base
         ultima_medida ? medida.grandeza = ultima_medida.grandeza : medida.grandeza = nil
         ultima_medida ? medida.divisor = ultima_medida.divisor : medida.divisor = nil
         ultima_medida ? medida.multiplo = ultima_medida.multiplo : medida.multiplo = nil
-        ultima_medida ? medida.indice = ultima_medida.indice : medida.indice = nil
+        indice = codigo_by_equipamento.codigo.id
+        indice = indice - 1
+        ultima_medida ? medida.indice = ultima_medida.indice : medida.indice = indice
+        ultima_medida ? medida.reporte_medida_id = ultima_medida.reporte_medida_id : medida.reporte_medida_id = nil
         medida.id_local = codigo_by_equipamento.codigo.id
 
         if self.faixas_medidas_mudaram ultima_medida, medida, @faixa
