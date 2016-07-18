@@ -42,23 +42,25 @@ class Medida < ActiveRecord::Base
         end
         ultima_medida = Medida.where(equipamento_id: equipamento, id_local: codigo_by_equipamento.codigo.id).last
 
-        medida.equipamento_id = equipamento.id
-        ultima_medida ? medida.nome = ultima_medida.nome : medida.nome = codigo_by_equipamento.codigo.codigo
-        ultima_medida ? medida.unidade_medida = ultima_medida.unidade_medida : medida.unidade_medida = nil
-        ultima_medida ? medida.reporte_medida_id = ultima_medida.reporte_medida_id : medida.reporte_medida_id = nil
-        medida.disponivel_ambiente = codigo_by_equipamento.disponivel_ambiente
-        ultima_medida ? medida.gauge = ultima_medida.gauge : medida.gauge = nil
-        medida.temperatura_ambiente = codigo_by_equipamento.disponivel_temperatura
-        ultima_medida ? medida.grandeza = ultima_medida.grandeza : medida.grandeza = nil
-        ultima_medida ? medida.divisor = ultima_medida.divisor : medida.divisor = nil
-        ultima_medida ? medida.multiplo = ultima_medida.multiplo : medida.multiplo = nil
+        ultima = ultima_medida.present?
         indice = codigo_by_equipamento.codigo.id
         indice = indice - 1
-        ultima_medida ? medida.indice = ultima_medida.indice : medida.indice = indice
-        ultima_medida ? medida.reporte_medida_id = ultima_medida.reporte_medida_id : medida.reporte_medida_id = nil
-        medida.id_local = codigo_by_equipamento.codigo.id
 
-        if self.faixas_medidas_mudaram ultima_medida, medida, @faixa
+        medida.equipamento_id       = equipamento.id
+        medida.indice               = ultima ? ultima_medida.indice : medida.indice = indice
+        medida.disponivel_ambiente  = codigo_by_equipamento.disponivel_ambiente
+        medida.nome                 = ultima ? ultima_medida.nome : codigo_by_equipamento.codigo.codigo
+        medida.unidade_medida       = ultima ? ultima_medida.unidade_medida : nil
+        medida.reporte_medida_id    = ultima ? ultima_medida.reporte_medida_id : nil
+        medida.gauge                = ultima ? ultima_medida.gauge : nil
+        medida.temperatura_ambiente = codigo_by_equipamento.disponivel_temperatura
+        medida.grandeza             = ultima ? ultima_medida.grandeza : nil
+        medida.divisor              = ultima ? ultima_medida.divisor : nil
+        medida.multiplo             = ultima ? ultima_medida.multiplo : nil
+        medida.reporte_medida_id    = ultima ? ultima_medida.reporte_medida_id : nil
+        medida.id_local             = codigo_by_equipamento.codigo.id
+
+        if Medida::faixas_medidas_mudaram ultima_medida, medida, @faixa
           @mudanca_faixa = true
         end
         @medidas_evento << medida
@@ -71,7 +73,7 @@ class Medida < ActiveRecord::Base
       if @mudanca_faixa
         @medidas.each do |medida|
            medida[:medida].save
-            self.persiste_faixas medida[:medida], medida[:faixa], medida[:ultima_medida]
+            Medida::persiste_faixas medida[:medida], medida[:faixa], medida[:ultima_medida]
         end
         evento = @medidas_evento
       else
@@ -96,7 +98,7 @@ class Medida < ActiveRecord::Base
   def self.faixas_medidas_mudaram ultima_medida, medida, faixa
     timer = medida.timer
     codigo = medida.id_local
-    ultima_medida ? (ultimas_faixas = self.busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
+    ultima_medida ? (ultimas_faixas = Medida::busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
     ultima_faixa = ultimas_faixas.first
 
       if ultima_faixa.present?
@@ -123,17 +125,17 @@ class Medida < ActiveRecord::Base
   end
 
   def self.persiste_faixas medida, faixa, ultima_medida
-    ultima_medida ? (ultimas_faixas = self.busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
+    ultima_medida ? (ultimas_faixas = Medida::busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
 
     if medida.id_local >= INICIO_DIGITAIS and medida.id_local <= FIM_DIGITAIS
-      Faixa.create(medida_id: medida.id, status_faixa: 1, disable: false, minimo: faixa[:normal], maximo: faixa[:normal].to_i + 0.99 )
-      Faixa.create(medida_id: medida.id, status_faixa: 2, disable: false, minimo: 50, maximo: 51 )
+      Faixa.create(medida_id: medida.id, status_faixa: OK, disable: false, minimo: faixa[:normal], maximo: faixa[:normal].to_i + 0.99 )
+      Faixa.create(medida_id: medida.id, status_faixa: ALERTA, disable: false, minimo: 50, maximo: 51 )
       normal = faixa[:normal] == 0 ? 1 : 0
-      Faixa.create(medida_id: medida.id, status_faixa: 3, disable: false, minimo: normal, maximo: normal.to_i + 0.99 )
+      Faixa.create(medida_id: medida.id, status_faixa: ALARME, disable: false, minimo: normal, maximo: normal.to_i + 0.99 )
     else
-      Faixa.create(medida_id: medida.id, status_faixa: 1, disable: false, minimo: faixa[:minimo], maximo: faixa[:maximo] )
-      Faixa.create(medida_id: medida.id, status_faixa: 2, disable: false, minimo: ultimas_faixas[1] ? ultimas_faixas[1].minimo : 0, maximo: ultimas_faixas[1] ? ultimas_faixas[1].maximo : 0 )
-      Faixa.create(medida_id: medida.id, status_faixa: 3, disable: false, minimo: ultimas_faixas[2] ? ultimas_faixas[2].minimo : 0, maximo: ultimas_faixas[2] ? ultimas_faixas[2].maximo : 0  )
+      Faixa.create(medida_id: medida.id, status_faixa: OK, disable: false, minimo: faixa[:minimo], maximo: faixa[:maximo] )
+      Faixa.create(medida_id: medida.id, status_faixa: ALERTA, disable: false, minimo: ultimas_faixas[1] ? ultimas_faixas[1].minimo : 0, maximo: ultimas_faixas[1] ? ultimas_faixas[1].maximo : 0 )
+      Faixa.create(medida_id: medida.id, status_faixa: ALARME, disable: false, minimo: ultimas_faixas[2] ? ultimas_faixas[2].minimo : 0, maximo: ultimas_faixas[2] ? ultimas_faixas[2].maximo : 0  )
     end
   end
 end
