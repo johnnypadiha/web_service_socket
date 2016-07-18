@@ -97,8 +97,7 @@ module AnalogicProcess
       $lista_telemetria[index][:id] = id
       $lista_telemetria[index][:hora] = hora
       if $lista_telemetria[index][:socket] != self
-        logger_socket.info 'Existe um socket antigo e o mesmo será fechado'
-        $lista_telemetria[index][:socket].close_connection
+        close_socket_old $lista_telemetria[index][:socket], id
       end
       $lista_telemetria[index][:socket] = self
     end
@@ -112,5 +111,15 @@ module AnalogicProcess
   def close_socket
     self.close_connection
     $sockets_conectados.delete_if {|s| s[:socket] == self }
+  end
+
+  # Internal : Remove socket antigo da telemetria para evitar socket fantasma.
+  #
+  # socket - Socket da conexão anterior no qual será fechado.
+  # codigo_telemetria - Inteiro contendo o código da telemetria conectada
+  def close_socket_old socket, codigo_telemetria
+    logger_socket.info "Existe um socket antigo da telemetria #{codigo_telemetria} e o mesmo será fechado"
+    socket.close_connection
+    $sockets_conectados.delete_if {|s| s[:socket] == socket }
   end
 end
