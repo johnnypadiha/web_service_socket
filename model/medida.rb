@@ -7,86 +7,90 @@ class Medida < ActiveRecord::Base
 
   def self.create_medidas(id_telemetria, analogicas, negativas, digitais)
     equipamentos = Equipamento.where(telemetria_id: id_telemetria)
-    equipamentos_evento = []
-    @mudanca_faixa = false
-    @medidas = []
-    @medidas_evento = []
-    @ultimas_medidas_evento = []
+    unless equipamentos.blank?
+      equipamentos_evento = []
+      @mudanca_faixa = false
+      @medidas = []
+      @medidas_evento = []
+      @ultimas_medidas_evento = []
 
-    equipamentos.each do |equipamento|
-      codigos_by_equipamento = EquipamentosCodigo.where(equipamento_id: equipamento.id).includes(:codigo)
+      equipamentos.each do |equipamento|
+        codigos_by_equipamento = EquipamentosCodigo.where(equipamento_id: equipamento.id).includes(:codigo)
 
-      codigos_by_equipamento.each do |codigo_by_equipamento|
+        codigos_by_equipamento.each do |codigo_by_equipamento|
 
-        equipamentos_evento.push(codigo_by_equipamento.equipamento_id)
+          equipamentos_evento.push(codigo_by_equipamento.equipamento_id)
 
-        medida = Medida.new
+          medida = Medida.new
 
-        analogicas.each do |k, v|
-          if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
-            medida.timer = v[:timer]
-            @faixa = v
+          analogicas.each do |k, v|
+            if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
+              medida.timer = v[:timer]
+              @faixa = v
+            end
           end
-        end
-        negativas.each do |k, v|
-          if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
-            medida.timer = v[:timer]
-            @faixa = v
+          negativas.each do |k, v|
+            if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
+              medida.timer = v[:timer]
+              @faixa = v
+            end
           end
-        end
-        digitais.each do |k, v|
-          if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
-            medida.timer = v[:timer]
-            @faixa = v
+          digitais.each do |k, v|
+            if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
+              medida.timer = v[:timer]
+              @faixa = v
+            end
           end
+          ultima_medida = Medida.where(equipamento_id: equipamento, id_local: codigo_by_equipamento.codigo.id).last
+
+          ultima = ultima_medida.present?
+          indice = codigo_by_equipamento.codigo.id
+          indice = indice - 1
+
+          medida.equipamento_id       = equipamento.id
+          medida.indice               = ultima ? ultima_medida.indice : medida.indice = indice
+          medida.disponivel_ambiente  = codigo_by_equipamento.disponivel_ambiente
+          medida.nome                 = ultima ? ultima_medida.nome : codigo_by_equipamento.codigo.codigo
+          medida.unidade_medida       = ultima ? ultima_medida.unidade_medida : nil
+          medida.reporte_medida_id    = ultima ? ultima_medida.reporte_medida_id : nil
+          medida.gauge                = ultima ? ultima_medida.gauge : nil
+          medida.temperatura_ambiente = codigo_by_equipamento.disponivel_temperatura
+          medida.grandeza             = ultima ? ultima_medida.grandeza : nil
+          medida.divisor              = ultima ? ultima_medida.divisor : nil
+          medida.multiplo             = ultima ? ultima_medida.multiplo : nil
+          medida.reporte_medida_id    = ultima ? ultima_medida.reporte_medida_id : nil
+          medida.id_local             = codigo_by_equipamento.codigo.id
+
+          if Medida::faixas_medidas_mudaram ultima_medida, medida, @faixa
+            @mudanca_faixa = true
+          end
+          @medidas_evento << medida
+          @ultimas_medidas_evento << ultima_medida
+          @medidas_faixas = {medida: medida, faixa: @faixa, ultima_medida: ultima_medida}
+          @medidas << @medidas_faixas
         end
-        ultima_medida = Medida.where(equipamento_id: equipamento, id_local: codigo_by_equipamento.codigo.id).last
-
-        ultima = ultima_medida.present?
-        indice = codigo_by_equipamento.codigo.id
-        indice = indice - 1
-
-        medida.equipamento_id       = equipamento.id
-        medida.indice               = ultima ? ultima_medida.indice : medida.indice = indice
-        medida.disponivel_ambiente  = codigo_by_equipamento.disponivel_ambiente
-        medida.nome                 = ultima ? ultima_medida.nome : codigo_by_equipamento.codigo.codigo
-        medida.unidade_medida       = ultima ? ultima_medida.unidade_medida : nil
-        medida.reporte_medida_id    = ultima ? ultima_medida.reporte_medida_id : nil
-        medida.gauge                = ultima ? ultima_medida.gauge : nil
-        medida.temperatura_ambiente = codigo_by_equipamento.disponivel_temperatura
-        medida.grandeza             = ultima ? ultima_medida.grandeza : nil
-        medida.divisor              = ultima ? ultima_medida.divisor : nil
-        medida.multiplo             = ultima ? ultima_medida.multiplo : nil
-        medida.reporte_medida_id    = ultima ? ultima_medida.reporte_medida_id : nil
-        medida.id_local             = codigo_by_equipamento.codigo.id
-
-        if Medida::faixas_medidas_mudaram ultima_medida, medida, @faixa
-          @mudanca_faixa = true
-        end
-        @medidas_evento << medida
-        @ultimas_medidas_evento << ultima_medida
-        @medidas_faixas = {medida: medida, faixa: @faixa, ultima_medida: ultima_medida}
-        @medidas << @medidas_faixas
-      end
-    end
-
-      if @mudanca_faixa
-        @medidas.each do |medida|
-           medida[:medida].save
-            Medida::persiste_faixas medida[:medida], medida[:faixa], medida[:ultima_medida]
-        end
-        evento = @medidas_evento
-      else
-        evento = @ultimas_medidas_evento
-        Logging.warn "Não existem mudanças na configuração da telemetria ID #{id_telemetria}"
       end
 
-      equipamentos_evento = equipamentos_evento.uniq
-      if equipamentos_evento.present?
-        Evento::persiste_evento_configuracao equipamentos_evento, evento
+        if @mudanca_faixa
+          @medidas.each do |medida|
+             medida[:medida].save
+              Medida::persiste_faixas medida[:medida], medida[:faixa], medida[:ultima_medida]
+          end
+          evento = @medidas_evento
+        else
+          evento = @ultimas_medidas_evento
+          Logging.warn "Não existem mudanças na configuração da telemetria ID #{id_telemetria}"
+        end
+
+        equipamentos_evento = equipamentos_evento.uniq
+        if equipamentos_evento.present?
+          Evento::persiste_evento_configuracao equipamentos_evento, evento
+        else
+          Logging.warn "É necessário cadastrar um equipamento e/ou pelo menos uma medida para que o evento de configuração seja persistido. Telemetria ID: #{id_telemetria}"
+          return false
+        end
       else
-        Logging.warn "É necessário cadastrar um equipamento e/ou pelo menos uma medida para que o evento de configuração seja persistido. Telemetria ID: #{id_telemetria}"
-        return false
+        Logging.warn "Nenhum equipamento cadastrado para Telemetria ID: #{id_telemetria}"
       end
   end
 
