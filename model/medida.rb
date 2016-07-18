@@ -8,7 +8,11 @@ class Medida < ActiveRecord::Base
   def self.create_medidas(id_telemetria, analogicas, negativas, digitais)
     equipamentos = Equipamento.where(telemetria_id: id_telemetria)
     equipamentos_evento = []
-    medidas = []
+    @mudanca_faixa = false
+    @medidas = []
+    @medidas_evento = []
+    @ultimas_medidas_evento = []
+
     equipamentos.each do |equipamento|
       codigos_by_equipamento = EquipamentosCodigo.where(equipamento_id: equipamento.id).includes(:codigo)
 
@@ -55,20 +59,29 @@ class Medida < ActiveRecord::Base
         medida.id_local = codigo_by_equipamento.codigo.id
 
         if self.faixas_medidas_mudaram ultima_medida, medida, @faixa
-          if medida.save
-            medidas << medida
-            self.persiste_faixas medida, @faixa, ultima_medida
-          else
-            Logging.error "problemas ao persistir a medida: #{medida.id_local} da telemetria código: #{equipamento.telemetria.codigo}"
-          end
-        else
-          Logging.warn "Não existem mudanças na configuração da medida: #{medida.id_local} da telemetria código: #{equipamento.telemetria.codigo}"
+          @mudanca_faixa = true
         end
+        @medidas_evento << medida
+        @ultimas_medidas_evento << ultima_medida
+        @medidas_faixas = {medida: medida, faixa: @faixa, ultima_medida: ultima_medida}
+        @medidas << @medidas_faixas
       end
     end
+
+      if @mudanca_faixa
+        @medidas.each do |medida|
+           medida[:medida].save
+            self.persiste_faixas medida[:medida], medida[:faixa], medida[:ultima_medida]
+        end
+        evento = @medidas_evento
+      else
+        evento = @ultimas_medidas_evento
+        Logging.warn "Não existem mudanças na configuração da telemetria ID #{id_telemetria}"
+      end
+
       equipamentos_evento = equipamentos_evento.uniq
       if equipamentos_evento.present?
-        Evento::persiste_evento_configuracao equipamentos_evento, medidas
+        Evento::persiste_evento_configuracao equipamentos_evento, evento
       else
         Logging.warn "É necessário cadastrar um equipamento e/ou pelo menos uma medida para que o evento de configuração seja persistido. Telemetria ID: #{id_telemetria}"
         return false
@@ -84,17 +97,25 @@ class Medida < ActiveRecord::Base
     timer = medida.timer
     codigo = medida.id_local
     ultima_medida ? (ultimas_faixas = self.busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
-
     ultima_faixa = ultimas_faixas.first
-    if ultima_faixa.present?
-      if (ultima_faixa.minimo.to_f == faixa[:minimo]) && (ultima_faixa.maximo.to_f == faixa[:maximo]) && (timer == ultima_medida.timer)
-        return false
+
+      if ultima_faixa.present?
+        if medida.id_local >= INICIO_DIGITAIS and medida.id_local <= FIM_DIGITAIS
+            if (ultima_faixa.minimo.to_f == faixa[:normal].to_f) && (ultima_faixa.maximo.to_f == faixa[:normal].to_i.to_f + 0.99) && (timer == ultima_medida.timer)
+              return false
+            else
+              return true
+            end
+        else
+          if (ultima_faixa.minimo.to_f == faixa[:minimo].to_f) && (ultima_faixa.maximo.to_f == faixa[:maximo].to_f) && (timer == ultima_medida.timer)
+            return false
+          else
+            return true
+          end
+        end
       else
         return true
       end
-    else
-      return true
-    end
   end
 
   def self.busca_faixas_medida medida_id
@@ -103,7 +124,8 @@ class Medida < ActiveRecord::Base
 
   def self.persiste_faixas medida, faixa, ultima_medida
     ultima_medida ? (ultimas_faixas = self.busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
-    if medida.id_local >= 21 and medida.id_local <= 24
+
+    if medida.id_local >= INICIO_DIGITAIS and medida.id_local <= FIM_DIGITAIS
       Faixa.create(medida_id: medida.id, status_faixa: 1, disable: false, minimo: faixa[:normal], maximo: faixa[:normal].to_i + 0.99 )
       Faixa.create(medida_id: medida.id, status_faixa: 2, disable: false, minimo: 50, maximo: 51 )
       normal = faixa[:normal] == 0 ? 1 : 0
