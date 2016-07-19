@@ -91,10 +91,10 @@ class ProcessarPacotes
     digitais = Hash.new
     QTDE_ANALOGICAS.times do |i|
       fundo_escala = Hash.new
-      fundo_escala[:"minimo"] = BaseConverter.convert_value_dec configuracao_hex[:analogicas][cont ... cont+2]
-      fundo_escala[:"maximo"] = BaseConverter.convert_value_dec configuracao_hex[:analogicas][cont+2 ... cont+4]
-      fundo_escala[:"timer"] = configuracao_hex[:timers_analogicas][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
-      analogicas[:"A#{i+1}"] = fundo_escala
+      fundo_escala[:minimo] = BaseConverter.convert_value_dec configuracao_hex[:analogicas][cont ... cont+2]
+      fundo_escala[:maximo] = BaseConverter.convert_value_dec configuracao_hex[:analogicas][cont+2 ... cont+4]
+      fundo_escala[:timer] = configuracao_hex[:timers_analogicas][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
+      analogicas["A#{i+1}"] = fundo_escala
       time_cont = time_cont+2
       cont = cont+4
     end
@@ -102,22 +102,21 @@ class ProcessarPacotes
     time_cont = 0
     QTDE_NEGATIVAS.times do |i|
       fundo_escala = Hash.new
-      fundo_escala[:"minimo"] = BaseConverter.convert_value_dec configuracao_hex[:negativas][cont ... cont+2]
-      fundo_escala[:"maximo"] = BaseConverter.convert_value_dec configuracao_hex[:negativas][cont+2 ... cont+4]
-      fundo_escala[:"timer"] = configuracao_hex[:timers_negativas][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
-      negativas[:"N#{i+1}"] = fundo_escala
+      fundo_escala[:minimo] = BaseConverter.convert_value_dec configuracao_hex[:negativas][cont ... cont+2]
+      fundo_escala[:maximo] = BaseConverter.convert_value_dec configuracao_hex[:negativas][cont+2 ... cont+4]
+      fundo_escala[:timer] = configuracao_hex[:timers_negativas][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
+      negativas["N#{i+1}"] = fundo_escala
       time_cont = time_cont+2
       cont = cont+4
     end
     time_cont = 0
     QTDE_DIGITAIS.times do |i|
       fundo_escala = Hash.new
-      fundo_escala[:"normal"] = digitais_bin[i-1]
-      fundo_escala[:"timer"] = configuracao_hex[:timers_digitais][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
-      digitais[:"D#{i+1}"] = fundo_escala
+      fundo_escala[:normal] = digitais_bin[i-1]
+      fundo_escala[:timer] = configuracao_hex[:timers_digitais][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
+      digitais["D#{i+1}"] = fundo_escala
       time_cont = time_cont+2
     end
-
      return analogicas, negativas, digitais
   end
 
