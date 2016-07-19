@@ -26,12 +26,6 @@ class ProcessarPacotes
     return inicializacao
   end
 
-  #  1 - operadora = "TIM"
-  #  2 - operadora = "VIVO M2M / SMARTCENTER"
-  #  3 - operadora = "BRASIL TELECOM"
-  #  4 - operadora = "VIVO"
-  #  5 - operadora = "OI"
-
   # Recebe um haxadecimal e converte para String, caso se 0 não tenta converter
   # telemetria[:host] = configuracao_hex[:host].hex == 0 ? 0 : configuracao_hex[:host].split.pack('H*').gsub("\0","")
   def self.configuracao(pacote)
