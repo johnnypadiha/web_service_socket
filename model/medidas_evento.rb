@@ -1,3 +1,4 @@
+require 'pp'
 class MedidasEvento < ActiveRecord::Base
   self.table_name = "main.medidas_eventos"
   belongs_to :evento
@@ -15,11 +16,13 @@ class MedidasEvento < ActiveRecord::Base
     end
   end
 
-  def self.obter_ultimas_medidas_evento(medidas_eventos_colecao)
+  def self.obter_ultimas_medidas_evento(medidas_eventos_colecao, equipamento_id)
+    pp medidas_eventos_colecao
     medidas = []
     MedidasEvento.transaction do
       medidas_eventos_colecao.each do |medida_evento|
-        result = MedidasEvento.joins(:medida).where('main.medidas.id_local = ?', medida_evento[:id_local]).last
+        result = MedidasEvento.where(medida_id: medida_evento[:medida_id]).last
+      
         medidas << result if result.present?
       end
     end
