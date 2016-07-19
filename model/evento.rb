@@ -58,9 +58,11 @@ class Evento < ActiveRecord::Base
             med_evento.save
           end
           colecao_medida_evento = []
+          Logging.info "Evento persistido para o equipamento  #{equipamento.nome} / ID #{equipamento.id}".blue
         end
       else
-        Logging.warn "Evento não foi persistido pois ainda não existem medidas para o equipamento  #{equipamento.nome} e ID #{equipamento.id}"
+        Logging.warn "Evento não foi persistido pois ainda não existem "\
+                     " medidas para o equipamento  #{equipamento.nome} e ID #{equipamento.id}".yellow
       end
     end
   end

@@ -102,7 +102,13 @@ class Pacotes
             medidas = ProcessarPacotes.leituras_instantanea pacote
             pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
             novo_pacote_equipamento = AlarmeNormalizacao.new({pacote: pacote_equipamento}).detectar_alteracao
-            Evento.persistir_evento novo_pacote_equipamento if novo_pacote_equipamento.present?
+            if novo_pacote_equipamento.present?
+              Evento.persistir_evento novo_pacote_equipamento
+            else
+              logger.info "Um pacote de Alarme / normalização foi recebido, "\
+                           "porem não foram detectadas alterações na faixa e o mesmo "\
+                           "foi ignorado".yellow
+            end
           end
         rescue Exception => e
           logger.fatal "Erro ao persistir Restauração Instantânea #{e}".red
@@ -120,7 +126,13 @@ class Pacotes
             medidas = ProcessarPacotes.leituras_instantanea pacote
             pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
             novo_pacote_equipamento = AlarmeNormalizacao.new({pacote: pacote_equipamento}).detectar_alteracao
-            Evento.persistir_evento novo_pacote_equipamento if novo_pacote_equipamento.present?
+            if novo_pacote_equipamento.present?
+              Evento.persistir_evento novo_pacote_equipamento
+            else
+              logger.info "Um pacote de Alarme / normalização foi recebido, "\
+                           "porem não foram detectadas alterações na faixa e o mesmo "\
+                           "foi ignorado".yellow
+            end
           end
         rescue Exception => e
           logger.fatal "Erro ao persistir Alarme Instantâneo #{e}".red
