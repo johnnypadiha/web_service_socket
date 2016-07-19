@@ -40,7 +40,6 @@ class Evento < ActiveRecord::Base
           medida_evento.id_local = medida.id_local
           medida_evento.valor = evento[CODIGOS_MEDIDAS[medida.id_local].to_sym]
           medida_evento.status_faixa = status_faixa
-          medida_evento.reporte_medida_id = medida.reporte_medida_id
           colecao_medida_evento << medida_evento
       end
       if equipamento_medidas.present?
@@ -83,7 +82,6 @@ class Evento < ActiveRecord::Base
              medida_evento.id_local = medida.id_local
              medida_evento.valor = 0
              medida_evento.status_faixa = 1
-             medida_evento.reporte_medida_id = medida.reporte_medida_id
              medida_evento.evento_id = evento.id
              medida_evento.save
            end
