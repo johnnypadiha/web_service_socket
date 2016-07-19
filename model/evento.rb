@@ -75,18 +75,23 @@ class Evento < ActiveRecord::Base
       ultima_inicializacao = Evento.where(status_id: id_inicializacao_analogica, equipamento_id: equipamento, created_at: Time.now().beginning_of_day..Time.now().end_of_day).includes(:status).last
       evento = Evento.create(equipamento_id: equipamento, status_id: id_configuracao_inicial_analogica, reporte_faixa: false, reporte_energia: false, reporte_sinal: false, reporte_temperatura: false, nivel_sinal: ultima_inicializacao ? ultima_inicializacao.nivel_sinal : nil)
 
-     medidas.each do |medida|
-       if medida.equipamento_id == evento.equipamento_id
-         medida_evento = MedidasEvento.new
-         medida_evento.medida_id = medida.id
-         medida_evento.id_local = medida.id_local
-         medida_evento.valor = 0
-         medida_evento.status_faixa = 1
-         medida_evento.reporte_medida_id = medida.reporte_medida_id
-         medida_evento.evento_id = evento.id
-         medida_evento.save
-       end
-     end
+      if evento.present?
+        medidas.each do |medida|
+           if medida.equipamento_id == evento.equipamento_id
+             medida_evento = MedidasEvento.new
+             medida_evento.medida_id = medida.id
+             medida_evento.id_local = medida.id_local
+             medida_evento.valor = 0
+             medida_evento.status_faixa = 1
+             medida_evento.reporte_medida_id = medida.reporte_medida_id
+             medida_evento.evento_id = evento.id
+             medida_evento.save
+           end
+        end
+      else
+        Logging.warn "Configuração não persistida"\
+                     "para o equipamento  ID #{equipamento}".yellow
+      end
 
     end
   end
