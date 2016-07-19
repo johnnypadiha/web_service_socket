@@ -7,71 +7,90 @@ class Medida < ActiveRecord::Base
 
   def self.create_medidas(id_telemetria, analogicas, negativas, digitais)
     equipamentos = Equipamento.where(telemetria_id: id_telemetria)
-    equipamentos_evento = []
-    medidas = []
-    equipamentos.each do |equipamento|
-      codigos_by_equipamento = EquipamentosCodigo.where(equipamento_id: equipamento.id).includes(:codigo)
+    unless equipamentos.blank?
+      equipamentos_evento = []
+      @mudanca_faixa = false
+      @medidas = []
+      @medidas_evento = []
+      @ultimas_medidas_evento = []
 
-      codigos_by_equipamento.each do |codigo_by_equipamento|
+      equipamentos.each do |equipamento|
+        codigos_by_equipamento = EquipamentosCodigo.where(equipamento_id: equipamento.id).includes(:codigo)
 
-        equipamentos_evento.push(codigo_by_equipamento.equipamento_id)
+        codigos_by_equipamento.each do |codigo_by_equipamento|
 
-        medida = Medida.new
+          equipamentos_evento.push(codigo_by_equipamento.equipamento_id)
 
-        analogicas.each do |k, v|
-          if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
-            medida.timer = v[:timer]
-            @faixa = v
+          medida = Medida.new
+
+          analogicas.each do |k, v|
+            if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
+              medida.timer = v[:timer]
+              @faixa = v
+            end
           end
-        end
-        negativas.each do |k, v|
-          if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
-            medida.timer = v[:timer]
-            @faixa = v
+          negativas.each do |k, v|
+            if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
+              medida.timer = v[:timer]
+              @faixa = v
+            end
           end
-        end
-        digitais.each do |k, v|
-          if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
-            medida.timer = v[:timer]
-            @faixa = v
+          digitais.each do |k, v|
+            if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
+              medida.timer = v[:timer]
+              @faixa = v
+            end
           end
-        end
-        ultima_medida = Medida.where(equipamento_id: equipamento, id_local: codigo_by_equipamento.codigo.id).last
+          ultima_medida = Medida.where(equipamento_id: equipamento, id_local: codigo_by_equipamento.codigo.id).last
 
-        medida.equipamento_id = equipamento.id
-        ultima_medida ? medida.nome = ultima_medida.nome : medida.nome = codigo_by_equipamento.codigo.codigo
-        ultima_medida ? medida.unidade_medida = ultima_medida.unidade_medida : medida.unidade_medida = nil
-        ultima_medida ? medida.reporte_medida_id = ultima_medida.reporte_medida_id : medida.reporte_medida_id = nil
-        medida.disponivel_ambiente = codigo_by_equipamento.disponivel_ambiente
-        ultima_medida ? medida.gauge = ultima_medida.gauge : medida.gauge = nil
-        medida.temperatura_ambiente = codigo_by_equipamento.disponivel_temperatura
-        ultima_medida ? medida.grandeza = ultima_medida.grandeza : medida.grandeza = nil
-        ultima_medida ? medida.divisor = ultima_medida.divisor : medida.divisor = nil
-        ultima_medida ? medida.multiplo = ultima_medida.multiplo : medida.multiplo = nil
-        indice = codigo_by_equipamento.codigo.id
-        indice = indice - 1
-        ultima_medida ? medida.indice = ultima_medida.indice : medida.indice = indice
-        ultima_medida ? medida.reporte_medida_id = ultima_medida.reporte_medida_id : medida.reporte_medida_id = nil
-        medida.id_local = codigo_by_equipamento.codigo.id
+          ultima = ultima_medida.present?
+          indice = codigo_by_equipamento.codigo.id
+          indice = indice - 1
 
-        if self.faixas_medidas_mudaram ultima_medida, medida, @faixa
-          if medida.save
-            medidas << medida
-            self.persiste_faixas medida, @faixa, ultima_medida
-          else
-            Logging.error "problemas ao persistir a medida: #{medida.id_local} da telemetria código: #{equipamento.telemetria.codigo}"
+          medida.equipamento_id       = equipamento.id
+          medida.indice               = ultima ? ultima_medida.indice : medida.indice = indice
+          medida.disponivel_ambiente  = codigo_by_equipamento.disponivel_ambiente
+          medida.nome                 = ultima ? ultima_medida.nome : codigo_by_equipamento.codigo.codigo
+          medida.unidade_medida       = ultima ? ultima_medida.unidade_medida : nil
+          medida.reporte_medida_id    = ultima ? ultima_medida.reporte_medida_id : nil
+          medida.gauge                = ultima ? ultima_medida.gauge : nil
+          medida.temperatura_ambiente = codigo_by_equipamento.disponivel_temperatura
+          medida.grandeza             = ultima ? ultima_medida.grandeza : nil
+          medida.divisor              = ultima ? ultima_medida.divisor : nil
+          medida.multiplo             = ultima ? ultima_medida.multiplo : nil
+          medida.reporte_medida_id    = ultima ? ultima_medida.reporte_medida_id : nil
+          medida.id_local             = codigo_by_equipamento.codigo.id
+
+          if Medida::faixas_medidas_mudaram ultima_medida, medida, @faixa
+            @mudanca_faixa = true
           end
-        else
-          Logging.warn "Não existem mudanças na configuração da medida: #{medida.id_local} da telemetria código: #{equipamento.telemetria.codigo}"
+          @medidas_evento << medida
+          @ultimas_medidas_evento << ultima_medida
+          @medidas_faixas = {medida: medida, faixa: @faixa, ultima_medida: ultima_medida}
+          @medidas << @medidas_faixas
         end
       end
-    end
-      equipamentos_evento = equipamentos_evento.uniq
-      if equipamentos_evento.present?
-        Evento::persiste_evento_configuracao equipamentos_evento, medidas
+
+        if @mudanca_faixa
+          @medidas.each do |medida|
+             medida[:medida].save
+              Medida::persiste_faixas medida[:medida], medida[:faixa], medida[:ultima_medida]
+          end
+          evento = @medidas_evento
+        else
+          evento = @ultimas_medidas_evento
+          Logging.warn "Não existem mudanças na configuração da telemetria ID #{id_telemetria}"
+        end
+
+        equipamentos_evento = equipamentos_evento.uniq
+        if equipamentos_evento.present?
+          Evento::persiste_evento_configuracao equipamentos_evento, evento
+        else
+          Logging.warn "É necessário cadastrar um equipamento e/ou pelo menos uma medida para que o evento de configuração seja persistido. Telemetria ID: #{id_telemetria}"
+          return false
+        end
       else
-        Logging.warn "É necessário cadastrar um equipamento e/ou pelo menos uma medida para que o evento de configuração seja persistido. Telemetria ID: #{id_telemetria}"
-        return false
+        Logging.warn "Nenhum equipamento cadastrado para Telemetria ID: #{id_telemetria}"
       end
   end
 
@@ -83,18 +102,26 @@ class Medida < ActiveRecord::Base
   def self.faixas_medidas_mudaram ultima_medida, medida, faixa
     timer = medida.timer
     codigo = medida.id_local
-    ultima_medida ? (ultimas_faixas = self.busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
-
+    ultima_medida ? (ultimas_faixas = Medida::busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
     ultima_faixa = ultimas_faixas.first
-    if ultima_faixa.present?
-      if (ultima_faixa.minimo.to_f == faixa[:minimo]) && (ultima_faixa.maximo.to_f == faixa[:maximo]) && (timer == ultima_medida.timer)
-        return false
+
+      if ultima_faixa.present?
+        if medida.id_local >= INICIO_DIGITAIS and medida.id_local <= FIM_DIGITAIS
+            if (ultima_faixa.minimo.to_f == faixa[:normal].to_f) && (ultima_faixa.maximo.to_f == faixa[:normal].to_i.to_f + 0.99) && (timer == ultima_medida.timer)
+              return false
+            else
+              return true
+            end
+        else
+          if (ultima_faixa.minimo.to_f == faixa[:minimo].to_f) && (ultima_faixa.maximo.to_f == faixa[:maximo].to_f) && (timer == ultima_medida.timer)
+            return false
+          else
+            return true
+          end
+        end
       else
         return true
       end
-    else
-      return true
-    end
   end
 
   def self.busca_faixas_medida medida_id
@@ -102,16 +129,17 @@ class Medida < ActiveRecord::Base
   end
 
   def self.persiste_faixas medida, faixa, ultima_medida
-    ultima_medida ? (ultimas_faixas = self.busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
-    if medida.id_local >= 21 and medida.id_local <= 24
-      Faixa.create(medida_id: medida.id, status_faixa: 1, disable: false, minimo: faixa[:normal], maximo: faixa[:normal].to_i + 0.99 )
-      Faixa.create(medida_id: medida.id, status_faixa: 2, disable: false, minimo: 50, maximo: 51 )
+    ultima_medida ? (ultimas_faixas = Medida::busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
+
+    if medida.id_local >= INICIO_DIGITAIS and medida.id_local <= FIM_DIGITAIS
+      Faixa.create(medida_id: medida.id, status_faixa: OK, disable: false, minimo: faixa[:normal], maximo: faixa[:normal].to_i + 0.99 )
+      Faixa.create(medida_id: medida.id, status_faixa: ALERTA, disable: false, minimo: 50, maximo: 51 )
       normal = faixa[:normal] == 0 ? 1 : 0
-      Faixa.create(medida_id: medida.id, status_faixa: 3, disable: false, minimo: normal, maximo: normal.to_i + 0.99 )
+      Faixa.create(medida_id: medida.id, status_faixa: ALARME, disable: false, minimo: normal, maximo: normal.to_i + 0.99 )
     else
-      Faixa.create(medida_id: medida.id, status_faixa: 1, disable: false, minimo: faixa[:minimo], maximo: faixa[:maximo] )
-      Faixa.create(medida_id: medida.id, status_faixa: 2, disable: false, minimo: ultimas_faixas[1] ? ultimas_faixas[1].minimo : 0, maximo: ultimas_faixas[1] ? ultimas_faixas[1].maximo : 0 )
-      Faixa.create(medida_id: medida.id, status_faixa: 3, disable: false, minimo: ultimas_faixas[2] ? ultimas_faixas[2].minimo : 0, maximo: ultimas_faixas[2] ? ultimas_faixas[2].maximo : 0  )
+      Faixa.create(medida_id: medida.id, status_faixa: OK, disable: false, minimo: faixa[:minimo], maximo: faixa[:maximo] )
+      Faixa.create(medida_id: medida.id, status_faixa: ALERTA, disable: false, minimo: ultimas_faixas[1] ? ultimas_faixas[1].minimo : 0, maximo: ultimas_faixas[1] ? ultimas_faixas[1].maximo : 0 )
+      Faixa.create(medida_id: medida.id, status_faixa: ALARME, disable: false, minimo: ultimas_faixas[2] ? ultimas_faixas[2].minimo : 0, maximo: ultimas_faixas[2] ? ultimas_faixas[2].maximo : 0  )
     end
   end
 end

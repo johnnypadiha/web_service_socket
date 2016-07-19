@@ -14,12 +14,10 @@ class Pacotes
           ActiveRecord::Base.connection_pool.with_connection do
             medidas = ProcessarPacotes.leituras_instantanea pacote
             pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
-
-            # logger.info medidas
             Evento.persistir_evento pacote_equipamento
           end
         rescue Exception => e
-          logger.fatal "Erro ao persistir leitura instantanea #{e}".red
+          logger.fatal "Erro ao persistir Periódico OK #{e}".red
           logger.fatal "Exception aconteceu em: #{e.backtrace[0]}".red
         end
       end
@@ -33,12 +31,10 @@ class Pacotes
           ActiveRecord::Base.connection_pool.with_connection do
             medidas = ProcessarPacotes.leituras_instantanea pacote
             pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
-
-            # logger.info medidas
             Evento.persistir_evento pacote_equipamento
           end
         rescue Exception => e
-          logger.fatal "Erro ao persistir leitura instantanea #{e}".red
+          logger.fatal "Erro ao persistir Periódico Alarmado #{e}".red
           logger.fatal "Exception aconteceu em: #{e.backtrace[0]}".red
         end
       end
@@ -54,7 +50,7 @@ class Pacotes
             logger.info "="*20
           end
         rescue Exception => e
-          logger.fatal "Erro ao persistir leitura instantanea #{e}".red
+          logger.fatal "Erro ao persistir Configuração #{e}".red
           logger.fatal "Exception aconteceu em: #{e.backtrace[0]}".red
         end
       end
@@ -72,7 +68,7 @@ class Pacotes
             logger.info "="*20
           end
         rescue Exception => e
-          logger.fatal "Erro ao persistir leitura instantanea #{e}".red
+          logger.fatal "Erro ao persistir Inicialização #{e}".red
           logger.fatal "Exception aconteceu em: #{e.backtrace[0]}".red
         end
       end
@@ -84,8 +80,6 @@ class Pacotes
             logger.info("Leitura Instantânea")
             medidas = ProcessarPacotes.leituras_instantanea pacote
             pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
-
-            # logger.info medidas
             Evento.persistir_evento pacote_equipamento
             logger.info "="*20
           end
@@ -111,7 +105,7 @@ class Pacotes
             Evento.persistir_evento novo_pacote_equipamento if novo_pacote_equipamento.present?
           end
         rescue Exception => e
-          logger.fatal "Erro ao persistir leitura instantanea #{e}".red
+          logger.fatal "Erro ao persistir Restauração Instantânea #{e}".red
           logger.fatal "Exception aconteceu em: #{e.backtrace[0]}".red
         end
       end
@@ -129,7 +123,7 @@ class Pacotes
             Evento.persistir_evento novo_pacote_equipamento if novo_pacote_equipamento.present?
           end
         rescue Exception => e
-          logger.fatal "Erro ao persistir leitura instantanea #{e}".red
+          logger.fatal "Erro ao persistir Alarme Instantâneo #{e}".red
           logger.fatal "Exception aconteceu em: #{e.backtrace[0]}".red
         end
       end

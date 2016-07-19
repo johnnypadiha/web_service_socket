@@ -21,14 +21,8 @@ class MedidasEvento < ActiveRecord::Base
     medidas = []
     MedidasEvento.transaction do
       medidas_eventos_colecao.each do |medida_evento|
-        p "-------------"
-        puts "#{medida_evento[:id_local]} -- ID LOCAL"
-        pp result = MedidasEvento.where(medida_id: medida_evento[:medida_id]).last
-        # pp result = MedidasEvento.joins(:medida, medida: :equipamento)
-        #                          .where('main.medidas.id_local = ?', medida_evento[:id_local])
-        #                          .where('main.medidas_eventos.id_local = ?', medida_evento[:id_local])
-        #                          .where('main.equipamentos.id = ?', equipamento_id).last
-        p '-------------'
+        result = MedidasEvento.where(medida_id: medida_evento[:medida_id]).last
+      
         medidas << result if result.present?
       end
     end
