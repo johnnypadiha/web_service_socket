@@ -27,12 +27,27 @@ class ProcessarPacotes
     return inicializacao
   end
 
+  def self.configuracao pacote
+    configuracao_hex, telemetria = ProcessarPacotes::divide_pacote(pacote)
+    analogicas, negativas, digitais = ProcessarPacotes.processa_configuracao configuracao_hex
+    result, id_telemetria = ProcessarPacotes::find_and_update_telemetria telemetria
+
+    if result
+      if Medida::create_medidas id_telemetria, analogicas, negativas, digitais
+        logger.info "Configuração da telemetria #{telemetria[:codigo_telemetria]} processada e persistida com sucesso!".blue
+      else
+        logger.info "Problemas ao persistir configuração da telemetria código: #{telemetria[:codigo_telemetria]}".red
+      end
+    else
+      logger.info "Houveram erros ao persistir o pacote de Configuração da telemetria #{telemetria[:codigo_telemetria]}".red
+    end
+  end
+
   # Recebe um haxadecimal e converte para String, caso se 0 não tenta converter
   # telemetria[:host] = configuracao_hex[:host].hex == 0 ? 0 : configuracao_hex[:host].split.pack('H*').gsub("\0","")
-  def self.configuracao(pacote)
+  def self.divide_pacote(pacote)
     configuracao_hex = Hash.new
     telemetria = Hash.new
-    configuracao = Hash.new
     configuracao_hex[:analogicas] = pacote[10..73]
     configuracao_hex[:negativas] = pacote[74..90]
     configuracao_hex[:digitais] = pacote[91..91]
@@ -65,20 +80,7 @@ class ProcessarPacotes
     telemetria[:porta_dns] = configuracao_hex[:porta_dns].hex
     telemetria[:timer_periodico] = configuracao_hex[:timer_periodico].hex / BASE_SEGUNDOS
 
-    analogicas, negativas, digitais = ProcessarPacotes.processa_configuracao configuracao_hex
-    configuracao[:telemetria] = telemetria
-
-    result, id_telemetria = ProcessarPacotes::find_and_update_telemetria configuracao[:telemetria]
-
-    if result
-      if Medida::create_medidas id_telemetria, analogicas, negativas, digitais
-        logger.info "Configuração da telemetria #{configuracao[:telemetria][:codigo_telemetria]} processada e persistida com sucesso!".blue
-      else
-        logger.info "Problemas ao persistir configuração da telemetria código: #{configuracao[:telemetria][:codigo_telemetria]}".red
-      end
-    else
-      logger.info "Houveram erros ao persistir o pacote de Configuração da telemetria #{configuracao[:telemetria][:codigo_telemetria]}".red
-    end
+    return configuracao_hex, telemetria
   end
 
   #digitais_bin = pega o Hexa converte para binario, garante que ele tenha 4 digitos e pega as 4 posições
