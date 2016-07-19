@@ -17,12 +17,11 @@ class MedidasEvento < ActiveRecord::Base
   end
 
   def self.obter_ultimas_medidas_evento(medidas_eventos_colecao, equipamento_id)
-    pp medidas_eventos_colecao
     medidas = []
     MedidasEvento.transaction do
       medidas_eventos_colecao.each do |medida_evento|
         result = MedidasEvento.where(medida_id: medida_evento[:medida_id]).last
-      
+
         medidas << result if result.present?
       end
     end

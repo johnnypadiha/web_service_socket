@@ -51,10 +51,6 @@ class AlarmeNormalizacao
             when OK
               tipo_pacote = PACOTE_NORMALIZACAO unless tipo_pacote == PACOTE_ALERTA && tipo_pacote == PACOTE_ALARME
             when ALERTA
-              p "ALERTA"
-              p "ALERTA"
-              p "ALERTA"
-              p "ALERTA"
               tipo_pacote = PACOTE_ALERTA unless tipo_pacote == PACOTE_ALARME
             when ALARME
               tipo_pacote = PACOTE_ALARME
@@ -69,25 +65,16 @@ class AlarmeNormalizacao
 
 
   def self.obter_tipo_pacote(tipo_pacote, pacote)
-    p "*"*12
-    p tipo_pacote
-    p "*"*12
-    p medidas_em_alarme = pacote.select {|s| s[:status_faixa].to_i == ALARME}
-    p medidas_em_alerta = pacote.select {|s| s[:status_faixa].to_i == ALERTA}
-    p medidas_normalizadas = pacote.select {|s| s[:status_faixa].to_i == OK}
+    medidas_em_alarme = pacote.select {|s| s[:status_faixa].to_i == ALARME}
+    medidas_em_alerta = pacote.select {|s| s[:status_faixa].to_i == ALERTA}
+    medidas_normalizadas = pacote.select {|s| s[:status_faixa].to_i == OK}
     case tipo_pacote.to_i
     when PACOTE_NORMALIZACAO
       tipo_pacote = PACOTE_NORMALIZACAO_ALERTA if medidas_em_alerta.present?
       tipo_pacote = PACOTE_NORMALIZACAO_ALARME if medidas_em_alarme.present?
-      p "*"*5
-      p tipo_pacote
-      p "*"*5
     when PACOTE_ALERTA
       tipo_pacote = PACOTE_ALERTA_OK if medidas_normalizadas.present?
       tipo_pacote = PACOTE_ALERTA_ALARME if medidas_em_alarme.present?
-      p "*"*5
-      p tipo_pacote
-      p "*"*5
     end
 
     tipo_pacote
