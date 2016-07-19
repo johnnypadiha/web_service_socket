@@ -36,7 +36,7 @@ class ProcessarPacotes
       if Medida::create_medidas id_telemetria, analogicas, negativas, digitais
         logger.info "Configuração da telemetria #{telemetria[:codigo_telemetria]} processada e persistida com sucesso!".blue
       else
-        logger.info "Problemas ao persistir configuração da telemetria código: #{telemetria[:codigo_telemetria]}".red
+        logger.fatal "Problemas ao persistir configuração da telemetria código: #{telemetria[:codigo_telemetria]}".red
       end
     else
       logger.info "Houveram erros ao persistir o pacote de Configuração da telemetria #{telemetria[:codigo_telemetria]}".red
