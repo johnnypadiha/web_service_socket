@@ -14,7 +14,8 @@ class TelemetriaController
   # return Boolean
   def self.verifica_telemetria pacote
     codigo = ProcessarPacotes::obtem_codigo_telemetria(pacote)
-    return TelemetriaController.find_by_codigo(codigo).present? ? true : false
+    telemetria_existe = TelemetriaController.find_by_codigo(codigo).present? ? true : false
+    return telemetria_existe, codigo
   end
 
   def self.atualiza_telemetria(telemetria, params)
