@@ -64,11 +64,9 @@ module AnalogicProcess
           data = Pacotes::formatador data
 
           telemetria_existe, codigo = TelemetriaController::verifica_telemetria data
-
-          if telemetria_existe
-            return true
-          else
+          if !telemetria_existe
             logger.fatal "A Telemetria código: #{codigo} não está cadastrada no sistema e o pacote da mesma foi rejeitado!".red
+            close_socket
             return false
           end
 
