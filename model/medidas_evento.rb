@@ -1,4 +1,3 @@
-require 'pp'
 class MedidasEvento < ActiveRecord::Base
   self.table_name = "main.medidas_eventos"
   belongs_to :evento
