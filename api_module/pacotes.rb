@@ -100,14 +100,17 @@ class Pacotes
         begin
           ActiveRecord::Base.connection_pool.with_connection do
             medidas = ProcessarPacotes.leituras_instantanea pacote
-            pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
-            novo_pacote_equipamento = AlarmeNormalizacao.new({pacote: pacote_equipamento}).detectar_alteracao
-            if novo_pacote_equipamento.present?
-              Evento.persistir_evento novo_pacote_equipamento
-            else
-              logger.info "Um pacote de Alarme / normalização foi recebido, "\
-                           "porem não foram detectadas alterações na faixa e o mesmo "\
-                           "foi ignorado".yellow
+            if medidas.present?
+              pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
+              if pacote_equipamento.present?
+                novo_pacote_equipamento = AlarmeNormalizacao.new({pacote: pacote_equipamento}).detectar_alteracao
+                if novo_pacote_equipamento.present?
+                  Evento.persistir_evento novo_pacote_equipamento
+                else
+                  logger.info "A telemetria #{ProcessarPacotes.obtem_codigo_telemetria pacote} enviou um pacote, "\
+                               "e o mesmo foi ignorado".yellow
+                end
+              end
             end
           end
         rescue Exception => e
@@ -124,14 +127,17 @@ class Pacotes
         begin
           ActiveRecord::Base.connection_pool.with_connection do
             medidas = ProcessarPacotes.leituras_instantanea pacote
-            pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
-            novo_pacote_equipamento = AlarmeNormalizacao.new({pacote: pacote_equipamento}).detectar_alteracao
-            if novo_pacote_equipamento.present?
-              Evento.persistir_evento novo_pacote_equipamento
-            else
-              logger.info "Um pacote de Alarme / normalização foi recebido, "\
-                           "porem não foram detectadas alterações na faixa e o mesmo "\
-                           "foi ignorado".yellow
+            if medidas.present?
+              pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
+              if pacote_equipamento.present?
+                novo_pacote_equipamento = AlarmeNormalizacao.new({pacote: pacote_equipamento}).detectar_alteracao
+                if novo_pacote_equipamento.present?
+                  Evento.persistir_evento novo_pacote_equipamento
+                else
+                  logger.info "A telemetria #{ProcessarPacotes.obtem_codigo_telemetria pacote} enviou um pacote, "\
+                               "e o mesmo foi ignorado".yellow
+                end
+              end
             end
           end
         rescue Exception => e

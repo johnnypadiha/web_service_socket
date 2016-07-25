@@ -11,28 +11,35 @@ class AlarmeNormalizacao
     pacote.each do |pack|
       equipamento = Equipamento.find(pack[:id_equipamento])
 
-      equipamento.medidas_equipamento(pack).each do |medida|
-        faixa_atual = medida.faixas.select {|s| pack[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i >= s.minimo.to_i && pack[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i <= s.maximo.to_i}.first
-        status_faixa = faixa_atual.present? ? faixa_atual.status_faixa : ALARME
 
-        medida_evento = {
-                          medida_id: medida.id,
-                          valor: pack[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i,
-                          status_faixa: status_faixa,
-                          id_local: medida.id_local
-                        }
+      if equipamento.medidas_equipamento(pack).present?
+        equipamento.medidas_equipamento(pack).each do |medida|
+          faixa_atual = medida.faixas.select {|s| pack[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i >= s.minimo.to_i && pack[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i <= s.maximo.to_i}.first
+          status_faixa = faixa_atual.present? ? faixa_atual.status_faixa : ALARME
 
-        medidas_eventos_colecao << medida_evento
-      end
+          medida_evento = {
+                            medida_id: medida.id,
+                            valor: pack[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i,
+                            status_faixa: status_faixa,
+                            id_local: medida.id_local
+                          }
 
-      ultimas_medidas_evento = MedidasEvento.obter_ultimas_medidas_evento medidas_eventos_colecao, pack[:id_equipamento]
+          medidas_eventos_colecao << medida_evento
+        end
 
-      mudou_faixa, tipo_pacote = AlarmeNormalizacao.detecta_mudanca_faixa ultimas_medidas_evento, medidas_eventos_colecao
+        ultimas_medidas_evento = MedidasEvento.obter_ultimas_medidas_evento medidas_eventos_colecao, pack[:id_equipamento]
 
-      if mudou_faixa
-        codigo_pacote = AlarmeNormalizacao.obter_tipo_pacote tipo_pacote, medidas_eventos_colecao
-        pack[:tipo_pacote] = codigo_pacote
-        novo_pacote << pack
+        mudou_faixa, tipo_pacote = AlarmeNormalizacao.detecta_mudanca_faixa ultimas_medidas_evento, medidas_eventos_colecao
+
+        if mudou_faixa
+          codigo_pacote = AlarmeNormalizacao.obter_tipo_pacote tipo_pacote, medidas_eventos_colecao
+          pack[:tipo_pacote] = codigo_pacote
+          novo_pacote << pack
+        end
+      else
+        logger.info "Um pacote foi recebido e ignorado, "\
+                     "Pois ainda não existem medidas relacionadas ao equipamento "\
+                     "Nome : #{equipamento.nome} / ID: #{equipamento.id}".yellow
       end
     end
 

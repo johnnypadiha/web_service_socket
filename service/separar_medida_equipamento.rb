@@ -13,7 +13,13 @@ class SepararMedidaEquipamento
         eqm[cod.codigo.to_sym] = medidas[:leituras][cod.codigo.to_sym]
       end
 
-      evento << eqm
+      if equipamento.codigos.present?
+        evento << eqm
+      else
+        logger.info "Um pacote foi recebido e ignorado, "\
+                     "Pois ainda não existem medidas associadas ao equipamento "\
+                     "Nome : #{equipamento.nome} / ID: #{equipamento.id}".yellow
+      end
       eqm = {}
     end
     evento

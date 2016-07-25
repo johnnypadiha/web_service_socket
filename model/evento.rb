@@ -50,6 +50,7 @@ class Evento < ActiveRecord::Base
         novo_evento.reporte_sinal = reporte_sinal
         novo_evento.reporte_energia = reporte_energia
         novo_evento.reporte_temperatura = reporte_temperatura
+        novo_evento.nivel_sinal = evento[:DBM]
 
         if novo_evento.save
           colecao_medida_evento.each do |med_evento|
