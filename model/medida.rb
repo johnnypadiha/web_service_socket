@@ -46,14 +46,19 @@ class Medida < ActiveRecord::Base
           ultima = ultima_medida.present?
           indice = codigo_by_equipamento.codigo.id
           indice = indice - 1
-
+          gauge =
+            if ultima
+              ultima_medida.gauge.present? ? ultima_medida.gauge : 'digital'
+            else
+              'digital'
+            end
           medida.equipamento_id       = equipamento.id
           medida.indice               = ultima ? ultima_medida.indice : medida.indice = indice
           medida.disponivel_ambiente  = codigo_by_equipamento.disponivel_ambiente
           medida.nome                 = ultima ? ultima_medida.nome : codigo_by_equipamento.codigo.codigo
           medida.unidade_medida       = ultima ? ultima_medida.unidade_medida : nil
           medida.reporte_medida_id    = ultima ? ultima_medida.reporte_medida_id : nil
-          medida.gauge                = ultima ? ultima_medida.gauge : nil
+          medida.gauge                = gauge
           medida.temperatura_ambiente = codigo_by_equipamento.disponivel_temperatura
           medida.grandeza             = ultima ? ultima_medida.grandeza : nil
           medida.divisor              = ultima ? ultima_medida.divisor : nil
