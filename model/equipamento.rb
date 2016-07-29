@@ -11,6 +11,12 @@ class Equipamento < ActiveRecord::Base
           class_name: "Codigo",
           :through => :equipamentos_codigos
 
+  has_many :medidas_equipamentos
+
+  has_many :medidas,
+    class_name: "Medida",
+    dependent: :destroy,
+    through: :medidas_equipamentos
 
   def medidas_equipamento(evento)
     event = []

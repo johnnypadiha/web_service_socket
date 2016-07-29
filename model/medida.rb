@@ -1,9 +1,17 @@
+require 'pp'
 class Medida < ActiveRecord::Base
   self.table_name = 'main.medidas'
 
   belongs_to :equipamento
   has_many :medidas_eventos
   has_many :faixas
+
+  has_many :medidas_equipamentos
+
+  has_many :equipamentos,
+    class_name: "Equipamento",
+    dependent: :destroy,
+    :through => :medidas_equipamentos
 
   def self.create_medidas(id_telemetria, analogicas, negativas, digitais)
     equipamentos = Equipamento.where(telemetria_id: id_telemetria)
@@ -15,69 +23,45 @@ class Medida < ActiveRecord::Base
       @ultimas_medidas_evento = []
 
       equipamentos.each do |equipamento|
-        codigos_by_equipamento = EquipamentosCodigo.where(equipamento_id: equipamento.id).includes(:codigo)
+        equipamentos_evento << equipamento.id
+        total_medidas_telemetria = [analogicas, negativas, digitais].inject(&:merge)
 
-        codigos_by_equipamento.each do |codigo_by_equipamento|
+        #
+        codigos_equipamentos_unicos =
+          equipamento.equipamentos_codigos
+                     .where(disponivel_ambiente: false)
+                     .where(equipamento_id: equipamento.id)
+                     .includes(:codigo)
+        codigos_equipamentos_comuns =
+          equipamento.equipamentos_codigos
+                     .where(disponivel_ambiente: true)
+                     .where(equipamento_id: equipamento.id)
+                     .includes(:codigo)
+        #
+        codigos_equipamentos_completo = { comuns: codigos_equipamentos_comuns, unicas: codigos_equipamentos_unicos}
 
-          equipamentos_evento.push(codigo_by_equipamento.equipamento_id)
-
-          medida = Medida.new
-
-          analogicas.each do |k, v|
-            if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
-              medida.timer = v[:timer]
-              @faixa = v
-            end
+        codigos_equipamentos_completo.each do |k, v|
+          pacote = nil
+          comum = nil
+          if k.to_s == 'comuns'
+            pacote = v
+            comum = true
+          else
+            pacote = v
+            comum = false
           end
-          negativas.each do |k, v|
-            if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
-              medida.timer = v[:timer]
-              @faixa = v
-            end
-          end
-          digitais.each do |k, v|
-            if k.to_s == codigo_by_equipamento.codigo.codigo.to_s
-              medida.timer = v[:timer]
-              @faixa = v
-            end
-          end
-          ultima_medida = Medida.where(equipamento_id: equipamento, id_local: codigo_by_equipamento.codigo.id).last
-
-          ultima = ultima_medida.present?
-          indice = codigo_by_equipamento.codigo.id
-          indice = indice - 1
-          gauge =
-            if ultima
-              ultima_medida.gauge.present? ? ultima_medida.gauge : 'digital'
-            else
-              'digital'
-            end
-          medida.equipamento_id       = equipamento.id
-          medida.indice               = ultima ? ultima_medida.indice : medida.indice = indice
-          medida.disponivel_ambiente  = codigo_by_equipamento.disponivel_ambiente
-          medida.nome                 = ultima ? ultima_medida.nome : codigo_by_equipamento.codigo.codigo
-          medida.unidade_medida       = ultima ? ultima_medida.unidade_medida : nil
-          medida.reporte_medida_id    = ultima ? ultima_medida.reporte_medida_id : nil
-          medida.gauge                = gauge
-          medida.temperatura_ambiente = codigo_by_equipamento.disponivel_temperatura
-          medida.grandeza             = ultima ? ultima_medida.grandeza : nil
-          medida.divisor              = ultima ? ultima_medida.divisor : nil
-          medida.multiplo             = ultima ? ultima_medida.multiplo : nil
-          medida.reporte_medida_id    = ultima ? ultima_medida.reporte_medida_id : nil
-          medida.id_local             = codigo_by_equipamento.codigo.id
-
-          if Medida::faixas_medidas_mudaram ultima_medida, medida, @faixa
-            @mudanca_faixa = true
-          end
-          @medidas_evento << medida
-          @ultimas_medidas_evento << ultima_medida
-          @medidas_faixas = {medida: medida, faixa: @faixa, ultima_medida: ultima_medida}
-          @medidas << @medidas_faixas
+          mudanca_faixa, medidas_evento, ultimas_medidas_evento, medidas_faixas =
+            Medida.processar_valores_configuracao(total_medidas_telemetria, pacote, equipamento, @mudanca_faixa, comum)
+            @mudanca_faixa = mudanca_faixa
+            @medidas_evento << medidas_evento
+            @ultimas_medidas_evento << ultimas_medidas_evento
+            @medidas << medidas_faixas
         end
+        pp @medidas
       end
 
         if @mudanca_faixa
-          @medidas.each do |medida|
+          @medidas.compact.each do |medida|
              medida[:medida].save
               Medida::persiste_faixas medida[:medida], medida[:faixa], medida[:ultima_medida]
           end
@@ -98,7 +82,70 @@ class Medida < ActiveRecord::Base
         Logging.warn "Nenhum equipamento cadastrado para Telemetria ID: #{id_telemetria}"
       end
   end
+  def self.extrair_medidas(pacote, codigo)
+    if pacote.has_key?(codigo)
+      return pacote[codigo][:timer], pacote[codigo]
+    end
+  end
 
+  def self.processar_valores_configuracao(total_medidas_telemetria, medidas_equipamento, equipamento, mudanca_faixa, medidas_comum = false)
+    medidas_equipamento.each do |codigo_by_equipamento|
+      timer, @faixa = Medida.extrair_medidas(total_medidas_telemetria, codigo_by_equipamento.codigo.codigo)
+      # Não consigo pegar esta medida pois não tenho o ID do equipamento
+      ultima_medida = Medida.where(equipamento_id: equipamento, id_local: codigo_by_equipamento.codigo.id).last
+
+      indice = codigo_by_equipamento.codigo.id
+      indice = indice - 1
+
+      medida = Medida.inicializar_medida ultima_medida, codigo_by_equipamento, equipamento.id, medidas_comum, indice, timer
+
+
+      if Medida::faixas_medidas_mudaram ultima_medida, medida, @faixa
+        mudanca_faixa = true
+      end
+      medidas_evento = medida
+      ultimas_medidas_evento = ultima_medida
+      medidas_faixas = {medida: medida, faixa: @faixa, ultima_medida: ultima_medida}
+        p "mudança de faixa"
+        p mudanca_faixa
+        p "mudança evento"
+        p medidas_evento
+        p "mudança medidas_evento"
+        p ultimas_medidas_evento
+        p "medida faixa"
+        p medidas_faixas
+
+      return mudanca_faixa, medidas_evento, ultimas_medidas_evento, medidas_faixas
+    end
+  end
+
+  def self.inicializar_medida(ultima_medida, codigo_by_equipamento, equipamento_id, medidas_comum, indice, timer)
+    equipamento_id = nil if medidas_comum
+    gauge =
+      if ultima_medida.present?
+        ultima_medida.gauge.present? ? ultima_medida.gauge : 'digital'
+      else
+        'digital'
+      end
+
+    medida = Medida.new
+    medida.equipamento_id       = equipamento_id
+    medida.indice               = ultima_medida.present? ? ultima_medida.indice : indice
+    medida.disponivel_ambiente  = codigo_by_equipamento.disponivel_ambiente
+    medida.nome                 = ultima_medida.present? ? ultima_medida.nome : codigo_by_equipamento.codigo.codigo
+    medida.unidade_medida       = ultima_medida.present? ? ultima_medida.unidade_medida : nil
+    medida.reporte_medida_id    = ultima_medida.present? ? ultima_medida.reporte_medida_id : nil
+    medida.gauge                = gauge
+    medida.temperatura_ambiente = codigo_by_equipamento.disponivel_temperatura
+    medida.grandeza             = ultima_medida.present? ? ultima_medida.grandeza : nil
+    medida.divisor              = ultima_medida.present? ? ultima_medida.divisor : nil
+    medida.multiplo             = ultima_medida.present? ? ultima_medida.multiplo : nil
+    medida.reporte_medida_id    = ultima_medida.present? ? ultima_medida.reporte_medida_id : nil
+    medida.id_local             = codigo_by_equipamento.codigo.id
+    medida.timer                = timer
+
+    medida
+  end
   # verifica se a media de configuração que esta tentando ser persistida possui algum dado novo ou é igual a ultima enviada
   # se retornar true é uma sinalização de que a faixa tem novos dados, se não ele é igual a última
   #
