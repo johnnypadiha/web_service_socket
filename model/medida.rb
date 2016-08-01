@@ -46,24 +46,36 @@ class Medida < ActiveRecord::Base
           ultima = ultima_medida.present?
           indice = codigo_by_equipamento.codigo.id
           indice = indice - 1
-          gauge =
-            if ultima
-              ultima_medida.gauge.present? ? ultima_medida.gauge : 'digital'
+          if ultima
+            gauge = ultima_medida.gauge.present? ? ultima_medida.gauge : 'analogico'
+              if ultima_medida.reporte_medida_id.present?
+                reporte_medida_id = ultima_medida.reporte_medida_id
+              elsif codigo_by_equipamento.codigo.id == 20
+                reporte_medida_id = 4
+              else
+                reporte_medida_id = 1
+              end
+          else
+            if codigo_by_equipamento.codigo.id == 20
+              gauge = 'temperatura'
+              reporte_medida_id = 4
             else
-              'digital'
+              gauge = 'analogico'
+              reporte_medida_id = 1
             end
+          end
+
           medida.equipamento_id       = equipamento.id
           medida.indice               = ultima ? ultima_medida.indice : medida.indice = indice
           medida.disponivel_ambiente  = codigo_by_equipamento.disponivel_ambiente
           medida.nome                 = ultima ? ultima_medida.nome : codigo_by_equipamento.codigo.codigo
           medida.unidade_medida       = ultima ? ultima_medida.unidade_medida : nil
-          medida.reporte_medida_id    = ultima ? ultima_medida.reporte_medida_id : nil
+          medida.reporte_medida_id = reporte_medida_id.to_i
           medida.gauge                = gauge
           medida.temperatura_ambiente = codigo_by_equipamento.disponivel_temperatura
           medida.grandeza             = ultima ? ultima_medida.grandeza : nil
           medida.divisor              = ultima ? ultima_medida.divisor : nil
           medida.multiplo             = ultima ? ultima_medida.multiplo : nil
-          medida.reporte_medida_id    = ultima ? ultima_medida.reporte_medida_id : nil
           medida.id_local             = codigo_by_equipamento.codigo.id
 
           if Medida::faixas_medidas_mudaram ultima_medida, medida, @faixa
