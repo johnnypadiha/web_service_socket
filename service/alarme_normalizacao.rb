@@ -11,7 +11,6 @@ class AlarmeNormalizacao
     pacote.each do |pack|
       equipamento = Equipamento.find(pack[:id_equipamento])
 
-
       if equipamento.medidas_equipamento(pack).present?
         equipamento.medidas_equipamento(pack).each do |medida|
           faixa_atual = medida.faixas.select {|s| pack[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i >= s.minimo.to_i && pack[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i <= s.maximo.to_i}.first
@@ -35,7 +34,10 @@ class AlarmeNormalizacao
           codigo_pacote = AlarmeNormalizacao.obter_tipo_pacote tipo_pacote, medidas_eventos_colecao
           pack[:tipo_pacote] = codigo_pacote
           novo_pacote << pack
+        else
+          logger.info "Um pacote de normalização foi recebido e ignorado, pois não ocorreram mudanças nas faixas"
         end
+
       else
         logger.info "Um pacote foi recebido e ignorado, "\
                      "Pois ainda não existem medidas relacionadas ao equipamento "\
