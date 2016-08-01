@@ -46,22 +46,28 @@ class Medida < ActiveRecord::Base
           ultima = ultima_medida.present?
           indice = codigo_by_equipamento.codigo.id
           indice = indice - 1
+
           if ultima
             gauge = ultima_medida.gauge.present? ? ultima_medida.gauge : 'analogico'
               if ultima_medida.reporte_medida_id.present?
                 reporte_medida_id = ultima_medida.reporte_medida_id
-              elsif codigo_by_equipamento.codigo.id == 20
-                reporte_medida_id = 4
+              elsif codigo_by_equipamento.codigo.id == TEMPERATURA_DEFAULT
+                reporte_medida_id = REPORTE_TEMPERATURA
+              elsif codigo_by_equipamento.codigo.id >= INICIO_DIGITAIS
+                reporte_medida_id = REPORTE_ENERGIA
               else
-                reporte_medida_id = 1
+                reporte_medida_id = REPORTE_FAIXA
               end
           else
-            if codigo_by_equipamento.codigo.id == 20
+            if codigo_by_equipamento.codigo.id == TEMPERATURA_DEFAULT
               gauge = 'temperatura'
-              reporte_medida_id = 4
+              reporte_medida_id = REPORTE_TEMPERATURA
+            elsif codigo_by_equipamento.codigo.id >= INICIO_DIGITAIS
+              reporte_medida_id = REPORTE_ENERGIA
+              gauge = 'led'
             else
               gauge = 'analogico'
-              reporte_medida_id = 1
+              reporte_medida_id = REPORTE_FAIXA
             end
           end
 
