@@ -106,10 +106,7 @@ class Pacotes
                 novo_pacote_equipamento = AlarmeNormalizacao.new({pacote: pacote_equipamento}).detectar_alteracao
                 if novo_pacote_equipamento.present?
                   Evento.persistir_evento novo_pacote_equipamento
-                else
-                  logger.info "A telemetria #{ProcessarPacotes.obtem_codigo_telemetria pacote} enviou um pacote, "\
-                               "e o mesmo foi ignorado".yellow
-                end
+                  end
               end
             end
           end
@@ -133,9 +130,6 @@ class Pacotes
                 novo_pacote_equipamento = AlarmeNormalizacao.new({pacote: pacote_equipamento}).detectar_alteracao
                 if novo_pacote_equipamento.present?
                   Evento.persistir_evento novo_pacote_equipamento
-                else
-                  logger.info "A telemetria #{ProcessarPacotes.obtem_codigo_telemetria pacote} enviou um pacote, "\
-                               "e o mesmo foi ignorado".yellow
                 end
               end
             end

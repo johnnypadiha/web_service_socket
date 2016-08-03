@@ -1,6 +1,5 @@
 # encoding: utf-8
 require_relative '../service/selecionar_pacote.rb'
-
 class Evento < ActiveRecord::Base
   self.table_name = 'main.eventos'
 
@@ -58,11 +57,13 @@ class Evento < ActiveRecord::Base
             med_evento.save
           end
           colecao_medida_evento = []
-          Logging.info "Evento persistido para o equipamento  #{equipamento.nome} / ID #{equipamento.id}".blue
+          Logging.info "Evento persistido para o equipamento  #{equipamento.nome}"\
+                       " / ID #{equipamento.id} / Telemetria #{evento[:codigo_telemetria]}".blue
         end
       else
         Logging.warn "Evento não foi persistido pois ainda não existem "\
-                     " medidas para o equipamento  #{equipamento.nome} e ID #{equipamento.id}".yellow
+                     " medidas para o equipamento  #{equipamento.nome} e ID #{equipamento.id} "\
+                     "/ Telemetria #{evento[:codigo_telemetria]}".yellow
       end
     end
   end

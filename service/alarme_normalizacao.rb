@@ -35,11 +35,15 @@ class AlarmeNormalizacao
           pack[:tipo_pacote] = codigo_pacote
           novo_pacote << pack
         else
-          logger.info "Um pacote de normalização foi recebido e ignorado, pois não ocorreram mudanças nas faixas"
+          logger.info "A Telemetria #{pack[:codigo_telemetria]} Enviou Um "\
+                       "pacote de normalização  para o equipamento: "\
+                       "foi recebido e ignorado, Nome : #{equipamento.nome} / ID: #{equipamento.id}"\
+                       " pois não ocorreram mudanças nas faixas".yellow
         end
 
       else
-        logger.info "Um pacote foi recebido e ignorado, "\
+        logger.info  "A Telemetria #{pack[:codigo_telemetria]} Enviou Um "\
+                     "pacote e o mesmo foi ignorado, "\
                      "Pois ainda não existem medidas relacionadas ao equipamento "\
                      "Nome : #{equipamento.nome} / ID: #{equipamento.id}".yellow
       end
