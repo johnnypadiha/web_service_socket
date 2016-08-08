@@ -10,6 +10,10 @@ development:
   <<: *default
   database: telemetria_development
 
+test:
+  <<: *default
+  database: telemetria_test
+
 production:
   <<: *default
   # host: 45.55.233.137
