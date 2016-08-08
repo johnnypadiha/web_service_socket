@@ -73,6 +73,7 @@ module AnalogicProcess
           cadastrar_telemetria(self, id)
           # atualização de hora
           self.send_data Hora.gerar_atualizacao_hora
+          self.send_data '<499702FFFE>'
           Pacotes.processador data
         end
       else
