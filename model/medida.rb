@@ -65,6 +65,9 @@ class Medida < ActiveRecord::Base
             elsif codigo_by_equipamento.codigo.id >= INICIO_DIGITAIS
               reporte_medida_id = REPORTE_ENERGIA
               gauge = 'led'
+            elsif (codigo_by_equipamento.codigo.id >= INICIO_NEGATIVAS and codigo_by_equipamento.codigo.id < FIM_NEGATIVAS)
+              reporte_medida_id = REPORTE_FAIXA
+              gauge = 'digital'
             else
               gauge = 'analogico'
               reporte_medida_id = REPORTE_FAIXA
