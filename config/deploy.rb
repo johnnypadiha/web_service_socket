@@ -16,7 +16,7 @@ namespace :deploy do
   task :update do
     invoke 'deploy:stop'
     invoke 'deploy:update_code'
-    invoke 'deploy:migrate'
+    # invoke 'deploy:migrate'
     invoke 'deploy:start'
   end
 
@@ -28,11 +28,11 @@ namespace :deploy do
     end
   end
 
-  task :migrate do
-    on roles(:web), in: :sequence, wait: 5 do
-      execute "cd #{deploy_to} && bundle exec rake db:migrate RAILS_ENV=production"
-    end
-  end
+  # task :migrate do
+  #   on roles(:web), in: :sequence, wait: 5 do
+  #     execute "cd #{deploy_to} && bundle exec rake db:migrate RAILS_ENV=production"
+  #   end
+  # end
 
   task :start do
     on roles(:web) do
