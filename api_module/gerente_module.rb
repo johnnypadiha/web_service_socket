@@ -38,7 +38,7 @@ class GerenteModule < EventMachine::Connection
   # ... telemetria
   #
   def self.checar_saida
-    saida = SaidasAnalogica.where('cancelado = ? and data_processamento is ?', false, nil).first
+    saida = Saida.where('cancelado = ? and data_processamento is ? and modelo_id = ?', false, nil, 1).first
     GerenteModule.processar_comandos(saida) if saida
   end
 
