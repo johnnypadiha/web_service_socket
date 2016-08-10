@@ -40,23 +40,19 @@ module AnalogicProcess
             if id_telemetria.nil?
               id_telemetria
             else
+              id_telemetria
               $lista_telemetria.find { |t| t[:id] == id_telemetria }
             end
 
           if telemetria.nil?
-            if id_telemetria == 'xxxx'
-              Saida.create(deleted: false, cancelado: false, codigo_equipamento: 9999, tentativa: 0, tipo_comando: 4)
-              send_data "teste de leitura instantanea requisitada para o id 28".blue
+            if pacote_formatado.size == 4
+              logger.info "Gerente enviou o ID".blue
             else
-              if pacote_formatado.size == 4
-                logger.info "Gerente enviou o ID".blue
-              else
-                logger.info "A Telemetria de ID #{id_telemetria} não comunicou com o sistema ou não é uma Telemetria vádia".red
-              end
+              logger.info "A Telemetria de ID #{id_telemetria} não comunicou com o sistema ou não é uma Telemetria válida".red
             end
           else
             logger.info "Telemetria encontrada #{telemetria}"
-            logger.info "Enviando pacote para telemetria"
+            logger.info "Enviando pacote para telemetria código: #{telemetria[:id]}"
             telemetria[:socket].send_data GerenteModule.obter_pacote(data)
           end
         else
@@ -71,9 +67,7 @@ module AnalogicProcess
           end
 
           cadastrar_telemetria(self, id)
-          # atualização de hora
           self.send_data Hora.gerar_atualizacao_hora
-          self.send_data '<499702FFFE>'
           Pacotes.processador data
         end
       else

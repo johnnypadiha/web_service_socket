@@ -123,7 +123,7 @@ class Medida < ActiveRecord::Base
   # verifica se a media de configuração que esta tentando ser persistida possui algum dado novo ou é igual a ultima enviada
   # se retornar true é uma sinalização de que a faixa tem novos dados, se não ele é igual a última
   #
-  # ultima_faixa: contem apenas a faixa verda, por que o pacote de configuração envia apenas esta
+  # ultima_faixa: contem apenas a faixa verde, por que o pacote de configuração envia apenas esta
   #
   def self.faixas_medidas_mudaram ultima_medida, medida, faixa
     timer = medida.timer

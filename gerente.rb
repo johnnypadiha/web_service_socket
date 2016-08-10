@@ -19,10 +19,10 @@ class Gerente
         logger.info "Exception during event: #{e.message} (#{e.class})".red
         logger.info (e.backtrace || [])[0..10].join("\n")
       end
-      # @timer = EventMachine::PeriodicTimer.new(30) do
-        # logger.info "Checando tabela de saida...."
-        # GerenteModule.checar_saida
-      # end
+      @timer = EventMachine::PeriodicTimer.new(5) do
+        logger.info "Checando tabela de saida...."
+        GerenteModule.checar_saida
+      end
       EventMachine::connect @ip, @porta, GerenteModule
     }
   end
