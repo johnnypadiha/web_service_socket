@@ -9,6 +9,7 @@ class SepararMedidaEquipamento
       eqm[:codigo_telemetria] = medidas[:codigo_telemetria]
       eqm[:DBM] = medidas[:DBM]
       eqm[:codigo_pacote] = medidas[:tipo_pacote]
+      eqm[:telemetria_codigo] = telemetria.codigo
       referencia_medidas.each do |cod|
         eqm[cod.codigo.to_sym] = medidas[:leituras][cod.codigo.to_sym]
       end
