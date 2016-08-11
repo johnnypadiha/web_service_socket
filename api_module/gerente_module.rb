@@ -61,6 +61,9 @@ class GerenteModule < EventMachine::Connection
       when RESET_TELEMETRY
         logger.info "Tentativa de envio de RESET para telemetria código: #{codigo_telemetria}"
         $gerente.send_data reset_telemetry codigo_telemetria
+      when INSTANT_READING
+        logger.info "Tentativa de envio de LEITURA INSTANTANEA para a telemetria código: #{codigo_telemetria}"
+        $gerente.send_data instant_reading codigo_telemetria
       # when 04
       #   id_telemetria = saida.codigo_equipamento.to_s.rjust(4,'0')
       #   logger.info id_telemetria
@@ -81,6 +84,15 @@ class GerenteModule < EventMachine::Connection
   #
   def self.reset_telemetry codigo_telemetria, codigo_gerente = '0000'
     code = "<#{codigo_gerente}#{codigo_telemetria}02FFFE>"
+  end
+
+  # Internal : Gera o pacote inicial para leitura instantanea de uma telemetria
+  #            em AnalogicProcess::receive_data
+  #
+  # code - pacote de leitura instantânea da telemetria montado
+  #
+  def self.instant_reading codigo_telemetria, codigo_gerente = '0000'
+    code = "<#{codigo_gerente}#{codigo_telemetria}02FFFF>"
   end
 
   # Internal - Gera o pacote final que sera enviado para a telemetria já com o

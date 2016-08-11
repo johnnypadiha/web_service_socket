@@ -93,3 +93,4 @@ TEMPERATURA_DEFAULT = 20
 #limite de tentativas de processamento da tabela saída analógica
 LIMITE_TENTIVAS = 5
 RESET_TELEMETRY = 1
+INSTANT_READING = 2

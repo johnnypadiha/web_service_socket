@@ -26,7 +26,7 @@ module AnalogicProcess
       porta, ip =  Socket.unpack_sockaddr_in(get_peername)
 
       logger_socket.info "RECEIVE_DATA ---> #{self}"
-        # valida se o pacote esta vindo em um formato válido Ex: <xxx>
+      # valida se o pacote esta vindo em um formato válido Ex: <xxx>
       if Pacotes.pacote_is_valido data
         id = data[1..4]
         if id.to_i == 0
