@@ -63,13 +63,17 @@ class GerenteModule < EventMachine::Connection
         $gerente.send_data reset_telemetry codigo_telemetria
       when INSTANT_READING
         logger.info "Tentativa de envio de LEITURA INSTANTANEA para a telemetria código: #{codigo_telemetria}"
-        $gerente.send_data instant_reading codigo_telemetria
+        if $gerente.send_data instant_reading codigo_telemetria
+          logger.info "Enviado com sucesso!"
+          saida.update(data_processamento: Time.now)
+        else
+          logger.info "Erro ao Enviar!"
+        end
       # when 04
       #   id_telemetria = saida.codigo_equipamento.to_s.rjust(4,'0')
       #   logger.info id_telemetria
       #
       #   if $gerente.send_data "<0000#{id_telemetria}02FFFF>"
-      #     saida.update(data_processamento: Time.now)
       #   end
       end
     else
