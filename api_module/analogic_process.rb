@@ -20,6 +20,12 @@ module AnalogicProcess
     logger_socket.info "POST_INIT ---> #{self}"
   end
 
+  # Internal : "À definir..."
+  #
+  # status_command - resultado da execução do método do Event Machine "send_data"
+  #                  se a tentativa de envio for para um socket já desconectado
+  #                  o reultado será um número negativo, geralmente "-1"
+  #
   def receive_data data
     Thread.new do
       data.chomp!
@@ -51,9 +57,14 @@ module AnalogicProcess
               logger.info "A Telemetria de ID #{id_telemetria} não comunicou com o sistema ou não é uma Telemetria válida".red
             end
           else
-            logger.info "Telemetria encontrada #{telemetria}"
-            logger.info "Enviando pacote para telemetria código: #{telemetria[:id]}"
-            telemetria[:socket].send_data GerenteModule.obter_pacote(data)
+
+            status_command = telemetria[:socket].send_data GerenteModule.obter_pacote(data)
+            if status_command > 0
+              logger.info "Enviando pacote: #{pacote} para telemetria código: #{telemetria[:id]}"
+            else
+              logger.info "Falha ao enviar pacote: #{pacote} para telemetria código: #{telemetria[:id]}, provavelmente socket OFF ou zumbi".red
+            end
+
           end
         else
           logger.info "Pacote recebido #{data}".green

@@ -123,6 +123,49 @@ class ProcessarPacotes
      return analogicas, negativas, digitais
   end
 
+  # Internal - Responsável por verificar na tabela de saída se a resposta de uma
+  #            uma telemetria pertence a algum comando que esta pendente na mesma
+  #
+  # codigo_telemetria - codigo da telemetria proveniente do pacote
+  # telemetry - Chave primária da telemetria do qual pertence o pacote
+  # pacote - pacote proveniente da telemetria contendo todos os dados de resposta
+  #          de um comando que foi solicitado anteriormente
+  #
+  def self.processa_confirmacao_comandos pacote
+    codigo_telemetria = ProcessarPacotes.obtem_codigo_telemetria pacote
+    telemetry = Telemetria.select(:id).find_by_codigo(codigo_telemetria)
+    pacote =  pacote[6..9]
+
+    case pacote.to_s
+    when "FFFF"
+      logger.info "Confirmação do recebimento do comando LEITURA_INSTANTANEA por parte da telemetria #{codigo_telemetria}!".blue
+      output_persistence_command telemetry, INSTANT_READING
+
+    when "FFFE"
+      logger.info "Confirmação do recebimento do comando RESET por parte da telemetria #{codigo_telemetria}!".blue
+      output_persistence_command telemetry, RESET_TELEMETRY
+
+    else
+      logger.info "Telemetria: #{codigo_telemetria} avisa que processou o pacote: #{pacote}, mas... que p* de pacote é esse?".blue
+    end
+  end
+
+  # Internal : Método auxiliar do "processa_confirmacao_comandos", responsável por
+  #            marcar um comando como "executado" na tabela de saída.
+  #
+  # saidas - lista de objetos da tabela saída que ainda não foram executados pela
+  #          telemetria
+  #
+  def self.output_persistence_command telemetry_id, type_commmand
+    saidas = Saida.where('cancelado = ? and data_processamento is ? and modelo_id = ? and telemetria_id = ? and comando = ?' , false, nil, 1, telemetry_id, type_commmand)
+    saidas.each do |saida|
+      saida.aguardando = false
+      saida.processado = true
+      saida.data_processamento = Time.now
+      saida.save
+    end
+  end
+
   def self.obtem_codigo_telemetria(pacote, inicio_telemetria_id = 0, fim_telemetria_id = 3)
     return pacote[inicio_telemetria_id..fim_telemetria_id]
   end
