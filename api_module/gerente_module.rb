@@ -38,7 +38,7 @@ class GerenteModule < EventMachine::Connection
   #         telemetria
   #
   def self.checar_saida
-    saida = Saida.where('cancelado = ? and data_processamento is ? and modelo_id = ?', false, nil, 1).first
+    saida = Saida.where('cancelado = ? and data_processamento is ? and modelo_id = ? and aguardando = ?', false, nil, 1, false).first
     GerenteModule.processar_comandos(saida) if saida
   end
 
@@ -63,12 +63,8 @@ class GerenteModule < EventMachine::Connection
         $gerente.send_data reset_telemetry codigo_telemetria
       when INSTANT_READING
         logger.info "Tentativa de envio de LEITURA INSTANTANEA para a telemetria código: #{codigo_telemetria}"
-        if $gerente.send_data instant_reading codigo_telemetria
-          logger.info "Enviado com sucesso!"
-          saida.update(data_processamento: Time.now)
-        else
-          logger.info "Erro ao Enviar!"
-        end
+        $gerente.send_data instant_reading codigo_telemetria
+
       # when 04
       #   id_telemetria = saida.codigo_equipamento.to_s.rjust(4,'0')
       #   logger.info id_telemetria
@@ -77,7 +73,7 @@ class GerenteModule < EventMachine::Connection
       #   end
       end
     else
-      saida.update(cancelado: true, data_processamento: Time.now)
+      saida.update(cancelado: true)
     end
   end
 

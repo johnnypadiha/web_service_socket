@@ -23,6 +23,22 @@ class Pacotes
       end
       logger.info "="*20
 
+    when CONFIRMACAO_COMANDOS
+      logger.info "="*20
+      logger.info("Confirmação de comando recebido da telemetria #{pacote}")
+
+      Thread.new do
+        begin
+          ActiveRecord::Base.connection_pool.with_connection do
+            ProcessarPacotes.processa_confirmacao_comandos pacote
+          end
+        rescue Expection => e
+          logger.fatal "Erro ao persistir, confirmação na tabela de saída #{e}".red
+          logger.fatal "Exception aconteceu em: #{e.backtrace[0]}".red
+        end
+      end
+      logger.info "="*20
+
     when PERIODICO_ALARMADO
       logger.info "="*20
       logger.info("Periódico Alarmado")
@@ -207,6 +223,8 @@ class Pacotes
         pacote.size == SIZE_PACOTES_DEFAULT ? true : false
       when CONFIGURACAO # 190
         pacote.size == SIZE_CONFIGURACAO ? true : false
+      when CONFIRMACAO_COMANDOS #12
+          pacote.size == SIZE_CONFIRMACAO_COMANDOS ? true : false
       else
         false
       end
