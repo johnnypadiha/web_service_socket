@@ -34,8 +34,8 @@ class GerenteModule < EventMachine::Connection
   #            (que ainda não foi  cancelado pelo usuário ou já foi processado)
   #            para que  o gerente realize o processamento.
   #
-  # saida - primeira linha da tabela de saída que deve ser envaida para a...
-  # ... telemetria
+  # saida - primeira linha da tabela de saída que deve ser envaida para a
+  #         telemetria
   #
   def self.checar_saida
     saida = Saida.where('cancelado = ? and data_processamento is ? and modelo_id = ?', false, nil, 1).first
@@ -108,7 +108,9 @@ class GerenteModule < EventMachine::Connection
   def self.obter_pacote(pacote)
     pacote = Pacotes.formatador(pacote)
     pacote = pacote[8..pacote.size]
-    "<#{gerar_check_sum(pacote)}>"
+    pacote = "<#{gerar_check_sum(pacote)}>"
+    logger.info "Pacote gerado #{pacote}"
+    pacote
   end
 
   # Internal : Gera o código especial para identificar o gerente que é um código
