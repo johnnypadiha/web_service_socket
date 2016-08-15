@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'colorize'
+gem 'ipaddress'
 group :development do
   # gem 'capistrano', '~> 3.4.0'
   gem 'eventmachine'

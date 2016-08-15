@@ -11,6 +11,7 @@ require './gerente.rb'
 require './api_module/analogic_process.rb'
 require './api_module/pacotes.rb'
 require './config/constantes.rb'
+require './service/dec_to_hex.rb'
 Dir.glob('./model/*.rb') { |file| load file }
 
 $path = File.dirname(File.expand_path(__FILE__))
