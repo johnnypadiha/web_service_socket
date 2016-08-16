@@ -9,7 +9,7 @@ class DecToHex
   end
 
   def ip_to_hex
-    if validate_ip ip
+    if ip_is_valid?
       ip_arr = ip.split('.').map(&:to_i)
       "%02X%02X%02X%02X" % ip_arr
     end
@@ -28,16 +28,16 @@ class DecToHex
   end
 
   private
-  def validate_ip ip
+  def ip_is_valid?
     IPAddress.valid? ip
   end
 end
 
 #Ip e Porta
-# DecToHex.new({ip: '69.162.90.34', port: 5580}).ip_port_to_hex
+# p DecToHex.new({ip: '69.162.90.34', port: 5580}).ip_port_to_hex
 #IP
-# DecToHex.new({ip: '69.162.90.34'}).ip_to_hex
+# p DecToHex.new({ip: '69.162.90.34333'}).ip_to_hex
 #Porta
-#DecToHex.new({port: '5580'}).port_to_hex
+# p DecToHex.new({port: '5580'}).port_to_hex
 #Host
-#DecToHex.new({host: 'amz'}).host_to_hex
+# p DecToHex.new({host: 'amz'}).host_to_hex
