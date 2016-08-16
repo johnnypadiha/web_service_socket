@@ -145,6 +145,22 @@ class ProcessarPacotes
       logger.info "Confirmação do recebimento do comando RESET por parte da telemetria #{codigo_telemetria}!".blue
       output_persistence_command telemetry, RESET_TELEMETRY
 
+    when "3002"
+      logger.info "Confirmação do recebimento do comando ALTERAR IP E PORTA PRIMÁRIOS, por parte da telemetria #{codigo_telemetria}!".blue
+      output_persistence_command telemetry, CHANGE_PRIMARY_IP
+
+    when "3502"
+      logger.info "Confirmação do recebimento do comando ALTERAR IP E PORTA SECUNDÁRIO, por parte da telemetria #{codigo_telemetria}!".blue
+      output_persistence_command telemetry, CHANGE_SECUNDARY_IP
+
+    when "3D02"
+      logger.info "Confirmação do recebimento do comando ALTERAR HOST, por parte da telemetria #{codigo_telemetria}!".blue
+      output_persistence_command telemetry, CHANGE_HOST_PORT
+
+    when "3E02"
+      logger.info "Confirmação do recebimento do comando ALTERAR PORTA DO HOST, por parte da telemetria #{codigo_telemetria}!".blue
+      output_persistence_command telemetry, CHANGE_HOST_PORT
+
     else
       logger.info "Telemetria: #{codigo_telemetria} avisa que processou o pacote: #{pacote}, mas... que p* de pacote é esse?".blue
     end
