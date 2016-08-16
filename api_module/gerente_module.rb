@@ -102,11 +102,11 @@ class GerenteModule < EventMachine::Connection
   end
 
   def self.change_host codigo_telemetria, codigo_gerente = '0000', saida
-    code = "<#{codigo_gerente}#{codigo_telemetria}023D#{DecToHex.new({ip: saida.ip, port: saida.porta}).ip_port_to_hex}>"
+    code = "<#{codigo_gerente}#{codigo_telemetria}023D#{DecToHex.new({host: saida.host}).host_to_hex}>"
   end
 
   def self.change_port codigo_telemetria, codigo_gerente = '0000', saida
-    code = "<#{codigo_gerente}#{codigo_telemetria}023E#{DecToHex.new({ip: saida.ip, port: saida.porta}).ip_port_to_hex}>"
+    code = "<#{codigo_gerente}#{codigo_telemetria}023E#{DecToHex.new({port: saida.porta}).port_to_hex}>"
   end
 
   # Internal : Gera o pacote inicial para resetar uma telemetria que será enviando
