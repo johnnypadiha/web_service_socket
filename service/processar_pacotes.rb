@@ -164,11 +164,11 @@ class ProcessarPacotes
 
       when "3D"
         logger.info "Confirmação do recebimento do comando ALTERAR HOST, por parte da telemetria #{codigo_telemetria}!".blue
-        output_persistence_command telemetry, CHANGE_HOST_PORT
+        output_persistence_command telemetry, CHANGE_HOST
 
       when "3E"
         logger.info "Confirmação do recebimento do comando ALTERAR PORTA DO HOST, por parte da telemetria #{codigo_telemetria}!".blue
-        output_persistence_command telemetry, CHANGE_HOST_PORT
+        output_persistence_command telemetry, CHANGE_PORT
 
       else
         logger.info "Telemetria: #{codigo_telemetria} avisa que processou o pacote: #{pacote}, mas... que p* de pacote é esse?!".blue

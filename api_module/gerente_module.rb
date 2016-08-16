@@ -73,9 +73,12 @@ class GerenteModule < EventMachine::Connection
         logger.info "Tentativa de envio de uma MUDANÇA DE IP SECUNDÁRIO para a telemetria código: #{codigo_telemetria}"
         $gerente.send_data change_secundary_ip codigo_telemetria, '0000', saida
 
-      when CHANGE_HOST_PORT
-        logger.info "Tentativa de envio de uma MUDANÇA DE PORTA E HOST para a telemetria código: #{codigo_telemetria}"
+      when CHANGE_HOST
+        logger.info "Tentativa de envio de uma MUDANÇA DE HOST para a telemetria código: #{codigo_telemetria}"
         $gerente.send_data change_host codigo_telemetria, '0000', saida
+
+      when CHANGE_PORT
+        logger.info "Tentativa de envio de uma MUDANÇA DE PORTA para a telemetria código: #{codigo_telemetria}"
         $gerente.send_data change_port codigo_telemetria, '0000', saida
 
       # when 04
