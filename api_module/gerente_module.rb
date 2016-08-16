@@ -65,6 +65,10 @@ class GerenteModule < EventMachine::Connection
         logger.info "Tentativa de envio de LEITURA INSTANTANEA para a telemetria código: #{codigo_telemetria}"
         $gerente.send_data instant_reading codigo_telemetria
 
+      when CHANGE_PRIMARY_IP
+        logger.info "Tentativa de envio de uma MUDANÇA DE IP PRIMÁRIO para a telemetria código: #{codigo_telemetria}"
+        $gerente.send_data change_primary_ip codigo_telemetria, '0000', saida
+
       # when 04
       #   id_telemetria = saida.codigo_equipamento.to_s.rjust(4,'0')
       #   logger.info id_telemetria
@@ -75,6 +79,17 @@ class GerenteModule < EventMachine::Connection
     else
       saida.update(cancelado: true)
     end
+  end
+
+  # CODE_PRIMARY_IP = '0230'
+  # CODE_SECONDARY_IP = '0235'
+  # CODE_HOST = '023D'
+  # CODE_PORT = '023E'
+  def self.change_primary_ip codigo_telemetria, codigo_gerente = '0000', saida
+    p saida.ip
+    p saida.porta
+    # p code = DecToHex.new({ip: saida.ip, port: saida.porta}).ip_port_to_hex
+    p code = "<#{codigo_gerente}#{codigo_telemetria}0230#{DecToHex.new({ip: saida.ip, port: saida.porta}).ip_port_to_hex}>"
   end
 
   # Internal : Gera o pacote inicial para resetar uma telemetria que será enviando
