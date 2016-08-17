@@ -82,9 +82,9 @@ class Medida < ActiveRecord::Base
           medida.reporte_medida_id = reporte_medida_id.to_i
           medida.gauge                = gauge
           medida.temperatura_ambiente = codigo_by_equipamento.disponivel_temperatura
-          medida.grandeza             = ultima ? ultima_medida.grandeza : nil
-          medida.divisor              = ultima ? ultima_medida.divisor : nil
-          medida.multiplo             = ultima ? ultima_medida.multiplo : nil
+          medida.grandeza             = ultima ? ultima_medida.grandeza.present? ? ultima_medida.grandeza : '' : ''
+          medida.divisor              = ultima ? ultima_medida.divisor.present? ? ultima_medida.divisor : 0 : 0
+          medida.multiplo             = ultima ? ultima_medida.multiplo.present? ? ultima_medida.multiplo : 0 : 0
           medida.id_local             = codigo_by_equipamento.codigo.id
 
           if Medida::faixas_medidas_mudaram ultima_medida, medida, @faixa

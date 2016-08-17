@@ -17,7 +17,7 @@ class Evento < ActiveRecord::Base
   # reporte_temperatura - Boolean informando se a evento do tipo temperatura
   # colecao_medida_evento - Array contendo todas as medidas a serem persisitidas
   #
-  # Sem retorno.
+  #
   def self.persistir_evento(eventos)
     reporte_faixa = false
     reporte_sinal = false
