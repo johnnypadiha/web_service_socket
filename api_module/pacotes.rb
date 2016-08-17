@@ -214,7 +214,6 @@ class Pacotes
   def self.validar_tipo_tamanho_pacote(pacote)
     package_length_is_valid = false
     tipo_pacote = ProcessarPacotes.obtem_tipo_pacote(pacote)
-
     package_length_is_valid =
       case tipo_pacote.to_i
       when PERIODICO_OK # 72
@@ -225,6 +224,11 @@ class Pacotes
         pacote.size == SIZE_CONFIGURACAO ? true : false
       when CONFIRMACAO_COMANDOS #12
           pacote.size == SIZE_CONFIRMACAO_COMANDOS ? true : false
+          if pacote.size == SIZE_CONFIRMACAO_COMANDOS or pacote.size == SIZE_CONFIRMACAO_IP_PORTA_HOST
+            true
+          else
+            false
+          end
       else
         false
       end

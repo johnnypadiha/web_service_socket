@@ -146,18 +146,46 @@ class ProcessarPacotes
     telemetry = Telemetria.select(:id).find_by_codigo(codigo_telemetria)
     pacote =  pacote[6..9]
 
-    case pacote.to_s
-    when "FFFF"
-      logger.info "Confirmação do recebimento do comando LEITURA_INSTANTANEA por parte da telemetria #{codigo_telemetria}!".blue
-      output_persistence_command telemetry, INSTANT_READING
+    if pacote[0..1] == "FF"
 
-    when "FFFE"
-      logger.info "Confirmação do recebimento do comando RESET por parte da telemetria #{codigo_telemetria}!".blue
-      output_persistence_command telemetry, RESET_TELEMETRY
+      case pacote.to_s
+      when "FFFF"
+        logger.info "Confirmação do recebimento do comando LEITURA_INSTANTANEA por parte da telemetria #{codigo_telemetria}!".blue
+        output_persistence_command telemetry, INSTANT_READING
+
+      when "FFFE"
+        logger.info "Confirmação do recebimento do comando RESET por parte da telemetria #{codigo_telemetria}!".blue
+        output_persistence_command telemetry, RESET_TELEMETRY
+
+      else
+        logger.info "Telemetria: #{codigo_telemetria} avisa que processou o pacote: #{pacote}, mas... que p* de pacote é esse?".blue
+      end
 
     else
-      logger.info "Telemetria: #{codigo_telemetria} avisa que processou o pacote: #{pacote}, mas... que p* de pacote é esse?".blue
+
+      case pacote[0..1].to_s
+      when "30"
+        logger.info "Confirmação do recebimento do comando ALTERAR IP E PORTA PRIMÁRIOS, por parte da telemetria #{codigo_telemetria}!".blue
+        output_persistence_command telemetry, CHANGE_PRIMARY_IP
+
+      when "35"
+        logger.info "Confirmação do recebimento do comando ALTERAR IP E PORTA SECUNDÁRIO, por parte da telemetria #{codigo_telemetria}!".blue
+        output_persistence_command telemetry, CHANGE_SECUNDARY_IP
+
+      when "3D"
+        logger.info "Confirmação do recebimento do comando ALTERAR HOST, por parte da telemetria #{codigo_telemetria}!".blue
+        output_persistence_command telemetry, CHANGE_HOST
+
+      when "3E"
+        logger.info "Confirmação do recebimento do comando ALTERAR PORTA DO HOST, por parte da telemetria #{codigo_telemetria}!".blue
+        output_persistence_command telemetry, CHANGE_PORT
+
+      else
+        logger.info "Telemetria: #{codigo_telemetria} avisa que processou o pacote: #{pacote}, mas... que p* de pacote é esse?!".blue
+      end
+
     end
+
   end
 
   # Internal : Método auxiliar do "processa_confirmacao_comandos", responsável por
