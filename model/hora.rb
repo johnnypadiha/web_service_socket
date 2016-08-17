@@ -1,4 +1,9 @@
 class Hora
+  # Internal: gera o hexadecimal de atualização de hora
+  #
+  # response - String contendo o pacote
+  #
+  # Retorna o pacote de atualozação de hora
   def self.gerar_atualizacao_hora
     response = ''
     data = Time.now.strftime("%y%m%d%H%M%S")

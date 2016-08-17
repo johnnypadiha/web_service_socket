@@ -1,8 +1,12 @@
 class SepararMedidaEquipamento
   # Internal: Separa as medidas enviada pela telemetria por equipamento.
   #
-  # medidas - Hash contendo os valores enviados pela telemetria -
-  #           :
+  # medidas - Hash contendo os valores enviados pela telemetria
+  # telemetria - Objeto do tipo Telemetria
+  # eqm - Hash que irá armazenar as medidas referente a um determinado equipamento
+  # evento - Array que irá armazenar os hash eqm
+  #
+  # Retorna o array evento com as medidas devidamente separadas
   def self.obter_pacote_equipamento(medidas)
     telemetria = Telemetria.find_by_codigo(medidas[:codigo_telemetria])
     eqm = {}
