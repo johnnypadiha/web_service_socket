@@ -7,6 +7,11 @@ class SelecionarPacote
     @codigo_atual = args[:codigo_atual]
   end
 
+  # Internal: Seleciona o pacote conforme o tipo
+  #
+  # codigo_pacote - Codigo do pacote a ser processado
+  #
+  # Retorna a referencia do pacote
   def seleciona_pacote
     case codigo_pacote.to_i
     when PERIODICO_OK, PERIODICO_ALARMADO
@@ -18,6 +23,11 @@ class SelecionarPacote
     end
   end
 
+  # Internal: Filtra o codigo do evento
+  #
+  # args - hash contendo os paramentros necessario para a execução.
+  #
+  # Retorna o tipo do pacote
   def self.filtrar_codigo_evento(args = {})
     case args[:status_faixa].to_i
     when OK

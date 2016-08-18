@@ -3,6 +3,11 @@ require_relative '../service/processar_pacotes.rb'
 require_relative '../controller/telemetria_controller.rb'
 
 class ProcessarPacotes
+  # Internal: Extrai as medidas do pacote .
+  #
+  # pacote - Hash contendo as medidas_primitivas
+  #
+  # Retorna as medidas separadas
   def self.leituras_instantanea pacote
     medidas = Hash.new
     medidas[:codigo_telemetria] = ProcessarPacotes::obtem_codigo_telemetria pacote
@@ -18,6 +23,11 @@ class ProcessarPacotes
     medidas
   end
 
+  # Internal: Processa o pacote de inicialização
+  #
+  # pacote - Hash com as medidas a monitorar
+  #
+  # Retorna as medidas devidamente corretas. 
   def self.inicializacao pacote
     inicializacao = Hash.new
     inicializacao[:codigo_telemetria] = ProcessarPacotes::obtem_codigo_telemetria pacote

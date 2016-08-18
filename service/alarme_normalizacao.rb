@@ -5,6 +5,12 @@ class AlarmeNormalizacao
     @pacote = args[:pacote]
   end
 
+  # Internal: Verifica se ouve alteração de faixa
+  #
+  # medidas_eventos_colecao - Array com a coleção de medidas
+  # novo_pacote - Array com o novo pacote a ser gerado.
+  #
+  # Retorna um novo pacote.
   def detectar_alteracao
     medidas_eventos_colecao = []
     novo_pacote = []
@@ -52,6 +58,14 @@ class AlarmeNormalizacao
     novo_pacote
   end
 
+  # Internal: Detecta se ouve mudança de faixa para alguma medida
+  #
+  # ultimas_medidas_evento - Objecto do tipo medidaEvento contendo as ultimas medidas
+  # medidas_colecao - Objeto contendo as novas medidas a serem comparadas.
+  # tipo_pacote - integer que armazena o tipo do pacote em medidas_colecao
+  # mudou_faixa - Boolean que informa se houve mudança na faixa
+  #
+  # Retorna o tipo do pacote e se ele é um alarme.
   def self.detecta_mudanca_faixa(ultimas_medidas_evento, medidas_colecao)
     tipo_pacote = 0
     mudou_faixa = false
@@ -76,7 +90,12 @@ class AlarmeNormalizacao
     return mudou_faixa, tipo_pacote
   end
 
-
+  # Internal: Gera o tipo do pacote
+  #
+  # tipo_pacote - Integer contendo o ultimo tipo do pacote calculado
+  # pacote - hash contendo a leitura atual
+  #
+  # Retrna o tipo do pacote
   def self.obter_tipo_pacote(tipo_pacote, pacote)
     medidas_em_alarme = pacote.select {|s| s[:status_faixa].to_i == ALARME}
     medidas_em_alerta = pacote.select {|s| s[:status_faixa].to_i == ALERTA}

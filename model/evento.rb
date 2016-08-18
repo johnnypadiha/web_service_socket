@@ -8,6 +8,16 @@ class Evento < ActiveRecord::Base
   belongs_to :status
   has_many :medidas_eventos
 
+  # Internal: Perisiste os eventos de: periodico / leitura instantânea / alarme
+  #
+  # eventos - Objecto contendo o evento a ser persisitido
+  # reporte_faixa - Boolean informando se a evento do tipo faixa
+  # reporte_sinal - Boolean informando se a evento do tipo sinal
+  # reporte_enenrgia - Boolean informando se a evento do tipo energia
+  # reporte_temperatura - Boolean informando se a evento do tipo temperatura
+  # colecao_medida_evento - Array contendo todas as medidas a serem persisitidas
+  #
+  #
   def self.persistir_evento(eventos)
     reporte_faixa = false
     reporte_sinal = false
