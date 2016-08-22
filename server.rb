@@ -39,10 +39,10 @@ require 'active_support/time'
     }
   end
 
-  # Internal : Faz verificação de sockets que se conectaram ao WS e não continuaram ...
-  # ... fazendo comunicação como uma telemetria, uma vez, ficando 'fantasmas' na ...
-  # ...lista de sockets. Aguarda esse socket durante 2(dois) minutos e após esse tempo ...
-  # o mesmo é banido do WS se não entrar na lista de telemetrias.
+  # Internal : Faz verificação de sockets que se conectaram ao WS e não continuaram
+  #             fazendo comunicação como uma telemetria, uma vez, ficando 'fantasmas' na
+  #             lista de sockets. Aguarda esse socket durante 2(dois) minutos e após esse tempo
+  #             o mesmo é banido do WS se não entrar na lista de telemetrias.
   #
   # $sockets_conectados - Lista contendo os sockets conectados ao WS
   # $lista_telemetria - Lista contendo as telemetrias conectadas ao WS
