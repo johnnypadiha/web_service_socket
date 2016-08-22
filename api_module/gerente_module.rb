@@ -113,7 +113,7 @@ class GerenteModule < EventMachine::Connection
     timer = BaseConverter.convert_to_hexa(saida.valor)
     id_local = BaseConverter.convert_to_hexa(medida.id_local)
 
-    code = "<#{codigo_gerente}#{codigo_telemetria}02#{id_local}#{minimo}#{maximo}#{timer}>"
+    code = "<#{codigo_gerente}#{codigo_telemetria}02#{id_local}#{minimo}#{maximo}#{timer}>".upcase
   end
 
   # Internal : Gera o pacote de mudança de IP primário, que será enviando
