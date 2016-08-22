@@ -81,6 +81,12 @@ class GerenteModule < EventMachine::Connection
         logger.info "Tentativa de envio de uma MUDANÇA DE PORTA para a telemetria código: #{codigo_telemetria}"
         $gerente.send_data change_port codigo_telemetria, '0000', saida
 
+      when CHANGE_FAIXA_TIMER
+        logger.info "Tentativa de envio de MUDANÇA DE FAIXA E TIMER para a telemetria código: #{codigo_telemetria}"
+        saida_faixas = SaidaFaixas.find_by_saida_id(saida.id)
+        medida = Medida.find(saida.medida_id)
+        $gerente.send_data change_faixa_timer codigo_telemetria, '0000', saida, saida_faixas, medida
+
       # when 04
       #   id_telemetria = saida.codigo_equipamento.to_s.rjust(4,'0')
       #   logger.info id_telemetria
@@ -91,6 +97,23 @@ class GerenteModule < EventMachine::Connection
     else
       saida.update(cancelado: true)
     end
+  end
+
+  # Internal : Gera o pacote de mudança de faixas e timers
+  #
+  # maximo - valor em hexadecimal do maximo da faixa verde
+  # minimo - valor em hexadecimal do mínimo da faixa verde
+  # timer - valor em hexadecimal do timer da medida
+  # id_local - valor em hexadecimal do id_local da medida
+  #
+  # retorna o pacote de mudança de faixa e timer ainda sem o checksum
+  def self.change_faixa_timer codigo_telemetria, codigo_gerente = '0000', saida, saida_faixas, medida
+    maximo = BaseConverter.convert_to_hexa(saida_faixas.maximo)
+    minimo = BaseConverter.convert_to_hexa(saida_faixas.minimo)
+    timer = BaseConverter.convert_to_hexa(saida.valor)
+    id_local = BaseConverter.convert_to_hexa(medida.id_local)
+
+    code = "<#{codigo_gerente}#{codigo_telemetria}02#{id_local}#{minimo}#{maximo}#{timer}>"
   end
 
   # Internal : Gera o pacote de mudança de IP primário, que será enviando

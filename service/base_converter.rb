@@ -21,4 +21,14 @@ module BaseConverter
       return value
     end
   end
+
+  # Internal : Converte para hexadecimal mantendo 2 casas decimais, mesmo quando
+  #            não o hexa não atender esse tamanho
+  #
+  # value - Valor a ser convertido para hexadecimal
+  #
+  # Retorna um hexadecimal de 2 casas
+  def self.convert_to_hexa value
+    value.to_i.to_s(16).rjust(2,'0')
+  end
 end
