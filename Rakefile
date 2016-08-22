@@ -1,2 +1,3 @@
-require 'standalone_migrations'
-StandaloneMigrations::Tasks.load_tasks
+require 'rake/notes/rake_task'
+# require 'standalone_migrations'
+# StandaloneMigrations::Tasks.load_tasks

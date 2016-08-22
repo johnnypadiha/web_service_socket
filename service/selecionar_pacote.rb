@@ -19,13 +19,14 @@ class SelecionarPacote
     when LEITURA_INSTANTANEA
       SelecionarPacote.filtrar_codigo_evento({status_faixa: status_faixa, ok: 11, alerta: 20, alarme: 19, codigo_atual: codigo_atual})
     else
-      'Implementar'
+      # TODO: 'Implementar'
     end
   end
 
   # Internal: Filtra o codigo do evento
   #
-  # args - hash contendo os paramentros necessario para a execução.
+  # args - hash contendo os parâmetros necessários para a execução.
+  # codigo_evento - Inteiro contendo o código do evento
   #
   # Retorna o tipo do pacote
   def self.filtrar_codigo_evento(args = {})

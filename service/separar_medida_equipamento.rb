@@ -5,6 +5,7 @@ class SepararMedidaEquipamento
   # telemetria - Objeto do tipo Telemetria
   # eqm - Hash que irá armazenar as medidas referente a um determinado equipamento
   # evento - Array que irá armazenar os hash eqm
+  # referencia_medidas - Objeto contendo os códigos das medidas do equipamento
   #
   # Retorna o array evento com as medidas devidamente separadas
   def self.obter_pacote_equipamento(medidas)
