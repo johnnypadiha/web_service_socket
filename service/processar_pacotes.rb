@@ -95,7 +95,24 @@ class ProcessarPacotes
     return configuracao_hex, telemetria
   end
 
-  #digitais_bin = pega o Hexa converte para binario, garante que ele tenha 4 digitos e pega as 4 posições
+
+  # Internal - Recebe um Hash com vários Hexadecimais que representam o pacote de
+  # configuração já pré dividido, e retorna 4 Hashses, medidas: ANALÓGICAS,
+  # NEGATIVAS e DIGITAIS com suas respectivas faixas e timers.
+  #
+  # digitais_bin : recebe um Hexa que representa as medidas digitais converte
+  #                para binario, garante que ele tenha 4 digitos um para cada
+  #                digital D1, D2, D3 e D4.
+  #
+  # Examples
+  #
+  #   processa_configuracao({:analogicas=>"007A00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF", :negativas=>"00FF00FF00FF00660", :digitais=>"F", :timers_analogicas=>"000F0F0F0F0F0F0F0F0F0F0F0F0F0F0F", :timers_negativas=>"0F0F0F0F", :timers_digitais=>"0F0F0F0FF", :timer_periodico=>"00B4", :operadora=>"02", :ip_primario_1octeto=>"2D", :ip_primario_2octeto=>"37", :ip_primario_3octeto=>"E9", :ip_primario_4octeto=>"89", :porta_ip_primario=>"15CC", :ip_secundario_1octeto=>"2D", :ip_secundario_2octeto=>"37", :ip_secundario_3octeto=>"E9", :ip_secundario_4octeto=>"89", :porta_ip_secundario=>"15CC", :host=>"000000", :porta_dns=>"15CC"})
+  #   # => {"A1"=>{:minimo=>0, :maximo=>48, :timer=>"0"}, "A2"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "A3"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "A4"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "A5"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "A6"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "A7"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "A8"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "A9"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "A10"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "A11"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "A12"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "A13"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "A14"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "A15"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "A16"=>{:minimo=>0, :maximo=>100, :timer=>"15"}}
+  #   # => {"N1"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "N2"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "N3"=>{:minimo=>0, :maximo=>100, :timer=>"15"}, "N4"=>{:minimo=>0, :maximo=>40, :timer=>"15"}}
+  #   # => {"D1"=>{:normal=>"1", :timer=>"15"}, "D2"=>{:normal=>"1", :timer=>"15"}, "D3"=>{:normal=>"1", :timer=>"15"}, "D4"=>{:normal=>"1", :timer=>"15"}}
+  #
+  # Retorna 4 (ANALOGICOS, DIGITAIS e NEGATIVAS) Hash com o mínimo, máximo e timer
+  # de cada medida.
   def self.processa_configuracao (configuracao_hex)
     digitais_bin = configuracao_hex[:digitais].hex.to_s(BASE_BIN).rjust(4,'0')[0..3]
     cont = 0
@@ -136,11 +153,11 @@ class ProcessarPacotes
   end
 
   # Internal - Responsável por verificar na tabela de saída se a resposta de uma
-  #            uma telemetria pertence a algum comando que esta pendente na mesma
+  #            uma telemetria pertence a algum comando que está pendente na mesma
   #
-  # codigo_telemetria - codigo da telemetria proveniente do pacote
-  # telemetry - Chave primária da telemetria do qual pertence o pacote
-  # pacote - pacote proveniente da telemetria contendo todos os dados de resposta
+  # codigo_telemetria - String codigo da telemetria proveniente do pacote
+  # telemetry - Inteiro ,chave primária da telemetria do qual pertence o pacote
+  # pacote - String, pacote proveniente da telemetria contendo todos os dados de resposta
   #          de um comando que foi solicitado anteriormente
   #
   def self.processa_confirmacao_comandos pacote
@@ -206,24 +223,45 @@ class ProcessarPacotes
     end
   end
 
+  # Internal : Método auxiliar, responsável por extrair o código da telemetria de
+  #            todos os pacotes da telemetria.
+  #
+  # Retorna o código da telemetria.
   def self.obtem_codigo_telemetria(pacote, inicio_telemetria_id = 0, fim_telemetria_id = 3)
     return pacote[inicio_telemetria_id..fim_telemetria_id]
   end
 
+  # Internal : Método auxiliar, responsável por extrair o firmware da telemetria
+  #            de um pacote de configuracao.
+  #
+  # Retorna o firmware da telemetria.
   def self.obtem_firmware(pacote, inicio_firmware = 6, fim_firmware = 9)
     return pacote[inicio_firmware..fim_firmware]
   end
 
+  # Internal : Método auxiliar, responsável por extrair o nível de sinal da
+  #            telemetria de um pacote de alguns tipos de pacote, dentre eles
+  #            (inicializacão, leitura instântanea).
+  #
+  # Retorna o nível de sinal da telemetria.
   def self.obtem_nivel_sinal(pacote, inicio_nivel_sinal = 74, fim_nivel_sinal = 78, base_subtracao = 65536)
     return pacote[inicio_nivel_sinal...fim_nivel_sinal].to_i(BASE_HEXA) - base_subtracao
   end
 
+  # Internal : Método auxiliar, responsável por extrair o tipo do pacote da
+  #            telemetria de todos os pacotes da telemetria.
+  #
+  # Retorna o tipo do pacote da telemetria.
   def self.obtem_tipo_pacote(pacote, inicio_id = 4, fim_id = 5)
     id_pacote = pacote[inicio_id..fim_id]
 
     return id_pacote.blank? ? '9999' : id_pacote
   end
 
+  # Internal : Encontra a telemetria que esta comunicando naquele momento, solicita
+  #            a atualização dos dados da mesma.
+  #
+  # Retorna uma menssagem de sucesso ou de erro, dependendo da execução do método.
   def self.find_and_update_telemetria(params)
     telemetria = TelemetriaController::find_telemetria params
     result, id_telemetria = TelemetriaController::atualiza_telemetria telemetria, params
@@ -237,16 +275,17 @@ class ProcessarPacotes
     end
   end
 
-  # Internal: Divide o pacote raw para o formato do banco atual
+  # Internal : Percorre o pacote de "leitura_instantanea e inicialização",
+  #            separando o conteúdo do mesmo em nome da medida e valor
   #
-  # pacote - Hash contendo o pacote cru enviado pela telemetria
-  # init - Inteiro contendo a posição de inicio de cada medida
-  # index_A - Inteiro contendo a posição do A
-  # index_N - Inteiro contendo a posição do N
-  # index_D - Inteiro contendo a posição do D
-  # leitura - array responsavel por amazenar um código válido.
   #
-  # Retorna um array contendo as medidas de A1 a A16
+  # Examples
+  #
+  #   obtem_medidas("499705818082808182818601000000000000000000000000000000C6800000000000000000FFCD13FF20FF75")
+  #   # => {:A1=>51, :A2=>51, :A3=>51, :A4=>51, :A5=>51, :A6=>51, :A7=>51, :A8=>53, :A9=>0, :A10=>0, :A11=>0, :A12=>0, :A13=>0, :A14=>0, :A15=>0, :A16=>0, :N1=>0, :N2=>0, :N3=>0, :N4=>0, :D1=>0, :D2=>0, :D3=>0, :D4=>0}
+  #
+  # Retorna um Hash com as medidas ANALÓGICAS(A), NEGATIVAS(N) e DIGITAIS(D) e
+  # seus respectivos valores.
   def self.obtem_medidas pacote
     init = 6
     index_A ||= 1

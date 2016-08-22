@@ -93,18 +93,38 @@ class GerenteModule < EventMachine::Connection
     end
   end
 
+  # Internal : Gera o pacote de mudança de IP primário, que será enviando
+  #            para AnalogicProcess::receive_data
+  #
+  # code - pacote de mudança de "IP primário" da telemetria montado
+  #
   def self.change_primary_ip codigo_telemetria, codigo_gerente = '0000', saida
     code = "<#{codigo_gerente}#{codigo_telemetria}0230#{DecToHex.new({ip: saida.ip, port: saida.porta}).ip_port_to_hex}>"
   end
 
+  # Internal : Gera o pacote de mudança de IP secundário, que será enviando
+  #            para AnalogicProcess::receive_data
+  #
+  # code - pacote de mudança de "IP secundário" da telemetria montado
+  #
   def self.change_secundary_ip codigo_telemetria, codigo_gerente = '0000', saida
     code = "<#{codigo_gerente}#{codigo_telemetria}0235#{DecToHex.new({ip: saida.ip, port: saida.porta}).ip_port_to_hex}>"
   end
 
+  # Internal : Gera o pacote de mudança de host, que será enviando
+  #            para AnalogicProcess::receive_data
+  #
+  # code - pacote de mudança de "host" da telemetria montado
+  #
   def self.change_host codigo_telemetria, codigo_gerente = '0000', saida
     code = "<#{codigo_gerente}#{codigo_telemetria}023D#{DecToHex.new({host: saida.host}).host_to_hex}>"
   end
 
+  # Internal : Gera o pacote de mudança de Porta do host, que será enviando
+  #            para AnalogicProcess::receive_data
+  #
+  # code - pacote de mudança de "Porta do host"" da telemetria montado
+  #
   def self.change_port codigo_telemetria, codigo_gerente = '0000', saida
     code = "<#{codigo_gerente}#{codigo_telemetria}023E#{DecToHex.new({port: saida.porta}).port_to_hex}>"
   end
