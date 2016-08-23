@@ -32,6 +32,11 @@ module BaseConverter
     value.to_i.to_s(16).rjust(2,'0')
   end
 
+  # Internal : Converte para byte, limite 255
+  #
+  # value - Valor em byte
+  #
+  # Retorna um valor em byte 
   def self.convert_to_byte value
     value = ((value.to_f * 255) / 100).to_i
   end

@@ -101,8 +101,8 @@ class GerenteModule < EventMachine::Connection
 
   # Internal : Gera o pacote de mudança de faixas e timers
   #
-  # maximo - valor em hexadecimal do maximo da faixa verde
-  # minimo - valor em hexadecimal do mínimo da faixa verde
+  # maximo - valor em hexadecimal e byte do maximo da faixa verde
+  # minimo - valor em hexadecimal e byte do mínimo da faixa verde
   # timer - valor em hexadecimal do timer da medida
   # id_local - valor em hexadecimal do id_local da medida
   #
