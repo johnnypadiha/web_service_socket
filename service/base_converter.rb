@@ -33,6 +33,6 @@ module BaseConverter
   end
 
   def self.convert_to_byte value
-    value = ((value.to_f * 255) / 100).round.to_i
+    value = ((value.to_f * 255) / 100).to_i
   end
 end
