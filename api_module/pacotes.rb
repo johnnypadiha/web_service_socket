@@ -35,6 +35,7 @@ class Pacotes
       Thread.new do
         begin
           ActiveRecord::Base.connection_pool.with_connection do
+            p "pacote recebido -->> #{pacote}"
             ProcessarPacotes.processa_confirmacao_comandos pacote
           end
         rescue Expection => e
