@@ -8,7 +8,6 @@ class Pacotes
   #              do pacote não seja identificado, esse é descartado como 'inválido'.
   # pacote - String contendo o pacote recebido da Telemetria
   def self.processador(pacote)
-    logger.fatal "pacote recebido >>>> #{pacote}".blue
     tipo_pacote = ProcessarPacotes::obtem_tipo_pacote pacote
 
     case tipo_pacote.to_i
@@ -31,12 +30,11 @@ class Pacotes
 
     when CONFIRMACAO_COMANDOS
       logger.info "="*20
-      logger.info("Confirmação de comando recebido da telemetria #{pacote}")
+      logger.info("Confirmação de comando recebido da telemetria #{pacote[0..3]}")
 
       Thread.new do
         begin
           ActiveRecord::Base.connection_pool.with_connection do
-            logger.fatal "pacote recebido -->> #{pacote}".red
             ProcessarPacotes.processa_confirmacao_comandos pacote
           end
         rescue Expection => e
