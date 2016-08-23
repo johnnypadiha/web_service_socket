@@ -31,4 +31,8 @@ module BaseConverter
   def self.convert_to_hexa value
     value.to_i.to_s(16).rjust(2,'0')
   end
+
+  def self.convert_to_byte value
+    value = ((value.to_f * 255) / 100).round.to_i
+  end
 end
