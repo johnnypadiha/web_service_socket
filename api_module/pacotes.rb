@@ -2,7 +2,13 @@ require_relative '../service/processar_pacotes.rb'
 require_relative '../service/separar_medida_equipamento.rb'
 require_relative '../service/alarme_normalizacao.rb'
 class Pacotes
+
+  # Internal : Recebe pacote para processamento.
+  #            Obtém o tipo do pacote e trata-o de acordo com seu tipo. Caso o tipo
+  #              do pacote não seja identificado, esse é descartado como 'inválido'.
+  # pacote - String contendo o pacote recebido da Telemetria
   def self.processador(pacote)
+    logger.fatal "pacote recebido >>>> #{pacote}".blue
     tipo_pacote = ProcessarPacotes::obtem_tipo_pacote pacote
 
     case tipo_pacote.to_i
@@ -30,6 +36,7 @@ class Pacotes
       Thread.new do
         begin
           ActiveRecord::Base.connection_pool.with_connection do
+            logger.fatal "pacote recebido -->> #{pacote}".red
             ProcessarPacotes.processa_confirmacao_comandos pacote
           end
         rescue Expection => e
@@ -167,12 +174,19 @@ class Pacotes
     end
   end
 
+  #Internal : Remove o inicio e fim do pacote recebido da Telemetria
+  #
+  # pacote - String contendo o pacote recebido da Telemetria
   def self.formatador(pacote)
     pacote = pacote.chomp
     pacote = pacote.tr!('<', '')
     pacote = pacote.tr!('>', '')
   end
 
+  # Internal : Verifica se o pacote recebido da Telemetria possui formato e tamanho
+  #             válidos.
+  #
+  # pacote - String contendo o pacote recebido da Telemetria
   def self.pacote_is_valido(pacote)
     package_is_valid = false
     pacote_recebido = ''
@@ -198,6 +212,9 @@ class Pacotes
     package_is_valid
   end
 
+  # Internal : Valida se o tipo do pacote recebido é válido.
+  #
+  # pacote - String contendo o pacote recebido da Telemetria
   def self.validar_tipo_pacote(pacote)
     package_type_is_valid = false
     tipo_pacote = ProcessarPacotes.obtem_tipo_pacote(pacote)
@@ -211,6 +228,11 @@ class Pacotes
       end
   end
 
+  # Internal : Valida se o tamanho do pacote recebido corresponde à algum tipo dos
+  #             tipos atualmente utilizados pela empresa.
+  #
+  # pacote - String contendo o pacote recebido da Telemetria
+  # return boolean
   def self.validar_tipo_tamanho_pacote(pacote)
     package_length_is_valid = false
     tipo_pacote = ProcessarPacotes.obtem_tipo_pacote(pacote)
