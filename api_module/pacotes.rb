@@ -8,6 +8,7 @@ class Pacotes
   #              do pacote não seja identificado, esse é descartado como 'inválido'.
   # pacote - String contendo o pacote recebido da Telemetria
   def self.processador(pacote)
+    logger.fatal "pacote recebido >>>> #{pacote}".blue
     tipo_pacote = ProcessarPacotes::obtem_tipo_pacote pacote
 
     case tipo_pacote.to_i
