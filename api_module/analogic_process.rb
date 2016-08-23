@@ -102,7 +102,7 @@ module AnalogicProcess
       else
         logger.info "pacote: #{data}, possui um formato inválido!".yellow
       end
-        logger.info "Telemetrias conectadas #{$lista_telemetria.size}".green
+        logger.info "Telemetrias conectadas #{$lista_telemetria.select { |t| t[:id].to_i != 0}.size}".green
     end
   end
 
