@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'eventmachine'
+require 'pp'
 
 class GerenteModule < EventMachine::Connection
   def initialize(*args)
@@ -85,7 +86,7 @@ class GerenteModule < EventMachine::Connection
         logger.info "Tentativa de envio de MUDANÇA DE FAIXA E TIMER para a telemetria código: #{codigo_telemetria}"
         saida_faixas = SaidaFaixas.find_by_saida_id(saida.id)
         medida = Medida.find(saida.medida_id)
-        $gerente.send_data change_faixa_timer codigo_telemetria, '0000', saida, saida_faixas, medida
+        $gerente.send_data change_faixa_timer codigo_telemetria, '0000', saida, saida_faixas, medida, telemetria
 
       # when 04
       #   id_telemetria = saida.codigo_equipamento.to_s.rjust(4,'0')
@@ -107,7 +108,8 @@ class GerenteModule < EventMachine::Connection
   # id_local - valor em hexadecimal do id_local da medida
   #
   # retorna o pacote de mudança de faixa e timer ainda sem o checksum
-  def self.change_faixa_timer codigo_telemetria, codigo_gerente = '0000', saida, saida_faixas, medida
+  def self.change_faixa_timer codigo_telemetria, codigo_gerente = '0000', saida, saida_faixas, medida_params, telemetria
+
     maximo = BaseConverter.convert_to_byte(saida_faixas.maximo)
     maximo = BaseConverter.convert_to_hexa(maximo)
 
@@ -115,9 +117,55 @@ class GerenteModule < EventMachine::Connection
     minimo = BaseConverter.convert_to_hexa(minimo)
 
     timer = BaseConverter.convert_to_hexa(saida.valor)
-    id_local = BaseConverter.convert_to_hexa(medida.id_local)
+    id_local = BaseConverter.convert_to_hexa(medida_params.id_local)
 
-    code = "<#{codigo_gerente}#{codigo_telemetria}02#{id_local}#{minimo}#{maximo}#{timer}>".upcase
+    if medida_params.id_local >= 21
+      medidas = []
+      novas_faixas = {21 => [0,0], 22 => [0,0], 23 => [0,0], 24 => [0,0]}
+      equipamentos = telemetria.equipamentos
+
+      equipamentos.each do |equipamento|
+        medidas += Medida.where(equipamento_id: equipamento.id, id_local: [21,22,23,24]).order("id desc").limit(4)
+      end
+
+      medidas = medidas.uniq { |medida| medida.id_local}
+
+      medidas.each do |medida|
+
+        if medida.id_local == medida_params.id_local
+          novas_faixas[medida.id_local][0] = saida_faixas.minimo.to_i
+          novas_faixas[medida.id_local][1] = medida_params.timer.to_i
+
+        else
+          valor_digital = medida.faixas.select(:minimo).where(status_faixa: 1)
+          novas_faixas[medida.id_local][0] = valor_digital[0].minimo.to_i
+          novas_faixas[medida.id_local][1] = medida.timer.to_i
+        end
+      end
+
+      faixas_digitais_binarias = "#{novas_faixas[21][0]}#{novas_faixas[22][0]}#{novas_faixas[23][0]}#{novas_faixas[24][0]}"
+
+      faixas_digitais_binarias = faixas_digitais_binarias.to_i(2)
+
+      faixas_digitais_binarias = BaseConverter.convert_to_hexa(faixas_digitais_binarias)
+
+      timer_D1 = novas_faixas[21][1]
+      timer_D1 = BaseConverter.convert_to_hexa(timer_D1)
+
+      timer_D2 = novas_faixas[22][1]
+      timer_D2 = BaseConverter.convert_to_hexa(timer_D2)
+
+      timer_D3 = novas_faixas[23][1]
+      timer_D3 = BaseConverter.convert_to_hexa(timer_D3)
+
+      timer_D4 = novas_faixas[24][1]
+      timer_D4 = BaseConverter.convert_to_hexa(timer_D4)
+
+      code = "<#{codigo_gerente}#{codigo_telemetria}0215#{faixas_digitais_binarias}#{timer_D1}#{timer_D2}#{timer_D3}#{timer_D4}>".upcase
+    else
+
+      code = "<#{codigo_gerente}#{codigo_telemetria}02#{id_local}#{minimo}#{maximo}#{timer}>".upcase
+    end
   end
 
   # Internal : Gera o pacote de mudança de IP primário, que será enviando
