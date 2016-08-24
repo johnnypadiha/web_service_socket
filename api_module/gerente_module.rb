@@ -122,11 +122,10 @@ class GerenteModule < EventMachine::Connection
     if medida_params.id_local >= 21
       medidas = []
       novas_faixas = {21 => [0,0], 22 => [0,0], 23 => [0,0], 24 => [0,0]}
-      equipamentos = telemetria.equipamentos
+      equipamentos = telemetria.equipamentos.pluck(:id)
 
-      equipamentos.each do |equipamento|
-        medidas += Medida.where(equipamento_id: equipamento.id, id_local: [21,22,23,24]).order("id desc").limit(4)
-      end
+      ids = Medida.select('MAX(id) id, id_local').where(equipamento_id: equipamentos).where(id_local: [21,22,23,24]).group(:id_local).map(&:id)
+      medidas = Medida.where(id: ids)
 
       medidas = medidas.uniq { |medida| medida.id_local}
 
@@ -135,7 +134,6 @@ class GerenteModule < EventMachine::Connection
         if medida.id_local == medida_params.id_local
           novas_faixas[medida.id_local][0] = saida_faixas.minimo.to_i
           novas_faixas[medida.id_local][1] = medida_params.timer.to_i
-
         else
           valor_digital = medida.faixas.select(:minimo).where(status_faixa: 1)
           novas_faixas[medida.id_local][0] = valor_digital[0].minimo.to_i
@@ -143,7 +141,9 @@ class GerenteModule < EventMachine::Connection
         end
       end
 
-      faixas_digitais_binarias = "#{novas_faixas[21][0]}#{novas_faixas[22][0]}#{novas_faixas[23][0]}#{novas_faixas[24][0]}"
+      faixas_digitais_binarias = "#{novas_faixas[24][0]}#{novas_faixas[23][0]}#{novas_faixas[22][0]}#{novas_faixas[21][0]}"
+
+      faixas_digitais_binarias = faixas_digitais_binarias.reverse
 
       faixas_digitais_binarias = faixas_digitais_binarias.to_i(2)
 
