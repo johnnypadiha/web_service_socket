@@ -20,7 +20,7 @@ class Gerente
         logger.info (e.backtrace || [])[0..10].join("\n")
       end
       @timer = EventMachine::PeriodicTimer.new(15) do
-        # logger.info "Checando tabela de saida...."
+        logger.info "Checando tabela de saida...."
         GerenteModule.checar_saida
       end
       EventMachine::connect @ip, @porta, GerenteModule
