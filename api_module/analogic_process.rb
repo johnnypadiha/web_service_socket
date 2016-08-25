@@ -64,7 +64,6 @@ module AnalogicProcess
             if id_telemetria.nil?
               id_telemetria
             else
-              id_telemetria
               $lista_telemetria.find { |t| t[:id] == id_telemetria }
             end
 

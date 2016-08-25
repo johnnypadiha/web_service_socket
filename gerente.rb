@@ -15,15 +15,18 @@ class Gerente
 
   def start_gerente
     EventMachine.run {
+      EventMachine::connect @ip, @porta, GerenteModule
+
       EventMachine.error_handler do |e|
         logger.info "Exception during event: #{e.message} (#{e.class})".red
         logger.info (e.backtrace || [])[0..10].join("\n")
       end
+
+      GerenteModule.checar_saida
       @timer = EventMachine::PeriodicTimer.new(15) do
         logger.info "Checando tabela de saida...."
         GerenteModule.checar_saida
       end
-      EventMachine::connect @ip, @porta, GerenteModule
     }
   end
 end
