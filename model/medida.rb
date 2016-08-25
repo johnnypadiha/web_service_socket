@@ -160,7 +160,7 @@ class Medida < ActiveRecord::Base
     if medida.id_local >= INICIO_DIGITAIS and medida.id_local <= FIM_DIGITAIS
       Faixa.create(medida_id: medida.id, status_faixa: OK, disable: false, minimo: faixa[:normal], maximo: faixa[:normal].to_i + 0.99 )
       Faixa.create(medida_id: medida.id, status_faixa: ALERTA, disable: false, minimo: 50, maximo: 51 )
-      normal = faixa[:normal] == 0 ? 1 : 0
+      normal = faixa[:normal].to_i == 0 ? 1 : 0
       Faixa.create(medida_id: medida.id, status_faixa: ALARME, disable: false, minimo: normal, maximo: normal.to_i + 0.99 )
     else
       Faixa.create(medida_id: medida.id, status_faixa: OK, disable: false, minimo: faixa[:minimo], maximo: faixa[:maximo] )
