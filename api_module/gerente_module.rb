@@ -109,7 +109,6 @@ class GerenteModule < EventMachine::Connection
   #
   # retorna o pacote de mudança de faixa e timer ainda sem o checksum
   def self.change_faixa_timer codigo_telemetria, codigo_gerente = '0000', saida, saida_faixas, medida_params, telemetria
-
     maximo = BaseConverter.convert_to_byte(saida_faixas.maximo)
     maximo = BaseConverter.convert_to_hexa(maximo)
 
@@ -133,7 +132,7 @@ class GerenteModule < EventMachine::Connection
 
         if medida.id_local == medida_params.id_local
           novas_faixas[medida.id_local][0] = saida_faixas.minimo.to_i
-          novas_faixas[medida.id_local][1] = medida_params.timer.to_i
+          novas_faixas[medida.id_local][1] = saida.valor.to_i
         else
           valor_digital = medida.faixas.select(:minimo).where(status_faixa: 1)
           novas_faixas[medida.id_local][0] = valor_digital[0].minimo.to_i

@@ -149,8 +149,7 @@ class ProcessarPacotes
       digitais["D#{i+1}"] = fundo_escala
       time_cont = time_cont+2
     end
-
-     return analogicas, negativas, digitais
+    return analogicas, negativas, digitais
   end
 
   # Internal - Responsável por verificar na tabela de saída se a resposta de uma
