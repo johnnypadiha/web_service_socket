@@ -88,12 +88,6 @@ class GerenteModule < EventMachine::Connection
         medida = Medida.find(saida.medida_id)
         $gerente.send_data change_faixa_timer codigo_telemetria, '0000', saida, saida_faixas, medida, telemetria
 
-      # when 04
-      #   id_telemetria = saida.codigo_equipamento.to_s.rjust(4,'0')
-      #   logger.info id_telemetria
-      #
-      #   if $gerente.send_data "<0000#{id_telemetria}02FFFF>"
-      #   end
       end
     else
       saida.update(cancelado: true)
@@ -106,25 +100,29 @@ class GerenteModule < EventMachine::Connection
   # minimo - valor em hexadecimal e byte do mínimo da faixa verde
   # timer - valor em hexadecimal do timer da medida
   # id_local - valor em hexadecimal do id_local da medida
+  # novas faixas - Hash que contem o id_local da medida e um Array com o timer e
+  #                o valor do estado "normal" da medida digital
+  # equipamentos - Array contendo os IDs dos equipamentos que pertencem a telemetria
+  # em questão
+  # medidas_ids - IDs das últimas medidas digitais de uma telemetria, caso ela possua
+  # medidas - Lista de objetos de medida, contendo a última configuração de medida
+  #           de uma medida digital
+  # faixas_digitais_binarias - valor "atual" para as 4 medidas digitais em binário
+  # faixas_digitais_hexa - valor da variavel "faixas_digitais_binarias", já convertidas
+  #                        para hexadecimal
   #
-  # retorna o pacote de mudança de faixa e timer ainda sem o checksum
+  #
+  # retorna o pacote de mudança de faixa e timer ainda sem o checksum, caso a medida_params
+  # que solicitou a mudança seja digital, gera um pacote diferenciado, devido ao fato da
+  # telemetria só receber a modificação de medida digital quando vier as 4 juntas
   def self.change_faixa_timer codigo_telemetria, codigo_gerente = '0000', saida, saida_faixas, medida_params, telemetria
-    maximo = BaseConverter.convert_to_byte(saida_faixas.maximo)
-    maximo = BaseConverter.convert_to_hexa(maximo)
-
-    minimo = BaseConverter.convert_to_byte(saida_faixas.minimo)
-    minimo = BaseConverter.convert_to_hexa(minimo)
-
-    timer = BaseConverter.convert_to_hexa(saida.valor)
-    id_local = BaseConverter.convert_to_hexa(medida_params.id_local)
 
     if medida_params.id_local >= 21
-      medidas = []
       novas_faixas = {21 => [0,0], 22 => [0,0], 23 => [0,0], 24 => [0,0]}
       equipamentos = telemetria.equipamentos.pluck(:id)
 
-      ids = Medida.select('MAX(id) id, id_local').where(equipamento_id: equipamentos).where(id_local: [21,22,23,24]).group(:id_local).map(&:id)
-      medidas = Medida.where(id: ids)
+      medidas_ids = Medida.select('MAX(id) id, id_local').where(equipamento_id: equipamentos).where(id_local: [21,22,23,24]).group(:id_local).map(&:id)
+      medidas = Medida.where(id: medidas_ids)
 
       medidas = medidas.uniq { |medida| medida.id_local}
 
@@ -146,7 +144,7 @@ class GerenteModule < EventMachine::Connection
 
       faixas_digitais_binarias = faixas_digitais_binarias.to_i(2)
 
-      faixas_digitais_binarias = BaseConverter.convert_to_hexa(faixas_digitais_binarias)
+      faixas_digitais_hexa = BaseConverter.convert_to_hexa(faixas_digitais_binarias)
 
       timer_D1 = novas_faixas[21][1]
       timer_D1 = BaseConverter.convert_to_hexa(timer_D1)
@@ -160,8 +158,17 @@ class GerenteModule < EventMachine::Connection
       timer_D4 = novas_faixas[24][1]
       timer_D4 = BaseConverter.convert_to_hexa(timer_D4)
 
-      code = "<#{codigo_gerente}#{codigo_telemetria}0215#{faixas_digitais_binarias}#{timer_D1}#{timer_D2}#{timer_D3}#{timer_D4}>".upcase
+      code = "<#{codigo_gerente}#{codigo_telemetria}0215#{faixas_digitais_hexa}#{timer_D1}#{timer_D2}#{timer_D3}#{timer_D4}>".upcase
+
     else
+      maximo = BaseConverter.convert_to_byte(saida_faixas.maximo)
+      maximo = BaseConverter.convert_to_hexa(maximo)
+
+      minimo = BaseConverter.convert_to_byte(saida_faixas.minimo)
+      minimo = BaseConverter.convert_to_hexa(minimo)
+
+      timer = BaseConverter.convert_to_hexa(saida.valor)
+      id_local = BaseConverter.convert_to_hexa(medida_params.id_local)
 
       code = "<#{codigo_gerente}#{codigo_telemetria}02#{id_local}#{minimo}#{maximo}#{timer}>".upcase
     end
