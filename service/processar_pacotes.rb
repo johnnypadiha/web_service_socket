@@ -144,11 +144,12 @@ class ProcessarPacotes
     time_cont = 0
     QTDE_DIGITAIS.times do |i|
       fundo_escala = Hash.new
-      fundo_escala[:normal] = digitais_bin[i-1]
+      fundo_escala[:normal] = digitais_bin[i]
       fundo_escala[:timer] = configuracao_hex[:timers_digitais][time_cont ... time_cont+2].hex.to_s(BASE_DEC)
       digitais["D#{i+1}"] = fundo_escala
       time_cont = time_cont+2
     end
+
      return analogicas, negativas, digitais
   end
 
