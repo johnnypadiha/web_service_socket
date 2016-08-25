@@ -279,23 +279,7 @@ class ProcessarPacotes
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "15"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida D01 por parte da telemetria #{codigo_telemetria}!".blue
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
-
-      when "16"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida D02 por parte da telemetria #{codigo_telemetria}!".blue
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
-
-      when "17"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida D03 por parte da telemetria #{codigo_telemetria}!".blue
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
-
-      when "18"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida D04 por parte da telemetria #{codigo_telemetria}!".blue
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
-
-      when "19"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida D05 por parte da telemetria #{codigo_telemetria}!".blue
+        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, das medidas DIGITAIS por parte da telemetria #{codigo_telemetria}!".blue
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       else
