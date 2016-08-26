@@ -21,7 +21,7 @@ class MedidasEvento < ActiveRecord::Base
       medidas_eventos_colecao.each do |medida_evento|
         result = MedidasEvento.where(medida_id: medida_evento[:medida_id]).last
 
-        medidas << result if result.present?
+        medidas << result if result.present? #and result.medida.timer.to_i > 0
       end
     end
     medidas

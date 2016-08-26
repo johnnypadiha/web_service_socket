@@ -30,7 +30,12 @@ class Evento < ActiveRecord::Base
       equipamento_medidas = equipamento.medidas_equipamento evento
       equipamento_medidas.each do |medida|
           faixa_atual = medida.faixas.select {|s| evento[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i >= s.minimo.to_i && evento[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i <= s.maximo.to_i}.first
-          status_faixa = faixa_atual.present? ? faixa_atual.status_faixa : ALARME
+          status_faixa =
+          if medida.timer.to_i <= 0
+            OK
+          else
+            faixa_atual.present? ? faixa_atual.status_faixa : ALARME
+          end
           codigo_evento =
             if evento[:tipo_pacote].present?
               evento[:tipo_pacote]
