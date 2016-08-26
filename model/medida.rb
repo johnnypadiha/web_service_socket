@@ -5,6 +5,23 @@ class Medida < ActiveRecord::Base
   has_many :medidas_eventos
   has_many :faixas
 
+  # Internal : Recebe o ID da telemetria e os dados dos pacotes e periste as faixas
+  #            o timer das medidas que vieram no pacote, uni esses dados com os
+  #            os dados das últimas medidas e faixas já existentes no web para que
+  #            o usuário não perca algumas informações que só existem no web.
+  #            Após persistir os dados das medidas e faixas, chama um método que
+  #            persistirá um evento com todos os valores zerados chamado de evento
+  #            de cofiguração.
+  #
+  # @mudanca_faixa - flag que verifica se existiram mudanças nas faixas que vieram
+  #                  da telemetria
+  # @medidas[] - Array de objetos Medidas e Faixas que serão persistidos caso ocorreu
+  #              alguma alteração de medidas e/ou faixas
+  # @medidas_evento[] - Medidas que irão gerar o evento de Configuração
+  # @ultimas_medidas_evento[] - Array das últimas medidas existentes no banco para
+  #                             fins de comparação com as medidas que estão chegando
+  #                             do web service.
+  #
   def self.create_medidas(id_telemetria, analogicas, negativas, digitais)
     equipamentos = Equipamento.where(telemetria_id: id_telemetria)
     unless equipamentos.blank?
@@ -120,10 +137,13 @@ class Medida < ActiveRecord::Base
       end
   end
 
-  # verifica se a media de configuração que esta tentando ser persistida possui algum dado novo ou é igual a ultima enviada
-  # se retornar true é uma sinalização de que a faixa tem novos dados, se não ele é igual a última
+  # Internal - verifica se a media de configuração que esta tentando ser persistida
+  #            possui algum dado novo ou é igual a ultima enviada se retornar true
+  #            é uma sinalização de que a faixa tem novos dados, se não ele é igual
+  #            a última.
   #
-  # ultima_faixa: contem apenas a faixa verde, por que o pacote de configuração envia apenas esta
+  # ultima_faixa: contem apenas a faixa verde, por que o pacote de configuração
+  #               envia apenas esta
   #
   def self.faixas_medidas_mudaram ultima_medida, medida, faixa
     timer = medida.timer
@@ -150,10 +170,22 @@ class Medida < ActiveRecord::Base
       end
   end
 
+  # Internal - busca as faixas de uma medida através do medida_id
+  #
+  # Retorna as três faixas de uma medida
   def self.busca_faixas_medida medida_id
     faixas = Faixa.where(medida_id: medida_id).order(:status_faixa)
   end
 
+  # Internal - Verifica se uma medida é Digital (D1 até D4), porque a forma de
+  #            tratar as medidas digitais e diferente:
+  #            Forma: valor mínio da faixa é um número escolhido pelo usuário e o
+  #            valor máximo é o número escolhido pelo usuário mais 1
+  #            caso a medida não seja do tipo digital o sistema verifica se a faixa
+  #            é a "verde" status_faixa OK, se sim, pega o que veio da telemetria
+  #            se não pega do banco de dados, porque a faixa vermelha e laranja
+  #            não são provenientes da telemetria.
+  #
   def self.persiste_faixas medida, faixa, ultima_medida
     ultima_medida ? (ultimas_faixas = Medida::busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
 
