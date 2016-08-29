@@ -20,7 +20,12 @@ class AlarmeNormalizacao
       if equipamento.medidas_equipamento(pack).present?
         equipamento.medidas_equipamento(pack).each do |medida|
           faixa_atual = medida.faixas.select {|s| pack[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i >= s.minimo.to_i && pack[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i <= s.maximo.to_i}.first
-          status_faixa = faixa_atual.present? ? faixa_atual.status_faixa : ALARME
+          status_faixa =
+          if medida.timer > 0
+            faixa_atual.present? ? faixa_atual.status_faixa : ALARME
+          else
+            OK
+          end
 
           medida_evento = {
                             medida_id: medida.id,
@@ -70,17 +75,19 @@ class AlarmeNormalizacao
     tipo_pacote = 0
     mudou_faixa = false
     ultimas_medidas_evento.each do |medida_anterior|
-      medidas_colecao.each do |medida_atual|
-        if medida_atual[:medida_id].to_i == medida_anterior.medida_id
-          unless medida_atual[:status_faixa].to_i == medida_anterior.status_faixa.to_i
-            mudou_faixa = true
-            case medida_atual[:status_faixa].to_i
-            when OK
-              tipo_pacote = PACOTE_NORMALIZACAO unless tipo_pacote == PACOTE_ALERTA && tipo_pacote == PACOTE_ALARME
-            when ALERTA
-              tipo_pacote = PACOTE_ALERTA unless tipo_pacote == PACOTE_ALARME
-            when ALARME
-              tipo_pacote = PACOTE_ALARME
+      if medida_anterior.medida.timer > 0
+        medidas_colecao.each do |medida_atual|
+          if medida_atual[:medida_id].to_i == medida_anterior.medida_id
+            unless medida_atual[:status_faixa].to_i == medida_anterior.status_faixa.to_i
+              mudou_faixa = true
+              case medida_atual[:status_faixa].to_i
+              when OK
+                tipo_pacote = PACOTE_NORMALIZACAO unless tipo_pacote == PACOTE_ALERTA && tipo_pacote == PACOTE_ALARME
+              when ALERTA
+                tipo_pacote = PACOTE_ALERTA unless tipo_pacote == PACOTE_ALARME
+              when ALARME
+                tipo_pacote = PACOTE_ALARME
+              end
             end
           end
         end
