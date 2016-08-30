@@ -98,6 +98,7 @@ class GerenteModule < EventMachine::Connection
   def self.disconnect_telemetry(telemetry_code, gerent_code)
     "<#{gerent_code}#{telemetry_code}1>"
   end
+
   # Internal : Gera o pacote de mudança de faixas e timers
   #
   # maximo - valor em hexadecimal e byte do maximo da faixa verde
@@ -121,11 +122,11 @@ class GerenteModule < EventMachine::Connection
   # telemetria só receber a modificação de medida digital quando vier as 4 juntas
   def self.change_faixa_timer codigo_telemetria, codigo_gerente = '0000', saida, saida_faixas, medida_params, telemetria
 
-    if medida_params.id_local >= 21
-      novas_faixas = {21 => [0,0], 22 => [0,0], 23 => [0,0], 24 => [0,0]}
+    if medida_params.id_local >= INICIO_DIGITAIS
+      novas_faixas = {D1 => [0,0], D2 => [0,0], D3 => [0,0], D4 => [0,0]}
       equipamentos = telemetria.equipamentos.pluck(:id)
 
-      medidas_ids = Medida.select('MAX(id) id, id_local').where(equipamento_id: equipamentos).where(id_local: [21,22,23,24]).group(:id_local).map(&:id)
+      medidas_ids = Medida.select('MAX(id) id, id_local').where(equipamento_id: equipamentos).where(id_local: [D1,D2,D3,D4]).group(:id_local).map(&:id)
       medidas = Medida.where(id: medidas_ids)
 
       medidas = medidas.uniq { |medida| medida.id_local}
@@ -142,24 +143,24 @@ class GerenteModule < EventMachine::Connection
         end
       end
 
-      faixas_digitais_binarias = "#{novas_faixas[24][0]}#{novas_faixas[23][0]}#{novas_faixas[22][0]}#{novas_faixas[21][0]}"
+      faixas_digitais_binarias = "#{novas_faixas[D4][0]}#{novas_faixas[D3][0]}#{novas_faixas[D2][0]}#{novas_faixas[D1][0]}"
 
       faixas_digitais_binarias = faixas_digitais_binarias.reverse
 
-      faixas_digitais_binarias = faixas_digitais_binarias.to_i(2)
+      faixas_digitais_binarias = faixas_digitais_binarias.to_i(BASE_BIN)
 
       faixas_digitais_hexa = BaseConverter.convert_to_hexa(faixas_digitais_binarias)
 
-      timer_D1 = novas_faixas[21][1]
+      timer_D1 = novas_faixas[D1][1]
       timer_D1 = BaseConverter.convert_to_hexa(timer_D1)
 
-      timer_D2 = novas_faixas[22][1]
+      timer_D2 = novas_faixas[D2][1]
       timer_D2 = BaseConverter.convert_to_hexa(timer_D2)
 
-      timer_D3 = novas_faixas[23][1]
+      timer_D3 = novas_faixas[D3][1]
       timer_D3 = BaseConverter.convert_to_hexa(timer_D3)
 
-      timer_D4 = novas_faixas[24][1]
+      timer_D4 = novas_faixas[D4][1]
       timer_D4 = BaseConverter.convert_to_hexa(timer_D4)
 
       code = "<#{codigo_gerente}#{codigo_telemetria}0215#{faixas_digitais_hexa}#{timer_D1}#{timer_D2}#{timer_D3}#{timer_D4}>".upcase
