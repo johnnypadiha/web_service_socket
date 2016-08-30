@@ -53,11 +53,11 @@ class GerenteModule < EventMachine::Connection
   # codigo_telemetria - código da telemetria no formato "xxxx"
   #
   def self.processar_comandos(saida)
-    if saida.tentativas.to_i  <= LIMITE_TENTIVAS
-      saida.update(tentativas: saida.tentativas.to_i + 1)
-      telemetria = Telemetria.find(saida.telemetria_id)
-      codigo_telemetria = telemetria.codigo.to_s.rjust(4,'0')
+    saida.update(tentativas: saida.tentativas.to_i + 1)
+    telemetria = Telemetria.find(saida.telemetria_id)
+    codigo_telemetria = telemetria.codigo.to_s.rjust(4,'0')
 
+    if saida.tentativas.to_i  <= LIMITE_TENTATIVAS
       case saida.comando.to_i
       when RESET_TELEMETRY
         logger.info "Tentativa de envio de RESET para telemetria código: #{codigo_telemetria}"
@@ -90,10 +90,14 @@ class GerenteModule < EventMachine::Connection
 
       end
     else
+      $gerente.send_data disconnect_telemetry codigo_telemetria, '0000'
       saida.update(cancelado: true)
     end
   end
 
+  def self.disconnect_telemetry(telemetry_code, gerent_code)
+    "<#{gerent_code}#{telemetry_code}1>"
+  end
   # Internal : Gera o pacote de mudança de faixas e timers
   #
   # maximo - valor em hexadecimal e byte do maximo da faixa verde
@@ -237,9 +241,12 @@ class GerenteModule < EventMachine::Connection
   def self.obter_pacote(pacote)
     pacote = Pacotes.formatador(pacote)
     pacote = pacote[8..pacote.size]
-    pacote = "<#{gerar_check_sum(pacote)}>"
-    logger.info "Pacote gerado #{pacote}"
-    pacote
+    if pacote.to_i == 1
+      false
+    else
+      logger.info "Pacote gerado #{pacote}"
+      pacote = "<#{gerar_check_sum(pacote)}>"
+    end
   end
 
   # Internal : Gera o código especial para identificar o gerente que é um código

@@ -75,11 +75,17 @@ module AnalogicProcess
             end
           else
 
-            status_command = telemetria[:socket].send_data GerenteModule.obter_pacote(data)
-            if status_command > 0
-              logger.info "Enviando pacote: #{pacote} para telemetria código: #{telemetria[:id]}"
+            package = GerenteModule.obter_pacote(data)
+            if package
+              status_command = telemetria[:socket].send_data package
+              if status_command > 0
+                logger.info "Enviando pacote: #{pacote} para telemetria código: #{telemetria[:id]}"
+              else
+                logger.info "Falha ao enviar pacote: #{pacote} para telemetria código: #{telemetria[:id]}, provavelmente socket OFF ou zumbi".red
+              end
             else
-              logger.info "Falha ao enviar pacote: #{pacote} para telemetria código: #{telemetria[:id]}, provavelmente socket OFF ou zumbi".red
+              logger.info "A telemetria : #{telemetria[:id]}, Não respondeu e foi desconectada".red
+              telemetria[:socket].close_socket
             end
 
           end

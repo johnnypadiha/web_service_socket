@@ -94,7 +94,7 @@ FIM_NEGATIVAS = 20
 TEMPERATURA_DEFAULT = 20
 
 #limite de tentativas de processamento da tabela saída analógica
-LIMITE_TENTIVAS = 10
+LIMITE_TENTATIVAS = 10
 RESET_TELEMETRY = 6
 INSTANT_READING = 2
 CHANGE_PRIMARY_IP = 19
