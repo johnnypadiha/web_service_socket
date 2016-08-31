@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'eventmachine'
-require 'pp'
 
 class GerenteModule < EventMachine::Connection
   def initialize(*args)
@@ -39,7 +38,7 @@ class GerenteModule < EventMachine::Connection
   #         telemetria
   #
   def self.checar_saida
-    saida = Saida.where('cancelado = ? and data_processamento is ? and modelo_id = ? and aguardando = ?', false, nil, 1, false).first
+    saida = Saida.check_out false, nil, 1, false
     GerenteModule.processar_comandos(saida) if saida
   end
 
