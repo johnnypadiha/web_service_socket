@@ -49,6 +49,7 @@ class Evento < ActiveRecord::Base
             reporte_temperatura = true if medida.reporte_medida_id == REPORTE_TEMPERATURA
           end
           Logging.info "DEBUG ---------- REPORT-----"
+          Logging.info faixa_atual
           Logging.info status_faixa
           Logging.info reporte_faixa
           Logging.info reporte_sinal
