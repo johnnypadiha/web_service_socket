@@ -161,7 +161,6 @@ class ProcessarPacotes
   #          de um comando que foi solicitado anteriormente
   #
   def self.processa_confirmacao_comandos pacote
-    logger.info "pacote ---->> #{pacote}!".blue
 
     codigo_telemetria = ProcessarPacotes.obtem_codigo_telemetria pacote
     telemetry = Telemetria.select(:id).find_by_codigo(codigo_telemetria)
@@ -171,11 +170,11 @@ class ProcessarPacotes
 
       case pacote.to_s
       when "FFFF"
-        logger.info "Confirmação do recebimento do comando LEITURA_INSTANTANEA por parte da telemetria #{codigo_telemetria}!".blue
+        write_command_log "LEITURA_INSTANTANEA", codigo_telemetria
         output_persistence_command telemetry, INSTANT_READING
 
       when "FFFE"
-        logger.info "Confirmação do recebimento do comando RESET por parte da telemetria #{codigo_telemetria}!".blue
+        write_command_log "RESET", codigo_telemetria
         output_persistence_command telemetry, RESET_TELEMETRY
 
       else
@@ -186,102 +185,102 @@ class ProcessarPacotes
 
       case pacote[0..1].to_s
       when "30"
-        logger.info "Confirmação do recebimento do comando ALTERAR IP E PORTA PRIMÁRIOS, por parte da telemetria #{codigo_telemetria}!".blue
+        write_command_log "ALTERAR IP E PORTA PRIMÁRIOS", codigo_telemetria
         output_persistence_command telemetry, CHANGE_PRIMARY_IP
 
       when "35"
-        logger.info "Confirmação do recebimento do comando ALTERAR IP E PORTA SECUNDÁRIO, por parte da telemetria #{codigo_telemetria}!".blue
+        write_command_log "ALTERAR IP E PORTA SECUNDÁRIO", codigo_telemetria
         output_persistence_command telemetry, CHANGE_SECUNDARY_IP
 
       when "3D"
-        logger.info "Confirmação do recebimento do comando ALTERAR HOST, por parte da telemetria #{codigo_telemetria}!".blue
+        write_command_log "ALTERAR HOST", codigo_telemetria
         output_persistence_command telemetry, CHANGE_HOST
 
       when "3E"
-        logger.info "Confirmação do recebimento do comando ALTERAR PORTA DO HOST, por parte da telemetria #{codigo_telemetria}!".blue
+        write_command_log "ALTERAR PORTA DO HOST", codigo_telemetria
         output_persistence_command telemetry, CHANGE_PORT
 
       when "01"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A1 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "A1", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
       when "02"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A2 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "A2", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "03"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A3 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "A3", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "04"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A4 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "A4", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "05"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A5 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "A5", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "06"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A6 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "A6", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "07"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A7 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "A7", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "08"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A8 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "A8", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "09"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A9 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "A9", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
-      when "OA"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A10 por parte da telemetria #{codigo_telemetria}!".blue
+      when "0A"
+        write_measures_log "A10", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "0B"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A11 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "A11", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "0C"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A12 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "A12", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "0D"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A13 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "A13", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "0E"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A14 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "A14", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "0F"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A15 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "A15", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "10"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida A16 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "A16", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "11"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida N01 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "N01", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "12"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida N02 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "N02", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "13"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida N03 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "N03", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "14"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, da medida N04 por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "N04", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       when "15"
-        logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, das medidas DIGITAIS por parte da telemetria #{codigo_telemetria}!".blue
+        write_measures_log "DIGITAIS", codigo_telemetria
         output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       else
@@ -290,6 +289,18 @@ class ProcessarPacotes
 
     end
 
+  end
+
+  # Internal - Escreve no nog recebimento de mudanças de faixas e timmer pela telemetria
+  #
+  def self.write_measures_log medida, codigo_telemetria
+    logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, das medidas #{medida} por parte da telemetria #{codigo_telemetria}!".blue
+  end
+
+  # Internal - Escreve no nog recebimento de mudanças de commando pela telemetria
+  #
+  def self.write_command_log command, codigo_telemetria
+    logger.info "Confirmação do recebimento do comando #{command}, por parte da telemetria #{codigo_telemetria}!".blue
   end
 
   # Internal : Método auxiliar do "processa_confirmacao_comandos", responsável por
