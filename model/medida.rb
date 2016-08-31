@@ -200,4 +200,16 @@ class Medida < ActiveRecord::Base
       Faixa.create(medida_id: medida.id, status_faixa: ALARME, disable: false, minimo: ultimas_faixas[2] ? ultimas_faixas[2].minimo : 0, maximo: ultimas_faixas[2] ? ultimas_faixas[2].maximo : 0  )
     end
   end
+
+  # Internal - Seleciona todas as meddias ambiente dos equipamentos passados pelo
+  #            parâmetro, caso a medida ambiente for repetida, seleciona apenas
+  #            que tiver oo maior ID.
+  #
+  # Retorna as medidas ambientes já unificadas pelo maior ID.
+  def self.last_environment_measures equipamentos
+    medidas_ids = Medida.select('MAX(id) id, id_local').where(equipamento_id: equipamentos).where(id_local: [D1,D2,D3,D4]).group(:id_local).map(&:id)
+    medidas = Medida.where(id: medidas_ids)
+    medidas = medidas.uniq { |medida| medida.id_local}
+  end
+
 end
