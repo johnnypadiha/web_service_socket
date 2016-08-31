@@ -48,6 +48,14 @@ class Evento < ActiveRecord::Base
             reporte_energia = true if medida.reporte_medida_id == REPORTE_ENERGIA
             reporte_temperatura = true if medida.reporte_medida_id == REPORTE_TEMPERATURA
           end
+          Logging.info "DEBUG ---------- REPORT-----"
+          Logging.info faixa_atual.inspect
+          Logging.info medida.timer
+          Logging.info status_faixa
+          Logging.info reporte_faixa
+          Logging.info reporte_sinal
+          Logging.info reporte_energia
+          Logging.info reporte_temperatura
 
           medida_evento = MedidasEvento.new
           medida_evento.medida_id = medida.id
