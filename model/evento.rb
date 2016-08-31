@@ -42,7 +42,7 @@ class Evento < ActiveRecord::Base
             else
               SelecionarPacote.new({codigo_atual: codigo_evento, codigo_pacote: evento[:codigo_pacote], status_faixa: status_faixa}).seleciona_pacote
             end
-          if status_faixa.to_i == ALERTA || status_faixa.to_i == ALARME
+          if status_faixa.to_i == ALERTA or status_faixa.to_i == ALARME
             reporte_faixa = true if medida.reporte_medida_id == REPORTE_FAIXA
             reporte_sinal = true if medida.reporte_medida_id == REPORTE_SINAL
             reporte_energia = true if medida.reporte_medida_id == REPORTE_ENERGIA
