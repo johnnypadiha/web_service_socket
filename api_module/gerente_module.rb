@@ -135,16 +135,36 @@ class GerenteModule < EventMachine::Connection
   # Retorna os valores máximo, mínimo, timer e id_local sendo os três primeiros
   # em hexadecimal
   def self.analogico_tracks_generate saida_faixas, saida, medida_params
-    maximo = BaseConverter.convert_to_byte(saida_faixas.maximo)
+    minimo, maximo = orange_track_to_green saida_faixas
+
+    logger.info "minimo #{minimo} -  maximo #{maximo}"
+
+    maximo = BaseConverter.convert_to_byte(maximo)
     maximo = BaseConverter.convert_to_hexa(maximo)
 
-    minimo = BaseConverter.convert_to_byte(saida_faixas.minimo)
+    minimo = BaseConverter.convert_to_byte(minimo)
     minimo = BaseConverter.convert_to_hexa(minimo)
 
     timer = BaseConverter.convert_to_hexa(saida.valor)
     id_local = BaseConverter.convert_to_hexa(medida_params.id_local)
 
     return maximo, minimo, timer, id_local
+  end
+
+  # Internal - Unifica a faixa laranja com a faixa verde da telemetria analógica
+  #            para que ao enviar uma faixa para telemetria a ela considere que
+  #            a faixa laranja e a verde seja a mesma coisa, ou seja "verde"
+  #
+  # Retorna o inicio e o fim da faixa verde que será enviada para a telemetria
+  def self.orange_track_to_green saida_faixas
+      if saida_faixas.maximo < saida_faixas.minimo_laranja
+        minimo = saida_faixas.minimo
+        maximo = saida_faixas.maximo_laranja
+      else
+        minimo = saida_faixas.minimo_laranja
+        maximo = saida_faixas.maximo
+      end
+    return minimo, maximo
   end
 
   # Internal - Gera novos valores para faixas e timers das medidas digitais, se
