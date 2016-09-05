@@ -5,7 +5,7 @@ class Medida < ActiveRecord::Base
   has_many :medidas_eventos
   has_many :faixas
 
-  # Internal : Recebe o ID da telemetria e os dados dos pacotes e periste as faixas
+  # Internal : Recebe o ID da telemetria e os dados dos pacotes e persiste as faixas
   #            o timer das medidas que vieram no pacote, uni esses dados com os
   #            os dados das últimas medidas e faixas já existentes no web para que
   #            o usuário não perca algumas informações que só existem no web.
@@ -137,6 +137,13 @@ class Medida < ActiveRecord::Base
       end
   end
 
+  # Internal - Pega a última faixa laranja de uma medida
+  #
+  def self.take_last_orange_track ultima_medida
+    ultima_medida ? (ultimas_faixas = Medida::busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
+    ultima_faixa = ultimas_faixas.second
+  end
+
   # Internal - verifica se a media de configuração que esta tentando ser persistida
   #            possui algum dado novo ou é igual a ultima enviada se retornar true
   #            é uma sinalização de que a faixa tem novos dados, se não ele é igual
@@ -181,10 +188,10 @@ class Medida < ActiveRecord::Base
   #            tratar as medidas digitais e diferente:
   #            Forma: valor mínio da faixa é um número escolhido pelo usuário e o
   #            valor máximo é o número escolhido pelo usuário mais 1
-  #            caso a medida não seja do tipo digital o sistema verifica se a faixa
-  #            é a "verde" status_faixa OK, se sim, pega o que veio da telemetria
-  #            se não pega do banco de dados, porque a faixa vermelha e laranja
-  #            não são provenientes da telemetria.
+  #            caso a medida não seja do tipo digital.
+  #            O sistema pega as faixas "verde" e "laranja", que vem da telemetria
+  #            juntas e de acordo com as informações do seu banco de dados recria
+  #            as faixas "verde" e "laranja"
   #
   def self.persiste_faixas medida, faixa, ultima_medida
     ultima_medida ? (ultimas_faixas = Medida::busca_faixas_medida ultima_medida.id) : ultimas_faixas = []
@@ -195,9 +202,110 @@ class Medida < ActiveRecord::Base
       normal = faixa[:normal].to_i == 0 ? 1 : 0
       Faixa.create(medida_id: medida.id, status_faixa: ALARME, disable: false, minimo: normal, maximo: normal.to_i + 0.99 )
     else
-      Faixa.create(medida_id: medida.id, status_faixa: OK, disable: false, minimo: faixa[:minimo], maximo: faixa[:maximo] )
-      Faixa.create(medida_id: medida.id, status_faixa: ALERTA, disable: false, minimo: ultimas_faixas[1] ? ultimas_faixas[1].minimo : 0, maximo: ultimas_faixas[1] ? ultimas_faixas[1].maximo : 0 )
-      Faixa.create(medida_id: medida.id, status_faixa: ALARME, disable: false, minimo: ultimas_faixas[2] ? ultimas_faixas[2].minimo : 0, maximo: ultimas_faixas[2] ? ultimas_faixas[2].maximo : 0  )
+      green_track, orange_track = track_divisor ultima_medida, medida, faixa
+
+      Faixa.create(medida_id: medida.id, status_faixa: OK, disable: false, minimo: green_track[:minimo], maximo: green_track[:maximo] )
+
+      if orange_track
+        Faixa.create(medida_id: medida.id, status_faixa: ALERTA, disable: false, minimo: orange_track[:minimo], maximo: orange_track[:maximo] )
+      else
+        Faixa.create(medida_id: medida.id, status_faixa: ALERTA, disable: false, minimo: 0, maximo: 0)
+      end
+
+    end
+  end
+
+
+  # Internal - De acordo com as informações das faixas presentes no banco de dados
+  #            e as fornecidas pelo web_service ao receber o pacote de configuração
+  #            de uma telemetria realiza a divisão das faixas "verde" e "laranja"
+  #
+  def self.track_divisor ultima_medida, medida, faixa
+    if ultima_medida
+      last_orange_track = take_last_orange_track ultima_medida
+
+      # p "minimo laranja : #{last_orange_track.minimo} | maximo laranja : #{last_orange_track.maximo}"
+      # p "minimo verde : #{faixa[:minimo]} | maximo verde : #{faixa[:maximo]}"
+
+      last_orange_track = readjustment_orange_track last_orange_track, faixa
+
+      if last_orange_track
+
+        # caso o laranja esteja no meio do verde, eu transformo o primeiro verde
+        # em laranja,
+        if (faixa[:maximo].to_i > last_orange_track[:maximo].to_i) and (faixa[:minimo].to_i < last_orange_track[:minimo].to_i)
+          last_orange_track[:minimo] = faixa[:minimo]
+        end
+
+        # caso o verde esteja no meio do laranja o primeiro laranja
+        # é transformado em verde
+        if ((last_orange_track[:maximo].to_i > faixa[:maximo].to_i) and (last_orange_track[:minimo].to_i < faixa[:minimo].to_i))
+          faixa[:minimo] = last_orange_track[:minimo] + 1
+        end
+
+          if faixa[:maximo].to_i > last_orange_track[:maximo].to_i
+            minimo = last_orange_track[:maximo].to_i
+            minimo = minimo + 1
+            maximo = faixa[:maximo]
+          else
+            maximo = last_orange_track[:minimo].to_i
+            maximo = maximo - 1
+            minimo = faixa[:minimo]
+          end
+
+      else
+        return faixa, false
+      end
+
+       green_track = {:minimo=> minimo, :maximo=> maximo, :timer=> medida.timer.to_s}
+       last_orange_track
+      return green_track, last_orange_track
+    else
+      return faixa, false
+    end
+  end
+
+  # Internal - Reajusta a faixa laranja, quando a versão do web da mesma apresenta
+  #            diferenças quando ao pacote recebido pela telemetria, tal anomalia
+  #            pode acontecer quando existir falha de comunicação do web com a
+  #            telemetria
+  def self.readjustment_orange_track orange_track, green_track
+    invalid_orange = false
+
+    if ((orange_track.minimo.to_i == green_track[:minimo].to_i) and (orange_track.maximo.to_i == green_track[:maximo].to_i))
+      invalid_orange = true
+
+    elsif ((orange_track.minimo.to_i < green_track[:minimo].to_i) and (orange_track.maximo.to_i < green_track[:minimo].to_i))
+      invalid_orange = true
+
+    elsif ((orange_track.maximo.to_i > green_track[:maximo].to_i) and (orange_track.minimo.to_i > green_track[:maximo].to_i))
+        invalid_orange = true
+
+    elsif ((orange_track.minimo.to_i < green_track[:minimo].to_i) and (orange_track.maximo.to_i < green_track[:maximo].to_i))
+        minimo = green_track[:minimo].to_i
+        maximo = orange_track.maximo.to_i
+
+    elsif ((orange_track.maximo.to_i > green_track[:maximo].to_i) and (orange_track.minimo.to_i > green_track[:maximo].to_i))
+      minimo = orange_track.minimo.to_i
+      maximo = green_track[:maximo]
+
+    elsif ((orange_track.maximo.to_i > green_track[:maximo].to_i) and (orange_track.minimo.to_i < green_track[:minimo].to_i))
+      minimo = green_track[:minimo] +2
+      maximo = green_track[:maximo]
+
+    elsif ((orange_track.minimo.to_i > green_track[:minimo].to_i) and (orange_track.maximo.to_i > green_track[:maximo].to_i))
+      minimo = orange_track.minimo.to_i
+      maximo = green_track[:maximo]
+
+    else
+      minimo = orange_track.minimo.to_i
+      maximo = orange_track.maximo.to_i
+    end
+
+    if invalid_orange
+      orange_track = false
+    else
+      orange_track = {:minimo=> minimo, :maximo=> maximo}
     end
   end
 
