@@ -94,7 +94,13 @@ class Medida < ActiveRecord::Base
           medida.equipamento_id       = equipamento.id
           medida.indice               = ultima ? ultima_medida.indice : medida.indice = indice
           medida.disponivel_ambiente  = codigo_by_equipamento.disponivel_ambiente
-          medida.nome                 = ultima ? ultima_medida.nome : codigo_by_equipamento.codigo.codigo
+          if ultima
+            medida.nome = ultima_medida.nome
+          elsif codigo_by_equipamento.disponivel_temperatura
+            medida.nome = "Temperatura Ambiente"
+          else
+            medida.nome = codigo_by_equipamento.codigo.codigo
+          end
           medida.unidade_medida       = ultima ? ultima_medida.unidade_medida : nil
           medida.reporte_medida_id = reporte_medida_id.to_i
           medida.gauge                = gauge
