@@ -3,7 +3,7 @@ class Hora
   #
   # response - String contendo o pacote
   #
-  # Retorna o pacote de atualozação de hora
+  # Retorna o pacote de atualização de hora
   def self.gerar_atualizacao_hora
     response = ''
     data = Time.now.strftime("%y%m%d%H%M%S")
