@@ -18,3 +18,19 @@ production:
   <<: *default
   # host: 45.55.233.137
   database: telemetria_production
+
+ojc_production:
+  <<: *default
+  # host: 45.55.233.137
+  database: telemetria_ojc_production
+
+amz_production:
+  <<: *default
+  # host: 45.55.233.137
+  database: telemetria_amz_production
+
+homologacao:
+  <<: *default
+  # host: 45.55.233.137
+  # database: homologacao
+  database: telemetria_production

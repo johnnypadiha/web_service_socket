@@ -1,5 +1,6 @@
 role :web, %w{45.55.233.137}
-server '45.55.233.137', user: 'sup1', roles: %w{web app}, my_property: :my_value
+server '45.55.233.137', user: 'sup1', roles: %w{web app}
+set :environment, 'homologacao'
 
 set :ssh_options, {
   keys: %w('~/.ssh/id_rsa.pub'),

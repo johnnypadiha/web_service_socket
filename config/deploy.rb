@@ -37,7 +37,7 @@ namespace :deploy do
   task :start do
     on roles(:web) do
       execute "echo > log.log"
-      execute "cd #{deploy_to} && bundle exec puma -d -C config/puma.rb"
+      execute "cd #{deploy_to} && bundle exec puma -d -C config/puma.rb -e #{fetch(:environment)}"
     end
   end
 
