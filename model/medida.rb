@@ -291,9 +291,9 @@ class Medida < ActiveRecord::Base
   #
   def self.create_orange_and_green_tracks orange_track, green_track
     if orange_track[:minimo] == green_track[:minimo]
-      green_track[:minimo] = orange_track[:maximo] + 1
+      green_track[:minimo] = orange_track[:maximo] + 0.1
     else
-      green_track[:maximo] = orange_track[:minimo] - 1
+      green_track[:maximo] = orange_track[:minimo] - 0.1
     end
 
     return green_track, orange_track
