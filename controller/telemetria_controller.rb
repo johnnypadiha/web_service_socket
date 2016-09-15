@@ -16,7 +16,7 @@ class TelemetriaController
   # codigo - Integer contendo o código da Telemetria passado como parâmetro.
   # return - Retorna o código da Telemetria caso encontrado
   def self.find_by_codigo(codigo)
-    return Telemetria.select(:codigo).find_by_codigo(codigo.to_i)
+    return Telemetria.select(:codigo, :id).find_by_codigo(codigo.to_i)
   end
 
   # Internal : Verifica se o código da telemetria recebido no pacote está cadastrado
@@ -24,9 +24,19 @@ class TelemetriaController
   #
   # pacote - Parâmetro contendo o pacote recebido da Telemetria
   # return Boolean
-  def self.verifica_telemetria pacote
+  def self.verifica_telemetria pacote, ip
     codigo = ProcessarPacotes::obtem_codigo_telemetria(pacote)
-    telemetria_existe = TelemetriaController.find_by_codigo(codigo).present? ? true : false
+    telemetria = TelemetriaController.find_by_codigo(codigo)
+
+    telemetria_existe =
+    p ip
+    p telemetria
+      if telemetria.present?
+        telemetria.update(ip: ip)
+        true
+      else
+        false
+      end
     return telemetria_existe, codigo
   end
 

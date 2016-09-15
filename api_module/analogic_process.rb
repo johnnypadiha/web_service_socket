@@ -93,7 +93,7 @@ module AnalogicProcess
           logger.info "Pacote recebido #{data}".green
           data = Pacotes::formatador data
 
-          telemetria_existe, codigo = TelemetriaController::verifica_telemetria data
+          telemetria_existe, codigo = TelemetriaController::verifica_telemetria data, ip
           if !telemetria_existe
             logger.fatal "A Telemetria código: #{codigo} não está cadastrada no sistema e o pacote da mesma foi rejeitado!".red
             close_socket
