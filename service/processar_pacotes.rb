@@ -161,6 +161,7 @@ class ProcessarPacotes
   #          de um comando que foi solicitado anteriormente
   #
   def self.processa_confirmacao_comandos pacote
+    logger.info "pacote>>>>>>>>> #{pacote} <<<<<<<<<<<<<<<<<<<<".blue
 
     codigo_telemetria = ProcessarPacotes.obtem_codigo_telemetria pacote
     telemetry = Telemetria.select(:id).find_by_codigo(codigo_telemetria)
