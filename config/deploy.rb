@@ -1,5 +1,5 @@
 # config valid only for current version of Capistrano
-lock '3.4.0'
+lock '3.4.1'
 
 set :application, 'web_service_analogico'
 set :repo_url, 'git@bitbucket.org:atmatecnologia/web_service_analogico.git'
