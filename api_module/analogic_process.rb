@@ -77,6 +77,7 @@ module AnalogicProcess
 
             package = GerenteModule.obter_pacote(data)
             if package
+              sleep 5
               telemetria[:socket].send_data Hora.gerar_atualizacao_hora
               sleep 5
               status_command = telemetria[:socket].send_data package
