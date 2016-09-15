@@ -23,7 +23,7 @@ class Gerente
       end
 
       GerenteModule.checar_saida
-      @timer = EventMachine::PeriodicTimer.new(1 minutes) do
+      @timer = EventMachine::PeriodicTimer.new(1.minutes) do
         logger.info "Checando tabela de saida...."
         GerenteModule.checar_saida
       end
