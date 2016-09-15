@@ -77,7 +77,6 @@ module AnalogicProcess
 
             package = GerenteModule.obter_pacote(data)
             if package
-              # telemetria[:socket].send_data Hora.gerar_atualizacao_hora
               status_command = telemetria[:socket].send_data package
               if status_command > 0
                 logger.info "Enviando pacote: #{pacote} para telemetria código: #{telemetria[:id]}"
