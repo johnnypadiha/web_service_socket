@@ -281,7 +281,7 @@ class ProcessarPacotes
 
       when "15"
         write_measures_log "DIGITAIS", codigo_telemetria
-        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("D1"), CHANGE_FAIXA_TIMER
+        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
 
       else
         logger.info "Telemetria: #{codigo_telemetria} avisa que processou o pacote: #{pacote}, mas... que p* de pacote é esse?!".blue
