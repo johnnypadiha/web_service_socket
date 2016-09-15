@@ -161,8 +161,6 @@ class ProcessarPacotes
   #          de um comando que foi solicitado anteriormente
   #
   def self.processa_confirmacao_comandos pacote
-    logger.info "pacote>>>>>>>>> #{pacote} <<<<<<<<<<<<<<<<<<<<".blue
-
     codigo_telemetria = ProcessarPacotes.obtem_codigo_telemetria pacote
     telemetry = Telemetria.select(:id).find_by_codigo(codigo_telemetria)
     pacote =  pacote[6..9]
@@ -203,86 +201,87 @@ class ProcessarPacotes
 
       when "01"
         write_measures_log "A1", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A1"), CHANGE_FAIXA_TIMER
+
       when "02"
         write_measures_log "A2", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A2"), CHANGE_FAIXA_TIMER
 
       when "03"
         write_measures_log "A3", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A3"), CHANGE_FAIXA_TIMER
 
       when "04"
         write_measures_log "A4", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A4"), CHANGE_FAIXA_TIMER
 
       when "05"
         write_measures_log "A5", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A5"), CHANGE_FAIXA_TIMER
 
       when "06"
         write_measures_log "A6", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A6"), CHANGE_FAIXA_TIMER
 
       when "07"
         write_measures_log "A7", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A7"), CHANGE_FAIXA_TIMER
 
       when "08"
         write_measures_log "A8", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A8"), CHANGE_FAIXA_TIMER
 
       when "09"
         write_measures_log "A9", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A9"), CHANGE_FAIXA_TIMER
 
       when "0A"
         write_measures_log "A10", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A10"), CHANGE_FAIXA_TIMER
 
       when "0B"
         write_measures_log "A11", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A11"), CHANGE_FAIXA_TIMER
 
       when "0C"
         write_measures_log "A12", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A12"), CHANGE_FAIXA_TIMER
 
       when "0D"
         write_measures_log "A13", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A13"), CHANGE_FAIXA_TIMER
 
       when "0E"
         write_measures_log "A14", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A14"), CHANGE_FAIXA_TIMER
 
       when "0F"
         write_measures_log "A15", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A15"), CHANGE_FAIXA_TIMER
 
       when "10"
         write_measures_log "A16", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("A16"), CHANGE_FAIXA_TIMER
 
       when "11"
         write_measures_log "N01", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("N1"), CHANGE_FAIXA_TIMER
 
       when "12"
         write_measures_log "N02", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("N2"), CHANGE_FAIXA_TIMER
 
       when "13"
         write_measures_log "N03", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("N3"), CHANGE_FAIXA_TIMER
 
       when "14"
         write_measures_log "N04", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("N4"), CHANGE_FAIXA_TIMER
 
       when "15"
         write_measures_log "DIGITAIS", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_FAIXA_TIMER
+        output_persistence_measure_command telemetry, CODIGOS_MEDIDAS.key("D1"), CHANGE_FAIXA_TIMER
 
       else
         logger.info "Telemetria: #{codigo_telemetria} avisa que processou o pacote: #{pacote}, mas... que p* de pacote é esse?!".blue
@@ -312,6 +311,23 @@ class ProcessarPacotes
   #
   def self.output_persistence_command telemetry_id, type_commmand
     saidas = Saida.where('cancelado = ? and data_processamento is ? and modelo_id = ? and telemetria_id = ? and comando = ?' , false, nil, 1, telemetry_id, type_commmand)
+    saidas.each do |saida|
+      saida.aguardando = false
+      saida.processado = true
+      saida.data_processamento = Time.now
+      saida.save
+    end
+  end
+
+  # Internal : Método auxiliar do "processa_confirmacao_comandos", responsável por
+  #            marcar um comando como "executado" na tabela de saída, para as faixas
+  #            que forem modificadas.
+  #
+  # saidas - lista de objetos da tabela saída que ainda não foram executados pela
+  #          telemetria
+  #
+  def self.output_persistence_measure_command telemetry_id, local_id, type_commmand
+    saidas = Saida.where('cancelado = ? and data_processamento is ? and modelo_id = ? and telemetria_id = ? and comando = ? and id_local = ?' , false, nil, 1, telemetry_id, type_commmand, local_id)
     saidas.each do |saida|
       saida.aguardando = false
       saida.processado = true
