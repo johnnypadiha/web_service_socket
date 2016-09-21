@@ -55,7 +55,7 @@ class TelemetriaController
       telemetria.porta_server_primario    = params[:porta_ip_primario] unless params[:porta_ip_primario].blank?
       telemetria.porta_server_secundario  = params[:porta_ip_secundario] unless params[:porta_ip_secundario].blank?
       telemetria.operadora                = params[:operadora] unless params[:operadora].blank?
-      telemetria.host_server              = params[:host] unless params[:host].blank?
+      # telemetria.host_server              = params[:host] unless params[:host].blank?
       telemetria.porta_host               = params[:porta_dns] unless params[:porta_dns].blank?
       telemetria.periodico                = params[:timer_periodico].to_i * 60 unless params[:timer_periodico].blank?
 
