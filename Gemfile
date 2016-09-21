@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 gem 'colorize', '~> 0.7.7'
 gem 'ipaddress', '~> 0.8.3'
 group :development do
-  # gem 'capistrano', '~> 3.4.0'
+  gem 'capistrano', '~> 3.4.1'
   gem 'eventmachine', '~> 1.2.0.1'
   gem 'logging', '~> 2.1.0'
   gem 'activesupport', '~> 4.2.6'#, '~> 4.2', '>= 4.2.6'
