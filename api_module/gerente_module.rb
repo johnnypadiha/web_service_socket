@@ -137,8 +137,6 @@ class GerenteModule < EventMachine::Connection
   def self.analogico_tracks_generate saida_faixas, saida, medida_params
     minimo, maximo = orange_track_to_green saida_faixas
 
-    logger.info "minimo #{minimo} -  maximo #{maximo}"
-
     maximo = BaseConverter.convert_to_byte(maximo)
     maximo = BaseConverter.convert_to_hexa(maximo)
 

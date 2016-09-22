@@ -12,7 +12,6 @@ class Pacotes
 
     case tipo_pacote.to_i
     when PERIODICO_OK
-      logger.info "="*20
       logger.info("Periódico OK")
       Thread.new do
         begin
@@ -26,10 +25,7 @@ class Pacotes
           logger.fatal "Exception aconteceu em: #{e.backtrace[0]}".red
         end
       end
-      logger.info "="*20
-
     when CONFIRMACAO_COMANDOS
-      logger.info "="*20
       logger.info("Confirmação de comando recebido da telemetria #{pacote[0..3]}")
 
       Thread.new do
@@ -42,10 +38,7 @@ class Pacotes
           logger.fatal "Exception aconteceu em: #{e.backtrace[0]}".red
         end
       end
-      logger.info "="*20
-
     when PERIODICO_ALARMADO
-      logger.info "="*20
       logger.info("Periódico Alarmado")
       Thread.new do
         begin
@@ -65,10 +58,8 @@ class Pacotes
       Thread.new do
         begin
           ActiveRecord::Base.connection_pool.with_connection do
-            logger.info "="*20
             logger.info ("Configuração")
             ProcessarPacotes.configuracao pacote
-            logger.info "="*20
           end
         rescue Exception => e
           logger.fatal "Erro ao persistir Configuração #{e}".red
@@ -79,14 +70,12 @@ class Pacotes
       Thread.new do
         begin
           ActiveRecord::Base.connection_pool.with_connection do
-            logger.info "="*20
             logger.info ("Inicialização")
             pacote_processado = ProcessarPacotes.inicializacao pacote
             unless pacote_processado.blank?
               pacote_equipamentos = SepararMedidaEquipamento.obter_pacote_equipamento pacote_processado
               Evento.persistir_inicializacao pacote_equipamentos, pacote_processado unless pacote_equipamentos.blank?
             end
-            logger.info "="*20
           end
         rescue Exception => e
           logger.fatal "Erro ao persistir Inicialização #{e}".red
@@ -97,7 +86,6 @@ class Pacotes
       Thread.new do
         begin
           ActiveRecord::Base.connection_pool.with_connection do
-            logger.info "="*20
             logger.info("Leitura Instantânea")
             medidas = ProcessarPacotes.leituras_instantanea pacote
             pacote_equipamento = SepararMedidaEquipamento.obter_pacote_equipamento medidas
@@ -110,10 +98,7 @@ class Pacotes
         end
       end
     when CONTAGEM_ALARMAR
-      logger.info "="*20
       print('Em contagem para alarmar')
-      logger.info "="*20
-
     when NORMALIZACAO
       logger.info "="*20
       logger.info("Restauração Instantânea")
@@ -136,10 +121,7 @@ class Pacotes
           logger.fatal "Exception aconteceu em: #{e.backtrace[0]}".red
         end
       end
-      logger.info "="*20
-
     when ALARME_INSTANTANEO
-      logger.info "="*20
       logger.info("Alarme Instantâneo")
       Thread.new do
         begin
@@ -160,13 +142,9 @@ class Pacotes
           logger.fatal "Exception aconteceu em: #{e.backtrace[0]}".red
         end
       end
-      logger.info "="*20
 
     when ID_RECEBIDO
-      logger.info "="*20
-      logger.info "ID RECEBIDO <#{pacote}>"
-      logger.info "="*20
-
+      logger_id.info "ID RECEBIDO <#{pacote}> ----> #{Time.now.strftime('%d/%m/%Y - %H:%M:%S')}"
     else
       logger.info "pacote tipo: #{tipo_pacote}, ainda não suportado pelo WebService".yellow
     end
