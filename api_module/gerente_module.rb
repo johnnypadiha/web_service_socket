@@ -38,8 +38,11 @@ class GerenteModule < EventMachine::Connection
   #         telemetria
   #
   def self.checar_saida
-    saida = Saida.check_out false, nil, 1, false
-    GerenteModule.processar_comandos(saida) if saida
+    saidas = Saida.check_out false, nil, 1, false
+    saidas.each do |saida|
+      GerenteModule.processar_comandos(saida) if saida
+      sleep 0.5
+    end
   end
 
   # Internal : recebe um pedido de processamento de comando verifica se o mesmo
