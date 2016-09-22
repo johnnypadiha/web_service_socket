@@ -16,7 +16,7 @@ module Logging
   end
 
   def self.logger_id
-    @logger ||= Logger.new("log_id.log")
+    @logger_id ||= Logger.new("log_id.log")
   end
 
   def self.logger
