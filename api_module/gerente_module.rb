@@ -89,14 +89,15 @@ class GerenteModule < EventMachine::Connection
           logger.info "Tentativa de envio de MUDANÇA DE FAIXA E TIMER para a telemetria código: #{codigo_telemetria}"
           saida_faixas = SaidaFaixas.find_by_saida_id(saida.id)
           medida = Medida.find(saida.medida_id)
-          $gerente.send_data change_faixa_timer codigo_telemetria, '0000', saida, saida_faixas, medida, telemetria
+          package = change_faixa_timer codigo_telemetria, '0000', saida, saida_faixas, medida, telemetria
+          $gerente.send_data package
 
         end
       else
         $gerente.send_data disconnect_telemetry codigo_telemetria, '0000'
         saida.update(cancelado: true)
       end
-    end
+    end.join
   end
 
   def self.disconnect_telemetry(telemetry_code, gerent_code)
