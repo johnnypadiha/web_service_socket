@@ -41,7 +41,6 @@ class GerenteModule < EventMachine::Connection
     saidas = Saida.check_out false, nil, 1, false
     saidas.each do |saida|
       GerenteModule.processar_comandos(saida) if saida
-      sleep 0.5
     end
   end
 
@@ -90,6 +89,7 @@ class GerenteModule < EventMachine::Connection
           saida_faixas = SaidaFaixas.find_by_saida_id(saida.id)
           medida = Medida.find(saida.medida_id)
           package = change_faixa_timer codigo_telemetria, '0000', saida, saida_faixas, medida, telemetria
+          sleep 0.5
           $gerente.send_data package
 
         end
