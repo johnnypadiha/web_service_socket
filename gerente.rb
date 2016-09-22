@@ -24,7 +24,6 @@ class Gerente
 
       GerenteModule.checar_saida
       @timer = EventMachine::PeriodicTimer.new(20) do
-        logger.info "Checando tabela de saida...."
         GerenteModule.checar_saida
       end
     }
