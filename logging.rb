@@ -1,5 +1,6 @@
 module Logging
   def logger_id
+    Logging.logger_id
   end
 
   def logger_socket
