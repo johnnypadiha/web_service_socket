@@ -255,6 +255,7 @@ class Pacotes
                         .where(modelo_id: MODELO_ANALOGICO)
                         .where(aguardando: false)
                         .where(data_processamento: nil)
+                        .where(faixa_virtual: false)
                         .first
       if saida.present?
         GerenteModule.obter_pacote(GerenteModule.processar_comandos(saida))
