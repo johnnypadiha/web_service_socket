@@ -7,7 +7,7 @@ class Pacotes
   #            Obtém o tipo do pacote e trata-o de acordo com seu tipo. Caso o tipo
   #              do pacote não seja identificado, esse é descartado como 'inválido'.
   # pacote - String contendo o pacote recebido da Telemetria
-  def self.processador(pacote)
+  def self.processador(pacote, socket)
     tipo_pacote = ProcessarPacotes::obtem_tipo_pacote pacote
 
     case tipo_pacote.to_i
@@ -145,6 +145,13 @@ class Pacotes
 
     when ID_RECEBIDO
       logger_id.info "ID RECEBIDO <#{pacote}> ----> #{Time.now.strftime('%d/%m/%Y - %H:%M:%S')}"
+      package = Pacotes.generate_response pacote
+      puts "#{package}".red
+      if package
+        socket.send_data package
+      else
+        socket.close_connection
+      end
     else
       logger.info "pacote tipo: #{tipo_pacote}, ainda não suportado pelo WebService".yellow
     end

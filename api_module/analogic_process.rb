@@ -101,10 +101,8 @@ module AnalogicProcess
           end
 
           cadastrar_telemetria(self, id)
-          package = Pacotes.generate_response id
-          puts "#{package}".red
-          self.send_data package
-          Pacotes.processador data
+
+          Pacotes.processador data, self
         end
       else
         logger.info "pacote: #{data}, possui um formato inválido!".yellow
