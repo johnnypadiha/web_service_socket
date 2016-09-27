@@ -12,6 +12,7 @@ class Pacotes
 
     case tipo_pacote.to_i
     when PERIODICO_OK
+      socket.send_data Hora.gerar_atualizacao_hora
       logger.info("Periódico OK")
       Thread.new do
         begin
@@ -39,6 +40,7 @@ class Pacotes
         end
       end
     when PERIODICO_ALARMADO
+      socket.send_data Hora.gerar_atualizacao_hora
       logger.info("Periódico Alarmado")
       Thread.new do
         begin
@@ -83,6 +85,7 @@ class Pacotes
         end
       end
     when LEITURA_INSTANTANEA
+      socket.send_data Hora.gerar_atualizacao_hora
       Thread.new do
         begin
           ActiveRecord::Base.connection_pool.with_connection do
