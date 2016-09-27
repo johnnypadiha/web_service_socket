@@ -1,7 +1,13 @@
 class Saida < ActiveRecord::Base
   self.table_name = "main.saidas"
 
+  belongs_to :telemetrias
   def self.check_out cancelado, data_processamento, modelo_id, aguardando
-    Saida.where('cancelado = ? and data_processamento is ? and modelo_id = ? and aguardando = ?', false, nil, 1, false).first
+    Saida.where(cancelado: false)
+         .where(data_processamento: nil)
+         .where(modelo_id: 1)
+         .where(aguardando: false)
+         .where('tentativas <= ?', LIMITE_TENTATIVAS)
+         .first
   end
 end

@@ -39,7 +39,10 @@ class GerenteModule < EventMachine::Connection
   #
   def self.checar_saida
     saida = Saida.check_out false, nil, 1, false
-    GerenteModule.processar_comandos(saida) if saida
+    if saida
+      package = GerenteModule.processar_comandos(saida)
+      $gerente.send_data package
+    end
   end
 
   # Internal : recebe um pedido de processamento de comando verifica se o mesmo
@@ -52,45 +55,45 @@ class GerenteModule < EventMachine::Connection
   # codigo_telemetria - código da telemetria no formato "xxxx"
   #
   def self.processar_comandos(saida)
-    saida.update(tentativas: saida.tentativas.to_i + 1)
     telemetria = Telemetria.find(saida.telemetria_id)
     codigo_telemetria = telemetria.codigo.to_s.rjust(4,'0')
+    saida.update(tentativas: saida.tentativas.to_i + 1)
 
-    if saida.tentativas.to_i  <= LIMITE_TENTATIVAS
+    if saida.tentativas.to_i <= LIMITE_TENTATIVAS_INDIVIDUAL
       case saida.comando.to_i
       when RESET_TELEMETRY
         logger.info "Tentativa de envio de RESET para telemetria código: #{codigo_telemetria}"
-        $gerente.send_data reset_telemetry codigo_telemetria
+        reset_telemetry codigo_telemetria
       when INSTANT_READING
         logger.info "Tentativa de envio de LEITURA INSTANTANEA para a telemetria código: #{codigo_telemetria}"
-        $gerente.send_data instant_reading codigo_telemetria
+        instant_reading codigo_telemetria
 
       when CHANGE_PRIMARY_IP
         logger.info "Tentativa de envio de uma MUDANÇA DE IP PRIMÁRIO para a telemetria código: #{codigo_telemetria}"
-        $gerente.send_data change_primary_ip codigo_telemetria, '0000', saida
+        change_primary_ip codigo_telemetria, '0000', saida
 
       when CHANGE_SECUNDARY_IP
         logger.info "Tentativa de envio de uma MUDANÇA DE IP SECUNDÁRIO para a telemetria código: #{codigo_telemetria}"
-        $gerente.send_data change_secundary_ip codigo_telemetria, '0000', saida
+        change_secundary_ip codigo_telemetria, '0000', saida
 
       when CHANGE_HOST
         logger.info "Tentativa de envio de uma MUDANÇA DE HOST para a telemetria código: #{codigo_telemetria}"
-        $gerente.send_data change_host codigo_telemetria, '0000', saida
+        change_host codigo_telemetria, '0000', saida
 
       when CHANGE_PORT
         logger.info "Tentativa de envio de uma MUDANÇA DE PORTA para a telemetria código: #{codigo_telemetria}"
-        $gerente.send_data change_port codigo_telemetria, '0000', saida
+        change_port codigo_telemetria, '0000', saida
 
       when CHANGE_FAIXA_TIMER
         logger.info "Tentativa de envio de MUDANÇA DE FAIXA E TIMER para a telemetria código: #{codigo_telemetria}"
         saida_faixas = SaidaFaixas.find_by_saida_id(saida.id)
         medida = Medida.find(saida.medida_id)
-        $gerente.send_data change_faixa_timer codigo_telemetria, '0000', saida, saida_faixas, medida, telemetria
+        change_faixa_timer codigo_telemetria, '0000', saida, saida_faixas, medida, telemetria
 
       end
     else
-      $gerente.send_data disconnect_telemetry codigo_telemetria, '0000'
       saida.update(cancelado: true)
+      disconnect_telemetry codigo_telemetria, '0000'
     end
   end
 

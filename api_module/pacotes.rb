@@ -232,4 +232,25 @@ class Pacotes
       end
   end
 
+  def self.generate_response(codigo)
+    telemetria = Telemetria.find_by_codigo(codigo.to_i)
+    if telemetria
+      saida = telemetria.saidas
+                        .where(
+                          'tentativas > ? and tentativas <= ?',
+                          LIMITE_TENTATIVAS,
+                          LIMITE_TENTATIVAS_INDIVIDUAL
+                        )
+                        .where(cancelado: false)
+                        .where(modelo_id: MODELO_ANALOGICO)
+                        .where(aguardando: false)
+                        .where(data_processamento: nil)
+                        .first
+      if saida.present?
+        GerenteModule.obter_pacote(GerenteModule.processar_comandos(saida))
+      else
+        Hora.gerar_atualizacao_hora
+      end
+    end
+  end
 end

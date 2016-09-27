@@ -92,7 +92,7 @@ module AnalogicProcess
         else
           logger.info "Pacote recebido #{data}".green
           data = Pacotes::formatador data
-
+          p data
           telemetria_existe, codigo = TelemetriaController::verifica_telemetria data, ip
           if !telemetria_existe
             logger.fatal "A Telemetria código: #{codigo} não está cadastrada no sistema e o pacote da mesma foi rejeitado!".red
@@ -101,7 +101,9 @@ module AnalogicProcess
           end
 
           cadastrar_telemetria(self, id)
-          self.send_data Hora.gerar_atualizacao_hora
+          package = Pacotes.generate_response id
+          puts "#{package}".red
+          self.send_data package
           Pacotes.processador data
         end
       else
