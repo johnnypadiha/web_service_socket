@@ -213,8 +213,8 @@ class Medida < ActiveRecord::Base
         Faixa.create(medida_id: medida.id, status_faixa: OK, disable: false, minimo: green_track[:minimo], maximo: green_track[:maximo])
         Faixa.create(medida_id: medida.id, status_faixa: ALERTA, disable: false, minimo: orange_track[:minimo], maximo: orange_track[:maximo])
       else
-        Faixa.create(medida_id: medida.id, status_faixa: OK, disable: false, minimo: faixa[:minimo], maximo: faixa[:maximo])
-        Faixa.create(medida_id: medida.id, status_faixa: ALERTA, disable: false, minimo: 0, maximo: 0)
+        Faixa.create(medida_id: medida.id, status_faixa: OK, disable: false, minimo: faixa[:minimo], maximo: faixa[:maximo]-1)
+        Faixa.create(medida_id: medida.id, status_faixa: ALERTA, disable: false, minimo: faixa[:maximo], maximo: faixa[:maximo])
       end
     end
   end
