@@ -70,7 +70,8 @@ class Medida < ActiveRecord::Base
               @mudanca_faixa = true
             end
             if Saida.where(aguardando_configuracao: true,
-                           medida_id: ultima_medida.id).first
+                           id_local: ultima_medida.id_local,
+                           telemetria_id: id_telemetria).first
               @aguardando_configuracao = true
               @mudanca_faixa = false
             end
@@ -114,7 +115,7 @@ class Medida < ActiveRecord::Base
   end
 
   # Internal - Recebe um Hash com todas as informacoes de uma medida e escolhe a
-  #            forma como deverá ser persistido as faixas e a medida
+  #            forma como devera ser persistido as faixas e a medida
   #
   def self.save_tracks_and_measures medidas
     medidas.each do |medida|
