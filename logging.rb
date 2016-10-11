@@ -1,6 +1,6 @@
 module Logging
-  def logger_id
-    Logging.logger_id
+  def logger_comunicacao
+    Logging.logger_comunicacao
   end
 
   def logger_socket
@@ -15,8 +15,8 @@ module Logging
     Logging.logger
   end
 
-  def self.logger_id
-    @logger_id ||= Logger.new("log_id.log")
+  def self.logger_comunicacao
+    @logger_comunicacao ||= Logger.new("log_comunicacao.log")
   end
 
   def self.logger

@@ -147,7 +147,7 @@ class Pacotes
       end
 
     when ID_RECEBIDO
-      logger_id.info "ID RECEBIDO <#{pacote}> ----> #{Time.now.strftime('%d/%m/%Y - %H:%M:%S')}"
+      logger_comunicacao.info "ID RECEBIDO <#{pacote}> ----> #{Time.now.strftime('%d/%m/%Y - %H:%M:%S')}"
       package = Pacotes.generate_response pacote
       puts "#{package}".red
       if package
