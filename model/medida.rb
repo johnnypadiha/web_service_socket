@@ -252,8 +252,9 @@ class Medida < ActiveRecord::Base
   #
   def self.persiste_faixas_saida medida, faixa, ultima_medida
     orange_track = {}
-    saida = Saida.where(medida_id: ultima_medida.id,
-                        aguardando_configuracao: true).first
+    saida = Saida.where(aguardando_configuracao: true,
+                        id_local: ultima_medida.id_local,
+                        telemetria_id: medida.equipamento.telemetria_id).first
     faixa_saida = SaidaFaixas.find_by_saida_id(saida.id)
     unify_track = Medida.unify_tracks faixa_saida
     if unify_track[:green_max].to_f == faixa[:maximo].to_f &&
