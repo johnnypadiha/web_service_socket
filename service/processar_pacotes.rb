@@ -316,6 +316,7 @@ class ProcessarPacotes
       saida.aguardando = false
       saida.processado = true
       saida.data_processamento = Time.now
+      saida.aguardando_configuracao = true
       saida.save
     end
   end

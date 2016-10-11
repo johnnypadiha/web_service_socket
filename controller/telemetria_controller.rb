@@ -29,8 +29,8 @@ class TelemetriaController
     telemetria = TelemetriaController.find_by_codigo(codigo)
 
     telemetria_existe =
-    p ip
-    p telemetria
+    ip
+    telemetria
       if telemetria.present?
         telemetria.update(ip: ip)
         true
