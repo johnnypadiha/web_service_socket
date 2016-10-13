@@ -31,7 +31,7 @@ porta = 5580
  ActiveRecord::Base.configurations = YAML.load(IO.read("#{$path}/db/config.yml"))
  ActiveRecord::Base.establish_connection(environment.to_sym)
  ActiveRecord::Base.default_timezone = :local
- ActiveRecord::Base.logger = Logger.new('sql_logger.log')
+ ActiveRecord::Base.logger = Logger.new('log/sql_logger.log')
 
 # Internal: cria a pasta para armazenar os pids e armazena o PID do puma
 #

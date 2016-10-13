@@ -3,10 +3,6 @@ vendor/**/*
 
 # Ignore all logfiles and tempfiles.
 Gemfile.lock
-log.log
-sql_logger.log
-telemetry_connection.log
-telemetry_socket.log
+/log/*
 tmp/**/*
 log_id.log
-log_comunicacao.log
