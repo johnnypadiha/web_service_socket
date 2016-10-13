@@ -171,11 +171,11 @@ class ProcessarPacotes
       case pacote.to_s
       when "FFFF"
         write_command_log "LEITURA_INSTANTANEA", codigo_telemetria
-        output_persistence_command telemetry, INSTANT_READING
+        output_persistence_command telemetry, INSTANT_READING, false
 
       when "FFFE"
         write_command_log "RESET", codigo_telemetria
-        output_persistence_command telemetry, RESET_TELEMETRY
+        output_persistence_command telemetry, RESET_TELEMETRY, false
 
       else
         logger.info "Telemetria: #{codigo_telemetria} avisa que processou o pacote: #{pacote}, mas... que p* de pacote é esse?".blue
@@ -310,13 +310,13 @@ class ProcessarPacotes
   # saidas - lista de objetos da tabela saída que ainda não foram executados pela
   #          telemetria
   #
-  def self.output_persistence_command telemetry_id, type_commmand
+  def self.output_persistence_command telemetry_id, type_commmand, waiting_config = true
     saidas = Saida.where('cancelado = ? and data_processamento is ? and modelo_id = ? and telemetria_id = ? and comando = ?' , false, nil, 1, telemetry_id, type_commmand)
     saidas.each do |saida|
       saida.aguardando = false
       saida.processado = true
       saida.data_processamento = Time.now
-      saida.aguardando_configuracao = true if type_commmand == CHANGE_FAIXA_TIMER
+      saida.aguardando_configuracao = waiting_config
       saida.save
     end
   end
