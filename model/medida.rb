@@ -121,9 +121,17 @@ class Medida < ActiveRecord::Base
     medidas.each do |medida|
       if medida[:medida].id_local >= INICIO_DIGITAIS &&
          medida[:medida].id_local <= FIM_DIGITAIS
-        if Medida.faixas_medidas_mudaram medida[:ultima_medida], medida[:medida], medida[:faixa]
+        if medida[:aguardando_configuracao]
+          saidas = Saida.where("aguardando_configuracao = ?
+          and id_local > ?
+          and telemetria_id = ?", true, 20,
+          medida[:ultima_medida].equipamento.telemetria_id)
+          saidas.update_all(aguardando_configuracao: false)
           Medida.create_measures_tracks(medida[:medida], medida[:faixa], true)
-          Logging.info 'mudanca de faixa digital'
+        elsif Medida.faixas_medidas_mudaram medida[:ultima_medida],
+                                            medida[:medida],
+                                            medida[:faixa]
+        Medida.create_measures_tracks(medida[:medida], medida[:faixa], true)
         end
       elsif medida[:first_configuration]
         Logging.info "primeira configuracao da medida"
