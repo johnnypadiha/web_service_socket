@@ -134,6 +134,7 @@ class Medida < ActiveRecord::Base
         Medida.create_measures_tracks(medida[:medida], medida[:faixa], true)
         end
       elsif medida[:first_configuration]
+        p 'passei 1'
         Logging.info "primeira configuracao da medida"
         green_track, orange_track = blood_force_track_create medida[:faixa]
         faixa_saida = SaidaFaixas.new
@@ -143,12 +144,14 @@ class Medida < ActiveRecord::Base
         faixa_saida.maximo_laranja = orange_track[:maximo]
         Medida.create_measures_tracks(medida[:medida], faixa_saida, false)
       elsif medida[:aguardando_configuracao]
+        p 'passei 2'
         Logging.info "mudanca de faixa aguardando_configuracao da tabela de
                       saida"
         Medida.persiste_faixas_saida medida[:medida],
                                      medida[:faixa],
                                      medida[:ultima_medida]
       elsif medida[:mudanca_faixa]
+        p 'passei 3'
         Logging.info "ocorreu mudanca de faixa nao prevista na tabela de saida"
         medida[:medida].save
         Medida.persiste_faixas medida[:medida],
@@ -266,8 +269,7 @@ class Medida < ActiveRecord::Base
     faixa_saida = SaidaFaixas.find_by_saida_id(saida.id)
     unify_track = Medida.unify_tracks faixa_saida
     if unify_track[:green_max].to_f == faixa[:maximo].to_f &&
-       unify_track[:green_min].to_f == faixa[:minimo].to_f &&
-       ultima_medida.timer.to_i == faixa[:timer].to_i
+       unify_track[:green_min].to_f == faixa[:minimo].to_f
       orange_track[:minimo] = faixa_saida.minimo_laranja
       orange_track[:maximo] = faixa_saida.maximo_laranja
       green_track, orange_track = Medida.create_orange_and_green_tracks orange_track, faixa
