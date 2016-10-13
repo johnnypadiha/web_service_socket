@@ -29,7 +29,7 @@ porta = 5580
  ActiveRecord::Base.establish_connection(:production)
  # ActiveRecord::Base.establish_connection(:development)
  ActiveRecord::Base.default_timezone = :local
- ActiveRecord::Base.logger = Logger.new('sql_logger.log')
+ ActiveRecord::Base.logger = Logger.new('log/sql_logger.log')
 
 # Internal: cria a pasta para armazenar os pids e armazena o PID do puma
 #

@@ -12,15 +12,15 @@ module Logging
  end
 
  def self.logger
-   @logger ||= Logger.new("log.log")
+   @logger ||= Logger.new("log/log.log")
  end
 
  def self.logger_telemetria_connection
-   @logger_telemetria_connection ||= Logger.new("telemetry_connection.log")
+   @logger_telemetria_connection ||= Logger.new("log/telemetry_connection.log")
  end
 
  def self.logger_socket
-   @logger_socket ||= Logger.new("telemetry_socket.log")
+   @logger_socket ||= Logger.new("log/telemetry_socket.log")
  end
 
  def self.method_missing(prioridade, *args)
