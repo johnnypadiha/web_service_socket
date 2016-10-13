@@ -9,9 +9,18 @@ class SepararMedidaEquipamento
   #
   # Retorna o array evento com as medidas devidamente separadas
   def self.obter_pacote_equipamento(medidas)
-    telemetria = Telemetria.find_by_codigo(medidas[:codigo_telemetria])
+    telemetria = Telemetria.find_by_codigo(medidas[:codigo_telemetria])# || Telemetria.new
     eqm = {}
     evento = []
+    if telemetria.blank?
+      logger.info "Telemetria #{medidas[:codigo_telemetria]}" \
+                  ' Não cadastrada'.yellow
+
+    elsif telemetria.equipamentos.blank?
+      logger.info 'Ainda não existem equipamentos associados a '\
+                  "Telemetria #{medidas[:codigo_telemetria]}".yellow
+    end
+
     telemetria.equipamentos.each do |equipamento|
       eqm[:id_equipamento] = equipamento.id
       referencia_medidas = equipamento.codigos || []
