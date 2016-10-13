@@ -316,7 +316,7 @@ class ProcessarPacotes
       saida.aguardando = false
       saida.processado = true
       saida.data_processamento = Time.now
-      saida.aguardando_configuracao = true
+      saida.aguardando_configuracao = true unless type_commmand == RESET_TELEMETRY && type_commmand == INSTANT_READING
       saida.save
     end
   end
