@@ -46,6 +46,7 @@ class Medida < ActiveRecord::Base
       @ultimas_medidas_evento = []
       medidas = {}
       equipamentos.each do |equipamento|
+        equipamento.process_saida_virtual
         codigos_by_equipamento =
           EquipamentosCodigo.where(equipamento_id: equipamento.id)
                             .includes(:codigo)
