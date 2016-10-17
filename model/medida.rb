@@ -5,22 +5,29 @@ class Medida < ActiveRecord::Base
   has_many :medidas_eventos
   has_many :faixas
 
-  # Internal : Recebe o ID da telemetria e os dados dos pacotes e persiste as
-  #            faixas o timer das medidas que vieram no pacote, uni esses dados
-  #            com os os dados das ultimas medidas e faixas ja existentes no web
-  #            para que o usuario nao perca algumas informacoes que so existem
-  #            no web. Apos persistir os dados das medidas e faixas, chama um
-  #            metodo que persistira um evento com todos os valores zerados
-  #            chamado de evento de cofiguracao.
+  # Internal: Recebe o ID da telemetria e os dados provenientes do pacote da
+  #           telemetria, compara com a ultima faixa do banco de dados e/ou
+  #           com as faixas da tabela de saida e chama os metodos que realizam
+  #           a persistencia das faixas e das medidas, apos este chama o metodo
+  #           que persiste o evento de configuracao.
   #
-  # @mudanca_faixa - flag que verifica se existiram mudancas nas faixas que
-  #                  vieram da telemetria
-  # @medidas[] - Array de objetos Medidas e Faixas que serao persistidos caso
-  #              ocorra alguma alteracao de medidas e/ou faixas
-  # @medidas_evento[] - Medidas que irao gerar o evento de Configuracao
-  # @ultimas_medidas_evento[] - Array das ultimas medidas existentes no banco
-  #                             para fins de comparacao com as medidas que
-  #                             estao chegando do web service.
+  #   id_telemetria - Integer que armazena o id da telemetria no banco de dados
+  #   analogicas, negativas e digitais - Hash que armazena os valores minimo,
+  #   maximo e timer de cada medida vinda do pacote de configuracao.
+  #   @mudanca_faixa - Boolean para identificar se ocorreu mudanca na faixa
+  #   @aguardando_configuracao - Boolean que identifica que existe alguma saida
+  #                              na tabela de saida aguardando a chegada de uma
+  #                              configuracao
+  #   @first_configuration - Boolean que determina se e a primeira vez que a
+  #                         medida esta sendo persistida.
+  #   @medidas[] - Array de objetos Medidas e Faixas
+  #   @medidas_evento[] - Array de medidas que irao compor o evento de
+  #                      configuracao
+  #   @ultimas_medidas_evento[] - Array das ultimas medidas que tambem podem
+  #                             compor o evento de configuracao
+  #   indice - Integer que armazena o indice que ira ordenar as medidas na tela
+  #   medidas - unizao dos Hashs (analogicas, digitais e negativas)
+  #   parameters - parametros para geracao do objeto Medida
   #
   def self.create_medidas(id_telemetria, analogicas, negativas, digitais)
     equipamentos = Equipamento.where(telemetria_id: id_telemetria)
@@ -114,8 +121,10 @@ class Medida < ActiveRecord::Base
     end
   end
 
-  # Internal - Recebe um Hash com todas as informacoes de uma medida e escolhe a
-  #            forma como devera ser persistido as faixas e a medida
+  # Internal: Recebe um Hash com todas as informacoes de uma medida e escolhe a
+  #           forma como devera ser persistido as faixas e a medida
+  #
+  #   medidas - Hash com o objeto Medida populado, porem nao persistido.
   #
   def self.save_tracks_and_measures medidas
     medidas.each do |medida|
@@ -134,7 +143,6 @@ class Medida < ActiveRecord::Base
         Medida.create_measures_tracks(medida[:medida], medida[:faixa], true)
         end
       elsif medida[:first_configuration]
-        p 'passei 1'
         Logging.info "primeira configuracao da medida"
         green_track, orange_track = blood_force_track_create medida[:faixa]
         faixa_saida = SaidaFaixas.new
@@ -144,14 +152,12 @@ class Medida < ActiveRecord::Base
         faixa_saida.maximo_laranja = orange_track[:maximo]
         Medida.create_measures_tracks(medida[:medida], faixa_saida, false)
       elsif medida[:aguardando_configuracao]
-        p 'passei 2'
         Logging.info "mudanca de faixa aguardando_configuracao da tabela de
                       saida"
         Medida.persiste_faixas_saida medida[:medida],
                                      medida[:faixa],
                                      medida[:ultima_medida]
       elsif medida[:mudanca_faixa]
-        p 'passei 3'
         Logging.info "ocorreu mudanca de faixa nao prevista na tabela de saida"
         medida[:medida].save
         Medida.persiste_faixas medida[:medida],
@@ -163,6 +169,8 @@ class Medida < ActiveRecord::Base
 
   # Internal - popula os campos do objeto Medida com os valores provenientes da
   #            telemetria, do software web ou valores defaults da medida
+  #
+  #   parameters - parametros para geracao do objeto Medida
   #
   def self.popula_measure(parameters)
     parameters[:medida].equipamento_id =
@@ -219,9 +227,15 @@ class Medida < ActiveRecord::Base
     end
   end
 
-  # Internal - Seta as configuracoes do gauge, reporte e tipo, de acordo com as
+  # Internal: Seta as configuracoes do gauge, reporte e tipo, de acordo com as
   #            configuracoes escolhidas anteriormente ou o default de cada gauge
   #
+  # last_measure - Objeto medida com os valores da ultima medida da medida em
+  #                questao
+  # codigo_by_equipamento - Lista de codigos, provenientes da tabela
+  #                         equipamentos_codigos
+  #
+  # Returns uma String com o tipo de gauge escolhido e o ID do reporte da medida
   def self.gauge_config_save(last_measure, codigo_by_equipamento)
     if last_measure.present?
       gauge = last_measure.gauge.present? ? last_measure.gauge : 'analogico'
@@ -260,6 +274,10 @@ class Medida < ActiveRecord::Base
   #            se nao, forca a divisao da faixa verde em (metade verde, metade
   #            laranja) e realiza a persistencia, em ambos os casos marca a
   #            "aguardando_configuracao" da tabela de saida como concluido.
+  #
+  #   Medida - Objeto medida atual em questao
+  #   ultima_medida - Objeto medida da ultima medida em questao
+  #   faixa - Hash com o minimo, maximo e timer da medida proveniente do pacote
   #
   def self.persiste_faixas_saida medida, faixa, ultima_medida
     orange_track = {}
