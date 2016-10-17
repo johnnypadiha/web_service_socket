@@ -30,6 +30,8 @@ class Medida < ActiveRecord::Base
   #   parameters - parametros para geracao do objeto Medida
   #
   def self.create_medidas(id_telemetria, analogicas, negativas, digitais)
+    Medida.reset_instant_read_complete id_telemetria, [RESET_TELEMETRY,
+                                                       INSTANT_READING]
     equipamentos = Equipamento.where(telemetria_id: id_telemetria)
     if equipamentos.blank?
       Logging.warn "Nenhum equipamento cadastrado para Telemetria
@@ -118,6 +120,21 @@ class Medida < ActiveRecord::Base
         Telemetria ID: #{id_telemetria}"
         return false
       end
+    end
+  end
+
+  # Internal: quando receber um pacote de configuracao, marcar reset telemetria
+  #           e leitura instantanea como concluidas, se existirem as mesmas na
+  #           tabela de saida
+  #
+  def self.reset_instant_read_complete(id_telemetria, commands)
+    outings = Saida.where("comando IN (?) and processado = ? and
+    telemetria_id = ?", commands, false, id_telemetria)
+    outings.each do |out|
+      out.processado = true
+      out.data_processamento = Time.now
+      out.cancelado = false
+      out.save
     end
   end
 
