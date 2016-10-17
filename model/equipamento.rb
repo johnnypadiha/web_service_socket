@@ -22,4 +22,19 @@ class Equipamento < ActiveRecord::Base
 
     event
   end
+
+  def process_saida_virtual
+    saidas =
+      telemetria.saidas
+                .where(telemetria_id: telemetria_id)
+                .where(comando: 4)
+                .where(processado: false)
+                .where(modelo_id: MODELO_ANALOGICO)
+                .where(faixa_virtual: true)
+                .where(data_processamento: nil)
+
+    if saidas.present?
+      saidas.update_all(processado: true, data_processamento: Time.now)
+    end
+  end
 end

@@ -8,6 +8,7 @@ class Saida < ActiveRecord::Base
          .where(data_processamento: nil)
          .where(modelo_id: 1)
          .where(aguardando: false)
+         .where(faixa_virtual: false)
          .where('tentativas <= ?', LIMITE_TENTATIVAS)
          .first
   end

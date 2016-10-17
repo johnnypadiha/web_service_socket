@@ -71,6 +71,7 @@ class Evento < ActiveRecord::Base
             med_evento.evento_id = novo_evento.id
             med_evento.save
           end
+          equipamento.process_saida_virtual
           colecao_medida_evento = []
           Logging.info "Evento persistido para o equipamento  #{equipamento.nome}"\
                        " / ID #{equipamento.id} / Telemetria #{evento[:codigo_telemetria]}".blue
