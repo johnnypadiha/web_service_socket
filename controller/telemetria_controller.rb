@@ -47,7 +47,7 @@ class TelemetriaController
   #           registro.
   # return Boolean
   def self.atualiza_telemetria(telemetria, params)
-    unless params.blank?
+    if params.present? && telemetria.present?
       telemetria.updated_at               = params[:data] unless params[:data].blank?
       telemetria.firmware                 = params[:firmware] unless params[:firmware].blank?
       telemetria.ip_server_primario       = params[:ip_primario] unless params[:ip_primario].blank?
