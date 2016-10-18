@@ -19,11 +19,15 @@ $path = File.dirname(File.expand_path(__FILE__))
 environment = ENV['RACK_ENV'] || 'development'
 
 ip = '159.203.97.144' if environment == 'ojc_production'
-ip = '45.55.233.137' if environment == 'amz_production'
+ip = '104.131.87.246' if environment == 'amz_production'
 ip = '45.55.233.137' if environment == 'homologacao'
 ip = '192.168.0.150' if environment == 'development'
 
-porta = 5580
+if environment == 'amz_production'
+  porta = 5581
+else
+  porta = 5580
+end
 
 @pasta_pids = "#{$path}/tmp/pids"
 
