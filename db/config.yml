@@ -21,7 +21,7 @@ ojc_production:
 
 amz_production:
   <<: *default
-  # host: 45.55.233.137
+  host: 45.55.225.132
   database: telemetria_amz_production
 
 homologacao:
