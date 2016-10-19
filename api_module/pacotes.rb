@@ -149,7 +149,6 @@ class Pacotes
     when ID_RECEBIDO
       logger_comunicacao.info "ID RECEBIDO <#{pacote}> ----> #{Time.now.strftime('%d/%m/%Y - %H:%M:%S')}"
       package = Pacotes.generate_response pacote
-      puts "#{package}".red
       if package
         socket.send_data package
       else
