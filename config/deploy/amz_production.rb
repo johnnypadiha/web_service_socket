@@ -1,5 +1,5 @@
-role :web, %w{104.131.87.246}
-server '104.131.87.246', user: 'sup1', roles: %w{web app}
+role :web, %w{104.236.115.92}
+server '104.236.115.92', user: 'sup1', roles: %w{web app}
 set :environment, 'amz_production'
 
 set :ssh_options, {
