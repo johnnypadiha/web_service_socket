@@ -23,7 +23,7 @@ namespace :deploy do
   task :update_code do
     on roles(:web), in: :sequence, wait: 5 do
       execute "cd #{deploy_to} && git stash"
-      execute "cd #{deploy_to} && git pull"
+      execute "cd #{deploy_to} && git pull --no-edit"
       execute "cd #{deploy_to} && bundle install --path vendor/bundle"
     end
   end
