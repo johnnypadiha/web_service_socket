@@ -522,23 +522,31 @@ class Medida < ActiveRecord::Base
     return green_track, orange_track
   end
 
-  # Internal - Força a criação das faixas "verde" e "laranja" seguindo a lógica
-  #            da divisão do pacote que chegou da telemetria em 50% para cada cor
-  #            exceto quando a faixa vinda da telemetria é muito pequena é não pode
-  #            ser dividida meio à meio.
+  # Internal - Forca a criacao das faixas "verde" e "laranja" seguindo a logica
+  #            da divisao do pacote que chegou da telemetria em 50% para cada
+  #            cor exceto quando a faixa vinda da telemetria e muito pequena e
+  #            nao pode ser dividida meio a meio, na primeira configuracao da
+  #            telemetria em que a faixa verde vem de 100 ate 100 o sistema
+  #            divide o 100.0 ate o 100.99 entre verde e laranja
   #
   def self.blood_force_track_create green_track
     orange_track = { minimo: nil, maximo: nil }
     midle = ((green_track[:maximo] - green_track[:minimo]) / 2) + green_track[:minimo]
-
-    if green_track[:maximo] - green_track[:minimo] > 3
-      orange_track[:minimo] = green_track[:minimo]
-      orange_track[:maximo] = midle - 0.1
-      green_track[:minimo] = midle
+    if green_track[:maximo] == 100 && green_track[:minimo] == 100
+      green_track[:minimo] = 100
+      green_track[:maximo] = 100.5
+      orange_track[:minimo] = 100.6
+      orange_track[:maximo] = 100.9
     else
-      orange_track[:minimo] = green_track[:minimo]
-      orange_track[:maximo] = green_track[:minimo]
-      green_track[:minimo] = green_track[:minimo] + 0.5
+      if green_track[:maximo] - green_track[:minimo] > 3
+        orange_track[:minimo] = green_track[:minimo]
+        orange_track[:maximo] = midle - 0.1
+        green_track[:minimo] = midle
+      else
+        orange_track[:minimo] = green_track[:minimo]
+        orange_track[:maximo] = green_track[:minimo]
+        green_track[:minimo] = green_track[:minimo] + 0.5
+      end
     end
     return green_track, orange_track
   end
