@@ -7,6 +7,7 @@ group :development do
   gem 'eventmachine', '~> 1.2.0.1'
   gem 'logging', '~> 2.1.0'
   gem 'activesupport', '~> 4.2.6'#, '~> 4.2', '>= 4.2.6'
+  # gem 'pry-meta'
 end
 
 group :test do
