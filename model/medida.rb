@@ -1,5 +1,3 @@
-# require 'pry'
-
 class Medida < ActiveRecord::Base
   self.table_name = 'main.medidas'
 
@@ -55,11 +53,9 @@ class Medida < ActiveRecord::Base
         codigos_by_equipamento.each do |codigo_by_equipamento|
           equipamentos_evento.push(codigo_by_equipamento.equipamento_id)
           medida = Medida.new
-
           medidas = analogicas.merge(negativas)
           medidas = medidas.merge(digitais)
           @faixa = Medida.tracks_extractor medidas, codigo_by_equipamento
-
           ultima_medida =
             Medida.where(equipamento_id: equipamento,
                          id_local: codigo_by_equipamento.codigo.id).last
@@ -149,9 +145,9 @@ class Medida < ActiveRecord::Base
   #           forma como devera ser persistido as faixas e a medida
   #
   #   medidas - Hash com o objeto Medida populado, porem nao persistido.
+  #   medida[:faixa].dup - cria um novo objeto a partir de uma copia do objeto
   #
   def self.save_tracks_and_measures medidas
-    # binding.pry
     medidas.each do |medida|
       if medida[:medida].id_local >= INICIO_DIGITAIS &&
          medida[:medida].id_local <= FIM_DIGITAIS
@@ -164,7 +160,7 @@ class Medida < ActiveRecord::Base
           Medida.create_measures_tracks(medida[:medida], medida[:faixa], true)
         elsif Medida.faixas_medidas_mudaram medida[:ultima_medida],
                                             medida[:medida],
-                                            medida[:faixa]
+                                            medida[:faixa].dup
         Medida.create_measures_tracks(medida[:medida], medida[:faixa], true)
         end
       elsif medida[:first_configuration]
@@ -180,7 +176,7 @@ class Medida < ActiveRecord::Base
         Logging.info "mudanca de faixa aguardando_configuracao da tabela de
                       saida"
         Medida.persiste_faixas_saida medida[:medida],
-                                     medida[:faixa],
+                                     medida[:faixa].dup,
                                      medida[:ultima_medida],
                                      medida[:saida_id]
 
@@ -188,7 +184,7 @@ class Medida < ActiveRecord::Base
         Logging.info "ocorreu mudanca de faixa nao prevista na tabela de saida"
         medida[:medida].save
         Medida.persiste_faixas medida[:medida],
-                               medida[:faixa],
+                               medida[:faixa].dup,
                                medida[:ultima_medida]
       end
     end
@@ -308,7 +304,6 @@ class Medida < ActiveRecord::Base
   #   faixa - Hash com o minimo, maximo e timer da medida proveniente do pacote
   #
   def self.persiste_faixas_saida medida, faixa, ultima_medida, saida_id
-    # binding.pry
     orange_track = {}
     saida = Saida.find(saida_id)
     faixa_saida = SaidaFaixas.find_by_saida_id(saida.id)
