@@ -547,9 +547,15 @@ class Medida < ActiveRecord::Base
         orange_track[:maximo] = midle - 0.1
         green_track[:minimo] = midle
       else
-        orange_track[:minimo] = green_track[:minimo]
-        orange_track[:maximo] = green_track[:minimo]
-        green_track[:minimo] = green_track[:minimo] + 0.5
+        if green_track[:maximo] - green_track[:minimo] <= 3
+          orange_track[:minimo] = midle + 0.1
+          orange_track[:maximo] = green_track[:maximo]
+          green_track[:maximo] = midle
+        else
+          orange_track[:minimo] = green_track[:minimo]
+          orange_track[:maximo] = green_track[:minimo]
+          green_track[:minimo] = green_track[:minimo] + 0.5
+        end
       end
     end
     return green_track, orange_track
