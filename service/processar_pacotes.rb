@@ -161,7 +161,6 @@ class ProcessarPacotes
   #          de um comando que foi solicitado anteriormente
   #
   def self.processa_confirmacao_comandos pacote
-    logger.info "PACOTE RECEBIDO >>>>>>>>>> #{pacote} <<<<<<<<<<<<<<<<<<<<<<".blue
     codigo_telemetria = ProcessarPacotes.obtem_codigo_telemetria pacote
     telemetry = Telemetria.select(:id).find_by_codigo(codigo_telemetria)
     pacote =  pacote[6..9]
@@ -186,19 +185,19 @@ class ProcessarPacotes
       case pacote[0..1].to_s
       when "30"
         write_command_log "ALTERAR IP E PORTA PRIMÁRIOS", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_PRIMARY_IP
+        output_persistence_command telemetry, CHANGE_PRIMARY_IP, false
 
       when "35"
         write_command_log "ALTERAR IP E PORTA SECUNDÁRIO", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_SECUNDARY_IP
+        output_persistence_command telemetry, CHANGE_SECUNDARY_IP, false
 
       when "3D"
         write_command_log "ALTERAR HOST", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_HOST
+        output_persistence_command telemetry, CHANGE_HOST, false
 
       when "3E"
         write_command_log "ALTERAR PORTA DO HOST", codigo_telemetria
-        output_persistence_command telemetry, CHANGE_PORT
+        output_persistence_command telemetry, CHANGE_PORT, false
 
       when "01"
         write_measures_log "A1", codigo_telemetria
