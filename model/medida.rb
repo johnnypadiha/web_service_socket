@@ -77,6 +77,10 @@ class Medida < ActiveRecord::Base
             if Medida.faixas_medidas_mudaram ultima_medida, medida, @faixa
               @mudanca_faixa = true
             end
+
+            if Medida.mudanca_ambiente ultima_medida, medida
+              @mudanca_faixa = true
+            end
             saida_present =
               Saida.where(aguardando_configuracao: true,
                              id_local: ultima_medida.id_local,
@@ -472,6 +476,14 @@ class Medida < ActiveRecord::Base
       end
     else
       return true
+    end
+  end
+
+  def self.mudanca_ambiente ultima_medida, medida
+    if ultima_medida.disponivel_ambiente == medida.disponivel_ambiente
+      false
+    else
+      true
     end
   end
 
