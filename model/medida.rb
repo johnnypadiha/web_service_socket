@@ -168,6 +168,8 @@ class Medida < ActiveRecord::Base
                                             medida[:medida],
                                             medida[:faixa].dup
         Medida.create_measures_tracks(medida[:medida], medida[:faixa], true)
+        elsif medida[:mudanca_ambiente]
+          Medida.create_measures_tracks(medida[:medida], medida[:faixa], true)
         end
       elsif medida[:first_configuration]
         Logging.info "primeira configuracao da medida"
