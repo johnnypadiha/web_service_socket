@@ -39,6 +39,7 @@ class Medida < ActiveRecord::Base
     else
       equipamentos_evento = []
       @mudanca_faixa = false
+      @mudanca_ambiente = false
       @aguardando_configuracao = false
       @first_configuration = false
       @medidas = []
@@ -79,7 +80,7 @@ class Medida < ActiveRecord::Base
             end
 
             if Medida.mudanca_ambiente ultima_medida, medida
-              @mudanca_faixa = true
+              @mudanca_ambiente = true
             end
             saida_present =
               Saida.where(aguardando_configuracao: true,
@@ -90,7 +91,7 @@ class Medida < ActiveRecord::Base
               @mudanca_faixa = false
               @saida_id = saida_present.id
             end
-            if @mudanca_faixa || @aguardando_configuracao
+            if @mudanca_faixa || @aguardando_configuracao || @mudanca_ambiente
               @medidas_evento << medida
             else
               @medidas_evento << ultima_medida
@@ -108,6 +109,7 @@ class Medida < ActiveRecord::Base
                               aguardando_configuracao: @aguardando_configuracao,
                               saida_id: @saida_id || nil,
                               mudanca_faixa: @mudanca_faixa,
+                              mudanca_ambiente: @mudanca_ambiente,
                               first_configuration: @first_configuration }
           @medidas << @medidas_faixas
           @mudanca_faixa = false
@@ -184,7 +186,7 @@ class Medida < ActiveRecord::Base
                                      medida[:ultima_medida],
                                      medida[:saida_id]
 
-      elsif medida[:mudanca_faixa]
+      elsif medida[:mudanca_faixa] || medida[:mudanca_ambiente]
         Logging.info "ocorreu mudanca de faixa nao prevista na tabela de saida"
         medida[:medida].save
         Medida.persiste_faixas medida[:medida],
@@ -479,11 +481,15 @@ class Medida < ActiveRecord::Base
     end
   end
 
+  # Internal - verifica se ocorreu mudanca em medidas que eram do ambiente e
+  # agora nao mais pertencema ao mesmo e vice-versa
+  #
   def self.mudanca_ambiente ultima_medida, medida
-    if ultima_medida.disponivel_ambiente == medida.disponivel_ambiente
-      false
+    if ultima_medida.disponivel_ambiente != medida.disponivel_ambiente ||
+       ultima_medida.temperatura_ambiente != medida.temperatura_ambiente
+      return true
     else
-      true
+      return false
     end
   end
 

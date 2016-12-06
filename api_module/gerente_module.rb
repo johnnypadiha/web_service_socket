@@ -139,11 +139,10 @@ class GerenteModule < EventMachine::Connection
   # em hexadecimal
   def self.analogico_tracks_generate saida_faixas, saida, medida_params
     minimo, maximo = orange_track_to_green saida_faixas
-
-    maximo = BaseConverter.convert_to_byte(maximo)
+    maximo = BaseConverter.convert_to_byte(maximo.to_i)
     maximo = BaseConverter.convert_to_hexa(maximo)
 
-    minimo = BaseConverter.convert_to_byte(minimo)
+    minimo = BaseConverter.convert_to_byte(minimo.to_i)
     minimo = BaseConverter.convert_to_hexa(minimo)
 
     timer = BaseConverter.convert_to_hexa(saida.valor)

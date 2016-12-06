@@ -23,7 +23,7 @@ class Gerente
       end
 
       GerenteModule.checar_saida
-      @timer = EventMachine::PeriodicTimer.new(20) do
+      @timer = EventMachine::PeriodicTimer.new(40) do
         GerenteModule.checar_saida
       end
     }
