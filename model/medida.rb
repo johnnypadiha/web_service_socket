@@ -353,6 +353,8 @@ class Medida < ActiveRecord::Base
 
   # Internal - persiste medidas e faixas
   #
+  # digital - true para D1 ate D4 e false para as outras medidas
+  #
   def self.create_measures_tracks(medida, faixa_saida, digital)
     medida.save
     if digital
@@ -555,7 +557,7 @@ class Medida < ActiveRecord::Base
   #
   def self.blood_force_track_create green_track
     orange_track = { minimo: nil, maximo: nil }
-    midle = ((green_track[:maximo] - green_track[:minimo]) / 2) + green_track[:minimo]
+    midle = Medida.take_midle green_track
     if green_track[:maximo] == 100 && green_track[:minimo] == 100
       green_track[:minimo] = 100
       green_track[:maximo] = 100.5
@@ -580,6 +582,13 @@ class Medida < ActiveRecord::Base
     end
     return green_track, orange_track
   end
+
+# Internal: recebe a faixa primaria da telemetria e retorna o valor que fica
+#           exatamente no meio dessa faixa
+#
+def self.take_midle track
+  ((track[:maximo] - track[:minimo]) / 2) + track[:minimo]
+end
 
   # Internal - Seleciona todas as meddias ambiente dos equipamentos passados pelo
   #            parâmetro, caso a medida ambiente for repetida, seleciona apenas
