@@ -557,7 +557,7 @@ class Medida < ActiveRecord::Base
   #
   def self.blood_force_track_create green_track
     orange_track = { minimo: nil, maximo: nil }
-    midle = Medida.take_midle green_track
+    middle = Medida.take_middle green_track
     if green_track[:maximo] == 100 && green_track[:minimo] == 100
       green_track[:minimo] = 100
       green_track[:maximo] = 100.5
@@ -566,13 +566,13 @@ class Medida < ActiveRecord::Base
     else
       if green_track[:maximo] - green_track[:minimo] > 3
         orange_track[:minimo] = green_track[:minimo]
-        orange_track[:maximo] = midle - 0.1
-        green_track[:minimo] = midle
+        orange_track[:maximo] = middle - 0.1
+        green_track[:minimo] = middle
       else
         if green_track[:maximo] - green_track[:minimo] <= 3
-          orange_track[:minimo] = midle + 0.1
+          orange_track[:minimo] = middle + 0.1
           orange_track[:maximo] = green_track[:maximo]
-          green_track[:maximo] = midle
+          green_track[:maximo] = middle
         else
           orange_track[:minimo] = green_track[:minimo]
           orange_track[:maximo] = green_track[:minimo]
@@ -586,7 +586,7 @@ class Medida < ActiveRecord::Base
 # Internal: recebe a faixa primaria da telemetria e retorna o valor que fica
 #           exatamente no meio dessa faixa
 #
-def self.take_midle track
+def self.take_middle track
   ((track[:maximo] - track[:minimo]) / 2) + track[:minimo]
 end
 
