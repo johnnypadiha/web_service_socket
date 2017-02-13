@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative '../service/selecionar_pacote.rb'
+require 'pp'
 class Evento < ActiveRecord::Base
   self.table_name = 'main.eventos'
 
@@ -28,6 +29,7 @@ class Evento < ActiveRecord::Base
       codigo_evento = 0
       equipamento = Equipamento.includes(:medidas, medidas: :faixas).find(evento[:id_equipamento])
       equipamento_medidas = equipamento.medidas_equipamento evento
+      tipo = []
       equipamento_medidas.each do |medida|
           faixa_atual = medida.faixas.select {|s| evento[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i >= s.minimo.to_i && evento[CODIGOS_MEDIDAS[medida.id_local].to_sym].to_i <= s.maximo.to_i}.first
           status_faixa =
@@ -36,12 +38,14 @@ class Evento < ActiveRecord::Base
           else
             faixa_atual.present? ? faixa_atual.status_faixa : ALARME
           end
-          codigo_evento =
-            if evento[:tipo_pacote].present?
-              evento[:tipo_pacote]
-            else
-              SelecionarPacote.new({codigo_atual: codigo_evento, codigo_pacote: evento[:codigo_pacote], status_faixa: status_faixa}).seleciona_pacote
-            end
+          codigo_evento = evento[:codigo_pacote]
+            # TODO: Remover os comentarios após os devidos testes em homologacao
+            # if evento[:tipo_pacote].present?
+            #   # p evento[:tipo_pacote]
+            #   evento[:tipo_pacote]
+            # else
+            #   SelecionarPacote.new({codigo_atual: codigo_evento, codigo_pacote: evento[:codigo_pacote], status_faixa: status_faixa}).seleciona_pacote
+            # end
           if status_faixa.to_i == ALERTA || status_faixa.to_i == ALARME
             reporte_faixa = true if medida.reporte_medida_id == REPORTE_FAIXA
             reporte_sinal = true if medida.reporte_medida_id == REPORTE_SINAL
@@ -55,7 +59,11 @@ class Evento < ActiveRecord::Base
           medida_evento.valor = evento[CODIGOS_MEDIDAS[medida.id_local].to_sym]
           medida_evento.status_faixa = status_faixa
           colecao_medida_evento << medida_evento
+          tipo << status_faixa
       end
+      codigo_evento =
+        SelecionarPacote.gerar_tipo_pacote(codigo_evento, tipo)
+
       if equipamento_medidas.present?
         novo_evento = Evento.new
         novo_evento.equipamento_id = equipamento.id
