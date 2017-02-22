@@ -150,6 +150,8 @@ class Pacotes
       logger_comunicacao.info "ID RECEBIDO <#{pacote}> ----> #{Time.now.strftime('%d/%m/%Y - %H:%M:%S')}"
       package = Pacotes.generate_response pacote
       if package
+        telemetria = Telemetria.find_by_codigo(pacote)
+        telemetria.update(conectado: true) if telemetria.present?
         socket.send_data package
       else
         socket.close_connection

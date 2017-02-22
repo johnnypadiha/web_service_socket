@@ -30,7 +30,7 @@ class TelemetriaController
 
     telemetria_existe =
       if telemetria.present?
-        telemetria.update(ip: ip)
+        telemetria.update(ip: ip, conectado: true)
         true
       else
         false
