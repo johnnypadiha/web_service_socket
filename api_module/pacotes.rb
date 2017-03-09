@@ -243,6 +243,7 @@ class Pacotes
       end
   end
 
+  # gera uma requisicao para a telmetria a cada keepalive enviado pela mesma.
   def self.generate_response(codigo)
     telemetria = Telemetria.find_by_codigo(codigo.to_i)
     if telemetria

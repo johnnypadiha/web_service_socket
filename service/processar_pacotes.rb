@@ -291,7 +291,7 @@ class ProcessarPacotes
 
   end
 
-  # Internal - Escreve no nog recebimento de mudanças de faixas e timmer pela telemetria
+  # Internal - Escreve no log recebimento de mudanças de faixas e timmer pela telemetria
   #
   def self.write_measures_log medida, codigo_telemetria
     logger.info "Confirmação do recebimento do comando ALTERAR FAIXAS E TIMER, das medidas #{medida} por parte da telemetria #{codigo_telemetria}!".blue

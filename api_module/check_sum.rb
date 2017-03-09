@@ -2,12 +2,12 @@
 module CheckSum
   # Internal : Gera o Validador CheckSum para todos os pacotes a enviar para a telemetria
   #
-  # comando : String que possui um comando em no formato hexadecimal
+  # comando : String que possui um comando no formato hexadecimal
   # i : Integer que armazena o contador para a flag de saida do while
   # cs : Inteiro que armnazena o calculo do CheckSum do pacote
-  # byte_pacote : String que armazena duas caracteres do conteudo da var comando
+  # byte_pacote : String que armazena dois caracteres do conteudo da variavel comando
   #
-  # retorno : var comando com o CheckSum
+  # retorno : variavel comando com o CheckSum
   def gerar_check_sum(comando)
     i = 0
     cs = 0
