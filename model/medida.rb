@@ -423,6 +423,8 @@ class Medida < ActiveRecord::Base
   #
   def self.unify_tracks(faixas)
     unify_track = { green_min: nil, green_max: nil }
+    faixas.minimo = faixas.minimo_laranja if faixas.minimo == nil
+    faixas.maximo = faixas.maximo_laranja if faixas.maximo == nil
     if faixas.minimo < faixas.minimo_laranja
       unify_track[:green_max] = faixas.maximo_laranja
       unify_track[:green_min] = faixas.minimo
