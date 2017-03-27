@@ -158,6 +158,7 @@ class GerenteModule < EventMachine::Connection
   # Retorna o inicio e o fim da faixa verde que sera enviada para a telemetria
   def self.orange_track_to_green saida_faixas
     saida_faixas.maximo = saida_faixas.maximo_laranja if saida_faixas.maximo == nil
+    saida_faixas.minimo_laranja = saida_faixas.minimo if saida_faixas.minimo_laranja == nil
 
       if saida_faixas.maximo < saida_faixas.minimo_laranja
         minimo = saida_faixas.minimo
