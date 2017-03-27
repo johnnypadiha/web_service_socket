@@ -151,12 +151,14 @@ class GerenteModule < EventMachine::Connection
     return maximo, minimo, timer, id_local
   end
 
-  # Internal - Unifica a faixa laranja com a faixa verde da telemetria analógica
+  # Internal - Unifica a faixa laranja com a faixa verde da telemetria analogica
   #            para que ao enviar uma faixa para telemetria a ela considere que
   #            a faixa laranja e a verde seja a mesma coisa, ou seja "verde"
   #
-  # Retorna o inicio e o fim da faixa verde que será enviada para a telemetria
+  # Retorna o inicio e o fim da faixa verde que sera enviada para a telemetria
   def self.orange_track_to_green saida_faixas
+    saida_faixas.maximo = saida_faixas.maximo_laranja if saida_faixas.maximo == nil
+
       if saida_faixas.maximo < saida_faixas.minimo_laranja
         minimo = saida_faixas.minimo
         maximo = saida_faixas.maximo_laranja

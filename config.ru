@@ -21,7 +21,7 @@ environment = ENV['RACK_ENV'] || 'development'
 ip = '159.203.97.144' if environment == 'ojc_production'
 ip = '104.236.115.92' if environment == 'amz_production'
 ip = '45.55.233.137' if environment == 'homologacao'
-ip = '192.168.15.120' if environment == 'development'
+ip = '192.168.15.13' if environment == 'development'
 
 if environment == 'amz_production'
   porta = 5581
