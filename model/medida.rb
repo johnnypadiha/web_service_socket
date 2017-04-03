@@ -234,6 +234,8 @@ class Medida < ActiveRecord::Base
     elsif parameters[:codigo_by_equipamento].disponivel_temperatura
       parameters[:medida].nome = 'Temperatura Ambiente'
       parameters[:medida].grandeza = 'ºC'
+      parameters[:medida].indice =
+        parameters[:indice]
     else
       parameters[:medida].indice =
         parameters[:indice]
